@@ -1,0 +1,12 @@
+# Node
+node_modules/
+frontend/node_modules/
+
+# Laravel
+backend/vendor/
+backend/.env
+.env
+
+# OS
+.DS_Store
+Thumbs.db
