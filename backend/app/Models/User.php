@@ -45,4 +45,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    // ... existing code ...
+
+    // Relationship: A user has many reviews
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // Relationship: A user has many movies in their watchlist
+    // We use 'belongsToMany' because a user connects to movies THROUGH the watchlists table
+    public function watchlist()
+    {
+        return $this->belongsToMany(Movie::class, 'watchlists', 'user_id', 'movie_id')->withTimestamps();
+    }
 }
