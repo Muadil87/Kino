@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { Routes, Route, useNavigate, Navigate } from 'react-router-dom' // ✅ IMPORT THIS
+import { useState, useEffect } from 'react' // ✅ Added useEffect
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom'
+import { getTrendingMovies } from './services/tmdb' // ✅ Import the API service
 import Navbar from './components/Navbar'
 import HeroSection from './components/HeroSection'
 import LandingHero from './components/LandingHero'
@@ -8,27 +9,22 @@ import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
 import Watchlist from './components/Watchlist'
 import Collections from './components/Collections'
+import MovieDetail from './components/MovieDetail'
+import SearchResults from './components/SearchResults'
+import Favorites from './components/Favorites'
 import './App.css'
 
-// Sample data (Keep this exactly as you had it)
-const mockMovies = [
-  { id: 1, title: 'The Ethereal Frame', release_date: '2024', poster_path: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=400&h=600&fit=crop', rating: 9.2, genre: 'Drama', description: 'A poetic journey through memory and cinema' },
-  { id: 2, title: 'Neon Horizons', release_date: '2024', poster_path: 'https://images.unsplash.com/photo-1533613220915-609f665a6416?w=400&h=600&fit=crop', rating: 8.8, genre: 'Sci-Fi', description: 'Where technology meets the human soul' },
-  { id: 3, title: 'Silent Canvas', release_date: '2023', poster_path: 'https://images.unsplash.com/photo-1489599849228-bed2b8904ee2?w=400&h=600&fit=crop', rating: 9.0, genre: 'Thriller', description: 'Visual storytelling at its finest' },
-  { id: 4, title: 'Chromatic Dreams', release_date: '2024', poster_path: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=400&h=600&fit=crop', rating: 8.5, genre: 'Fantasy', description: 'Colors come alive in this visual spectacle' },
-  { id: 5, title: 'The Last Frame', release_date: '2023', poster_path: 'https://images.unsplash.com/photo-1533613220915-609f665a6416?w=400&h=600&fit=crop', rating: 8.9, genre: 'Drama', description: 'A meditation on mortality and cinema' },
-  { id: 6, title: 'Luminous Paths', release_date: '2024', poster_path: 'https://images.unsplash.com/photo-1489599849228-bed2b8904ee2?w=400&h=600&fit=crop', rating: 8.7, genre: 'Adventure', description: 'Light guides the way to discovery' }
-]
+// ❌ DELETED: const mockMovies = [...] (We don't need this anymore!)
 
-// 1️⃣ Extracting your Dashboard UI into a Component so it fits in a Route
+// 1️⃣ The Dashboard Component (Updated to handle loading)
 const Dashboard = ({ movies }) => {
-  const featuredMovie = movies[0];
-  
+  // ✅ Loading Check: If data hasn't arrived yet, show a loading text
+  if (!movies || movies.length === 0) {
+    return <div className="loading-screen">Loading amazing movies...</div>;
+  }
+
   return (
     <>
-      {/* Hero Section */}
-      <HeroSection movie={featuredMovie} />
-
       {/* Trending Section */}
       <section className="section trending-section">
         <div className="section-header">
@@ -36,34 +32,16 @@ const Dashboard = ({ movies }) => {
             <h2 className="section-title">Trending</h2>
             <div className="title-underline"></div>
           </div>
-          <button className="view-all-btn">
-            View All
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
         </div>
         <div className="movie-grid">
-          {movies.map(movie => (
+          {/* Show top 12 movies from API */}
+          {movies.slice(0, 12).map(movie => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
       </section>
 
-      {/* Call to Action Section */}
-      <section className="section cta-section">
-        <div className="cta-content">
-          <h2 className="cta-title">Discover Your Next Favorite Film</h2>
-          <p className="cta-text">
-            Explore our curated collection of extraordinary cinema. From indie darlings to blockbuster spectacles, KINO brings the world of film to your fingertips.
-          </p>
-          <button className="btn-primary">
-             Start Watching
-          </button>
-        </div>
-      </section>
-
-      {/* Staff Picks Section */}
+      {/* Staff Picks Section (KEPT - Using API data now) */}
       <section className="section staff-picks-section">
         <div className="section-header">
            <div>
@@ -72,18 +50,22 @@ const Dashboard = ({ movies }) => {
            </div>
         </div>
         <div className="picks-grid">
-           {movies.slice(0, 3).map((movie) => (
+           {/* We take movies 4, 5, and 6 for "Staff Picks" just to show something different */}
+           {movies.slice(4, 7).map((movie) => (
              <div key={movie.id} className="pick-card">
                 <div className="pick-header">
                    <div>
                      <h3 className="pick-title">{movie.title}</h3>
-                     <p className="pick-year">{movie.release_date}</p>
+                     <p className="pick-year">{movie.release_date ? movie.release_date.split('-')[0] : 'N/A'}</p>
                    </div>
                    <div className="pick-rating">
-                      <span>{movie.rating}</span>
+                      <span>{movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}</span>
                    </div>
                 </div>
-                <p className="pick-description">{movie.description}</p>
+                {/* Overview is often long, so we limit it */}
+                <p className="pick-description">
+                    {movie.overview ? movie.overview.substring(0, 100) + '...' : 'No description available.'}
+                </p>
              </div>
            ))}
         </div>
@@ -94,13 +76,62 @@ const Dashboard = ({ movies }) => {
 
 // 2️⃣ The Main App Component
 function App() {
-  const [movies] = useState(mockMovies)
-  // Initialize state from localStorage to persist login
+  // ✅ STATE CHANGE: Start with empty array, not mock data
+  const [movies, setMovies] = useState([]) 
+  const [favorites, setFavorites] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('kino_favorites') || '[]') } catch { return [] }
+  })
+  const [watchlist, setWatchlist] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('kino_watchlist') || '[]') } catch { return [] }
+  })
+  
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     return localStorage.getItem('kino_isLoggedIn') === 'true'
   })
   
   const navigate = useNavigate();
+
+  // ✅ NEW: Fetch Data from TMDB when App loads
+  useEffect(() => {
+    const fetchMovies = async () => {
+      try {
+        console.log("Fetching movies...");
+        const trendingMovies = await getTrendingMovies();
+        setMovies(trendingMovies);
+        console.log("Movies loaded:", trendingMovies);
+      } catch (error) {
+        console.error("Error loading movies:", error);
+      }
+    };
+
+    fetchMovies();
+  }, []); // Run once on mount
+  
+  useEffect(() => {
+    localStorage.setItem('kino_favorites', JSON.stringify(favorites))
+  }, [favorites])
+  
+  useEffect(() => {
+    localStorage.setItem('kino_watchlist', JSON.stringify(watchlist))
+  }, [watchlist])
+  
+  const isFav = (id) => favorites.some(m => m.id === id)
+  const isInWatchlist = (id) => watchlist.some(m => m.id === id)
+  const upsertMinimal = (m) => ({
+    id: m.id,
+    title: m.title,
+    poster_path: m.poster_path || m.posterUrl || null,
+    backdrop_path: m.backdrop_path || null,
+    release_date: m.release_date || null,
+    vote_average: m.vote_average ?? m.rating ?? null,
+    overview: m.overview || m.description || ''
+  })
+  const toggleFavorite = (movie) => {
+    setFavorites(prev => isFav(movie.id) ? prev.filter(x => x.id === undefined || x.id !== movie.id) : [...prev, upsertMinimal(movie)])
+  }
+  const toggleWatchlist = (movie) => {
+    setWatchlist(prev => isInWatchlist(movie.id) ? prev.filter(x => x.id === undefined || x.id !== movie.id) : [...prev, upsertMinimal(movie)])
+  }
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -114,49 +145,28 @@ function App() {
     navigate('/');
   };
 
-  // 3️⃣ Adapter to make your existing Navbar work with Router
-  // If your Navbar calls onNavigate('signin'), we translate that to navigate('/login')
-  const handleNavigation = (destination) => {
-    if (destination === 'signin') navigate('/login');
-    if (destination === 'signup') navigate('/signup');
-    if (destination === 'landing') navigate('/');
-    if (destination === 'dashboard') navigate('/dashboard');
-  };
-
   return (
     <div className="app">
-      {/* Navbar sits outside Routes so it's always visible */}
-      <Navbar 
-        isLoggedIn={isLoggedIn} 
-        setIsLoggedIn={handleLogout} 
-      />
+      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={handleLogout} />
       
-      {/* 4️⃣ The Router Map */}
       <Routes>
-        {/* Public Routes - Redirect if already logged in */}
         <Route path="/" element={
           isLoggedIn ? <Navigate to="/dashboard" /> : <LandingHero onGetStarted={() => navigate('/signup')} />
         } />
         
         <Route path="/login" element={
           isLoggedIn ? <Navigate to="/dashboard" /> : (
-            <SignIn 
-              onNavigateToSignUp={() => navigate('/signup')} 
-              onLogin={handleLogin} 
-            />
+            <SignIn onNavigateToSignUp={() => navigate('/signup')} onLogin={handleLogin} />
           )
         } />
         
         <Route path="/signup" element={
           isLoggedIn ? <Navigate to="/dashboard" /> : (
-            <SignUp 
-              onNavigateToSignIn={() => navigate('/login')} 
-              onSignUp={handleLogin} 
-            />
+            <SignUp onNavigateToSignIn={() => navigate('/login')} onSignUp={handleLogin} />
           )
         } />
 
-        {/* Protected Routes - Only show if logged in */}
+        {/* Protected Routes */}
         <Route 
           path="/dashboard" 
           element={
@@ -166,7 +176,13 @@ function App() {
         <Route 
           path="/watchlist" 
           element={
-            isLoggedIn ? <Watchlist movies={movies} /> : <Navigate to="/login" />
+            isLoggedIn ? <Watchlist movies={watchlist} /> : <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/favorites" 
+          element={
+            isLoggedIn ? <Favorites movies={favorites} /> : <Navigate to="/login" />
           } 
         />
         <Route 
@@ -175,9 +191,28 @@ function App() {
             isLoggedIn ? <Collections movies={movies} /> : <Navigate to="/login" />
           } 
         />
+        <Route 
+          path="/movie/:id" 
+          element={
+            isLoggedIn ? (
+              <MovieDetail 
+                movies={movies} 
+                onToggleFavorite={toggleFavorite}
+                onToggleWatchlist={toggleWatchlist}
+                isFavorite={isFav}
+                isInWatchlist={isInWatchlist}
+              />
+            ) : <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/search" 
+          element={
+            isLoggedIn ? <SearchResults /> : <Navigate to="/login" />
+          } 
+        />
       </Routes>
 
-      {/* Footer */}
       <footer className="footer">
         <div className="footer-container">
            <div className="footer-bottom">

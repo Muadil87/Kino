@@ -1,28 +1,34 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom' // ✅ Import Router tools
+import { Link, useNavigate } from 'react-router-dom'
 import './Navbar.css'
 
-// We don't need 'onNavigate' anymore because we have the router!
 export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const navigate = useNavigate() // ✅ Hook for button navigation
+  const [searchTerm, setSearchTerm] = useState('')
+  const navigate = useNavigate()
 
   const handleLogout = () => {
-    setIsLoggedIn(); // Calls the logout function passed from App.jsx
-    navigate('/');   // Redirect to home
+    setIsLoggedIn();
+    navigate('/');
+  }
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault()
+    const q = searchTerm.trim()
+    if (!q) return
+    navigate(`/search?q=${encodeURIComponent(q)}`)
+    setMobileMenuOpen(false)
   }
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
         
-        {/* Logo - Uses Link for instant home travel */}
         <Link to={isLoggedIn ? "/dashboard" : "/"} className="navbar-logo" style={{ textDecoration: 'none' }}>
           <div className="logo-icon">K</div>
           <h1 className="logo-text">KINO</h1>
         </Link>
 
-        {/* Center Navigation */}
         <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
           <Link to={isLoggedIn ? "/dashboard" : "/"} className="nav-link">
             Trending
@@ -35,17 +41,23 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
               My Watchlist
             </Link>
           )}
+          {isLoggedIn && (
+            <Link to="/favorites" className="nav-link">
+              Favorites
+            </Link>
+          )}
         </div>
 
-        {/* Right Actions */}
         <div className="navbar-actions">
-          {/* Search (Visual only for now) */}
-          <button className="search-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.35-4.35"></path>
-            </svg>
-          </button>
+          <form className="search-form" onSubmit={handleSearchSubmit}>
+            <input
+              type="search"
+              className="search-input"
+              placeholder="Search movies..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </form>
           
           {isLoggedIn ? (
             <button className="sign-in-btn" onClick={handleLogout}>
@@ -53,7 +65,6 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
             </button>
           ) : (
             <>
-              {/* We use navigate() for buttons to keep your styling exact */}
               <button className="sign-in-btn" onClick={() => navigate('/login')}>
                 Sign In
               </button>
@@ -63,7 +74,6 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
             </>
           )}
 
-          {/* Mobile Menu Toggle */}
           <button 
             className="menu-btn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
