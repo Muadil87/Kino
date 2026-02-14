@@ -3,13 +3,12 @@ import MovieCard from './MovieCard';
 import './Watchlist.css';
 
 const Watchlist = ({ movies }) => {
-  // Mock data for new sections
   const recentActivities = [
     { id: 1, text: 'You added "The Ethereal Frame" to your watchlist', date: '2 hours ago' },
     { id: 2, text: 'You marked "Neon Horizons" as watched', date: 'Yesterday' },
   ];
 
-  const personalizedSuggestions = movies.slice(3, 6);
+  const personalizedSuggestions = (movies || []).slice(3, 6);
 
   return (
     <div className="watchlist-page">
@@ -21,7 +20,8 @@ const Watchlist = ({ movies }) => {
       <section className="section">
         <h2 className="section-title">Current Watchlist</h2>
         <div className="movie-grid">
-          {movies.slice(0, 3).map(movie => (
+          {(!movies || movies.length === 0) && <div>No movies yet.</div>}
+          {(movies || []).slice(0, 12).map(movie => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
