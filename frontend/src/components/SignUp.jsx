@@ -61,55 +61,55 @@ const SignUp = ({ onNavigateToSignIn }) => {
 
   return (
     <div className="auth-container">
+      <img 
+        src="https://image.tmdb.org/t/p/w1280/hZkgoQYus5vegHoetLkCJzb17zJ.jpg" 
+        alt="Fight Club Movie Scene" 
+        className="auth-bg-image"
+        loading="lazy"
+        onError={(e) => { e.target.style.display = 'none' }}
+      />
       <div className="auth-card">
         <h2 className="auth-title">Create Account</h2>
         
-        {error && <div style={{color: 'red', marginBottom: '10px'}}>{error}</div>}
+        {error && <div style={{color: '#ff4444', marginBottom: '15px', background: 'rgba(255, 0, 0, 0.1)', padding: '10px', borderRadius: '8px'}}>{error}</div>}
 
-        <form onSubmit={handleSignUp} className="auth-form">
-          <div className="form-group">
-            <label>USERNAME</label>
-            <input 
-              type="text" 
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="Choose a username" 
-              required
-            />
-          </div>
+        <form onSubmit={handleSignUp}>
+          <input 
+            type="text" 
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="Username" 
+            className="auth-input"
+            required
+          />
           
-          <div className="form-group">
-            <label>EMAIL</label>
-            <input 
-              type="email" 
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email" 
-              required
-            />
-          </div>
+          <input 
+            type="email" 
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Email" 
+            className="auth-input"
+            required
+          />
           
-          <div className="form-group">
-            <label>PASSWORD</label>
-            <input 
-              type="password" 
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Create a password" 
-              required
-            />
-          </div>
+          <input 
+            type="password" 
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Password" 
+            className="auth-input"
+            required
+          />
 
-          <button type="submit" className="auth-btn">SIGN UP</button>
+          <button type="submit" className="auth-btn">Join KINO</button>
         </form>
 
-        <p className="auth-footer">
-          Already have an account? 
-          <span onClick={onNavigateToSignIn} className="auth-link"> Sign In</span>
-        </p>
+        <div className="auth-link" onClick={onNavigateToSignIn} style={{cursor: 'pointer'}}>
+          Already have an account? <span>Sign In</span>
+        </div>
       </div>
     </div>
   );

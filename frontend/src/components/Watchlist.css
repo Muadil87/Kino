@@ -1,38 +1,80 @@
 .watchlist-page {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
-  color: #f8f8f8;
+  padding: 140px 2rem 4rem 2rem; /* Standardized to match Dashboard */
+  color: var(--foreground);
+  min-height: 100vh;
 }
 
 .page-header {
   margin-bottom: 3rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 1.5rem;
 }
 
 .page-title {
+  font-family: 'Oswald', sans-serif;
   font-size: 2.5rem;
-  font-weight: 800;
+  font-weight: 700;
   margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
 }
 
-.page-subtitle {
-  color: #808080;
-  font-size: 1.1rem;
+/* Add these new styles for the Tabs */
+.tabs-container {
+  display: flex;
+  gap: 1rem;
+  margin-top: 20px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 2rem;
+  padding-bottom: 1px;
 }
 
-.watchlist-grid-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 3rem;
-  margin-top: 2rem;
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: 'Manrope', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px 6px 0 0;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-@media (min-width: 1024px) {
-  .watchlist-grid-layout {
-    grid-template-columns: 2fr 1fr;
-  }
+.tab-btn:hover {
+  color: var(--foreground);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+  color: var(--accent-primary);
+  border-bottom: 2px solid var(--accent-primary); /* KINO Red */
+  background: linear-gradient(to top, rgba(255, 10, 22, 0.1), transparent);
+}
+
+.count {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-left: 5px;
+}
+
+.tab-btn.active .count {
+  color: var(--accent-primary);
+}
+
+/* Style for the Date in History mode */
+.watched-date {
+  font-size: 0.8rem;
+  color: var(--accent-secondary); /* Electric Blue */
+  margin-top: 4px;
+  font-weight: 500;
+  font-family: 'Manrope', sans-serif;
 }
 
 .section {
@@ -40,44 +82,35 @@
 }
 
 .section-title {
-  font-size: 1.5rem;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 1.5rem;
-  color: #f8f8f8;
+  color: var(--foreground);
+  text-transform: uppercase;
 }
+
+/* Movie grid handled by global App.css */
+/* .movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2rem;
+} */
 
 .movie-grid.compact {
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
-.empty-state {
-  background: rgba(255, 255, 255, 0.03);
-  padding: 3rem;
+/* Empty state handled by SharedStyles.css */
+/* .empty-state {
+  background: var(--card-bg);
+  padding: 4rem;
   border-radius: 12px;
   text-align: center;
-  color: #808080;
-  border: 1px dashed rgba(255, 255, 255, 0.1);
-}
-
-.activity-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.activity-item {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 1rem;
-  border-radius: 8px;
-  border-left: 3px solid #00bfff;
-}
-
-.activity-text {
-  font-size: 0.95rem;
-  margin-bottom: 0.25rem;
-}
-
-.activity-date {
-  font-size: 0.8rem;
-  color: #808080;
-}
+  color: var(--text-muted);
+  border: 1px dashed var(--border-color);
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.1rem;
+} */

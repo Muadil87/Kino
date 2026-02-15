@@ -1,0 +1,35 @@
+.landing-page {
+  width: 100%;
+  background-color: var(--background);
+}
+
+.landing-trending-section {
+  padding: 4rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.section-container {
+  width: 100%;
+}
+
+.landing-trending-section .section-title {
+  color: var(--foreground);
+  font-family: 'Oswald', sans-serif;
+  font-size: 2rem;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.landing-trending-section .title-underline {
+  width: 60px;
+  height: 4px;
+  background-color: var(--accent-primary);
+  margin-bottom: 2rem;
+}
+
+.landing-trending-section .loading-state {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0;
+}

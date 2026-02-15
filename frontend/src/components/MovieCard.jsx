@@ -2,73 +2,98 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import './MovieCard.css'
 
-export default function MovieCard({ movie }) {
+export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
   const [isHovered, setIsHovered] = useState(false)
 
   const tmdbBase = 'https://image.tmdb.org/t/p/w500'
+  // Use backdrop_path instead of poster_path
+  const backdrop = movie.backdrop_path || movie.backdropUrl
   const poster = movie.poster_path || movie.posterUrl
-  const imageUrl = poster
-    ? (String(poster).startsWith('http') ? poster : `${tmdbBase}${poster}`)
-    : 'https://via.placeholder.com/500x750?text=No+Image'
-
-  const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'N/A'
-  const rating = typeof movie.vote_average === 'number' ? movie.vote_average.toFixed(1) : (movie.rating ?? 'N/A')
+  
+  // Prefer backdrop, fallback to poster if backdrop missing
+  const imagePath = backdrop || poster
+  
+  const imageUrl = imagePath
+    ? (String(imagePath).startsWith('http') ? imagePath : `${tmdbBase}${imagePath}`)
+    : 'https://via.placeholder.com/500x281?text=No+Image' // 16:9 placeholder
 
   return (
-    <div
-      className="movie-card"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <Link 
+      to={`/movie/${movie.id}`} 
+      className="movie-card-link"
+      onClick={(e) => {
+        if (onClick) {
+          e.preventDefault()
+          onClick(movie)
+        }
+      }}
     >
-      {/* Poster Image */}
-      <div className="movie-poster">
-        <Link to={`/movie/${movie.id}`} className="poster-link">
+      <div
+        className="movie-card"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="movie-image-wrapper">
           <img
             src={imageUrl} 
             alt={movie.title}
-            className="poster-image"
+            className="movie-backdrop"
             loading="lazy"
+            onError={(e) => {
+              e.target.onerror = null; 
+              e.target.src = 'https://via.placeholder.com/500x281?text=No+Image';
+            }}
           />
-        </Link>
-        
-        {/* Overlay */}
-        <div className={`movie-overlay ${isHovered ? 'visible' : ''}`} />
-      </div>
+          <div className="movie-gradient-overlay" />
+          
+          {/* Quick Actions Overlay - Only shows if handlers are provided */}
+          {(onRemove || onMarkWatched) && (
+            <div className={`movie-actions-overlay ${isHovered ? 'visible' : ''}`}>
+              {onMarkWatched && (
+                <button 
+                  className="action-btn watched-btn" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onMarkWatched(movie);
+                  }}
+                  title="Mark as Watched"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                </button>
+              )}
+              {onRemove && (
+                <button 
+                  className="action-btn remove-btn" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onRemove(movie);
+                  }}
+                  title="Remove from List"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              )}
+            </div>
+          )}
 
-      {/* Content */}
-      <div className="movie-content">
-        <div className="movie-header">
-          <div className="movie-info">
-            <Link to={`/movie/${movie.id}`} className="movie-title-link">
+          <div className="movie-text-overlay">
+            <div className="movie-info-container">
               <h3 className="movie-title">{movie.title}</h3>
-            </Link>
-            <p className="movie-meta">
-              {releaseYear}
-            </p>
+              {movie.dateWatched && (
+                <div className="watched-date">Watched: {movie.dateWatched}</div>
+              )}
+            </div>
           </div>
-          <div className="movie-rating">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="12 2 15.09 10.26 23.77 11.27 17.88 17.14 19.54 25.98 12 21.77 4.46 25.98 6.12 17.14 0.23 11.27 8.91 10.26"></polygon>
-            </svg>
-            <span>{rating}</span>
-          </div>
-        </div>
-
-        {/* Description */}
-        <p className="movie-description">
-          {movie.overview ? (movie.overview.length > 100 ? movie.overview.substring(0, 100) + '...' : movie.overview) : 'No description available.'}
-        </p>
-
-        {/* Action Button */}
-        <div className={`card-actions ${isHovered ? 'visible' : ''}`}>
-           <Link to={`/movie/${movie.id}`} className="watch-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <polygon points="5 3 19 12 5 21"></polygon>
-            </svg>
-            Details
-          </Link>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }

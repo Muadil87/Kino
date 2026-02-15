@@ -30,16 +30,27 @@ export default function SearchResults() {
   }, [query])
 
   return (
-    <section className="section">
+    <section className="section search-results-section">
       <div className="section-header">
         <div>
-          <h2 className="section-title">Search</h2>
+          <h2 className="section-title">Search Results</h2>
           <div className="title-underline"></div>
         </div>
       </div>
 
-      {loading && <div>Searching…</div>}
-      {!loading && results.length === 0 && <div>No results for “{query}”.</div>}
+      {loading && (
+        <div className="loading-state">
+          <div className="spinner"></div>
+          <p>Searching for "{query}"...</p>
+        </div>
+      )}
+
+      {!loading && results.length === 0 && query && (
+        <div className="empty-state">
+          <h3>No matches found</h3>
+          <p>We couldn't find any movies matching "{query}". Try checking your spelling or search for something else.</p>
+        </div>
+      )}
 
       {!loading && results.length > 0 && (
         <div className="movie-grid">
