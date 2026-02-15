@@ -25,12 +25,11 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn }) {
       <div className="navbar-container">
         
         <Link to={isLoggedIn ? "/dashboard" : "/"} className="navbar-logo" style={{ textDecoration: 'none' }}>
-          <div className="logo-icon">K</div>
           <h1 className="logo-text">KINO</h1>
         </Link>
 
         <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
-          <Link to={isLoggedIn ? "/dashboard" : "/"} className="nav-link">
+          <Link to={isLoggedIn ? "/dashboard" : "/#trending"} className="nav-link">
             Trending
           </Link>
           <Link to="/collections" className="nav-link">

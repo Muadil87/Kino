@@ -54,3 +54,26 @@ export const getMovieReviews = async (id) => {
     const response = await tmdbClient.get(`/movie/${id}/reviews`);
     return response.data.results;
 };
+
+// 1. Get the list of official Genres (Action, Horror, Comedy, etc.) 
+export const getGenres = async () => { 
+  const response = await tmdbClient.get('/genre/movie/list'); 
+  return response.data.genres; 
+}; 
+
+// 2. Get a list of movies for a specific genre (so we can steal a cover image) 
+export const getMoviesByGenre = async (genreId) => { 
+  const response = await tmdbClient.get('/discover/movie', { 
+    params: { 
+      with_genres: genreId, 
+      sort_by: 'popularity.desc', // Get the most popular ones 
+      include_adult: false 
+    } 
+  }); 
+  return response.data.results; 
+};
+
+export const getMovieProviders = async (id) => {
+    const response = await tmdbClient.get(`/movie/${id}/watch/providers`);
+    return response.data.results;
+};

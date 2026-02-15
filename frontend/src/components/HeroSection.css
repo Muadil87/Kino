@@ -1,30 +1,34 @@
 .hero-section {
   position: relative;
-  height: 100vh;
+  height: 80vh;
   min-height: 500px;
   overflow: hidden;
   background-size: cover;
-  background-position: center;
+  background-position: center top;
   display: flex;
   align-items: center;
+  margin-bottom: 2rem;
 }
 
 @media (min-width: 768px) {
   .hero-section {
     min-height: 600px;
+    height: 85vh;
   }
 }
 
 .hero-overlay-left {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, #050505 0%, rgba(5, 5, 5, 0.5) 50%, transparent 100%);
+  background: linear-gradient(to right, var(--background) 0%, rgba(15, 16, 20, 0.6) 50%, transparent 100%);
+  z-index: 1;
 }
 
 .hero-overlay-bottom {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 50%, #050505 100%);
+  background: linear-gradient(to bottom, transparent 50%, var(--background) 100%);
+  z-index: 1;
 }
 
 .hero-content {
@@ -33,6 +37,7 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
+  z-index: 2;
 }
 
 @media (min-width: 768px) {
@@ -49,28 +54,38 @@
 
 .hero-inner {
   max-width: 800px;
+  animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .genre-badge {
   display: inline-block;
   margin-bottom: 1.5rem;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #00bfff;
-  background: rgba(0, 191, 255, 0.15);
+  color: var(--accent-secondary);
+  background: rgba(0, 212, 255, 0.1);
   padding: 0.5rem 1rem;
-  border-radius: 20px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  font-family: 'Oswald', sans-serif;
 }
 
 .hero-title {
   font-size: 3rem;
-  font-weight: 900;
-  color: #f8f8f8;
+  font-weight: 700;
+  color: var(--foreground);
   margin: 0 0 1rem 0;
   line-height: 1.1;
-  font-family: 'Playfair Display', serif;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  text-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
 @media (min-width: 768px) {
@@ -91,6 +106,8 @@
   gap: 1.5rem;
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
+  font-family: 'Manrope', sans-serif;
+  color: var(--text-muted);
 }
 
 @media (min-width: 768px) {
@@ -100,33 +117,36 @@
 }
 
 .meta-item {
-  color: #999999;
-}
-
-.meta-item.rating {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(0, 191, 255, 0.15);
-  padding: 0.5rem 0.75rem;
-  border-radius: 20px;
 }
 
 .rating-value {
-  color: #00bfff;
-  font-weight: 600;
+  color: var(--accent-primary); /* Red rating */
+  font-weight: 800;
+  font-size: 1.1em;
 }
 
 .rating-label {
-  color: #999999;
+  opacity: 0.7;
+  font-size: 0.9em;
 }
 
 .hero-description {
-  font-size: 1.125rem;
-  color: rgba(248, 248, 248, 0.9);
-  margin: 0 0 2rem 0;
+  font-size: 1rem;
   line-height: 1.6;
+  color: var(--text-muted); /* Muted text */
+  margin-bottom: 2.5rem;
   max-width: 600px;
+  font-family: 'Manrope', sans-serif;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+@media (min-width: 768px) {
+  .hero-description {
+    font-size: 1.125rem;
+  }
 }
 
 .hero-buttons {
@@ -136,36 +156,43 @@
 }
 
 .btn {
-  border: none;
-  padding: 1.5rem 2rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
+  padding: 1rem 2rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
   transition: all 0.3s ease;
-  text-decoration: none;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: none;
 }
 
 .btn-primary {
-  background: #00bfff;
-  color: #050505;
+  background: var(--accent-primary);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 10, 22, 0.3);
 }
 
 .btn-primary:hover {
-  background: #0099cc;
+  background: #ff2e3b;
   transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 10, 22, 0.5);
 }
 
 .btn-secondary {
-  background: transparent;
-  color: #f8f8f8;
-  border: 2px solid rgba(248, 248, 248, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-secondary:hover {
-  background: rgba(248, 248, 248, 0.1);
-  border-color: rgba(248, 248, 248, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.4);
 }

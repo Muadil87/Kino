@@ -9,22 +9,35 @@ export default function SignIn({ onNavigateToSignUp, onLogin }) {
 
   return (
     <div className="auth-container">
+      <img 
+        src="https://image.tmdb.org/t/p/w1280/iwgl8zlrrfvfWp9k9Paj8lvFEvS.jpg" 
+        alt="Cinematic Movie Scene" 
+        className="auth-bg-image"
+        loading="lazy"
+        onError={(e) => { e.target.style.display = 'none' }}
+      />
       <div className="auth-card">
-        <h2 className="auth-title">Sign In</h2>
-        <form className="auth-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input type="email" id="email" placeholder="Enter your email" required />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password" placeholder="Enter your password" required />
-          </div>
+        <h2 className="auth-title">Welcome Back</h2>
+        <form onSubmit={handleSubmit}>
+          <input 
+            type="email" 
+            id="email" 
+            placeholder="Email" 
+            className="auth-input"
+            required 
+          />
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="Password" 
+            className="auth-input"
+            required 
+          />
           <button type="submit" className="auth-btn">Sign In</button>
         </form>
-        <p className="auth-footer">
-          Don't have an account? <span className="auth-link" onClick={onNavigateToSignUp}>Sign Up</span>
-        </p>
+        <div className="auth-link" onClick={onNavigateToSignUp} style={{cursor: 'pointer'}}>
+          New to KINO? <span>Join the Club</span>
+        </div>
       </div>
     </div>
   )

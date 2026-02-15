@@ -1,109 +1,143 @@
-.auth-container {
-  min-height: calc(100vh - 80px); /* Adjust based on navbar height */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #050505;
-  padding: 2rem;
-}
+/* 1. The Full Page Background */ 
+.auth-container { 
+  min-height: 100vh; 
+  width: 100%; 
+  display: flex; 
+  align-items: flex-start; /* Changed from center to prevent navbar overlap */
+  justify-content: center; 
+  padding-top: 140px; /* Push down to clear fixed navbar */
+  padding-bottom: 2rem;
+  
+  /* ICONIC MOVIE SCENE BACKGROUND */ 
+  background-color: var(--background);
+  position: relative; 
+} 
 
-.auth-card {
-  background: #141414;
-  padding: 2.5rem;
-  border-radius: 12px;
+.auth-bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0;
+  animation: fadeInAuth 1.5s ease-out forwards;
 }
 
-.auth-title {
-  color: #f8f8f8;
-  font-size: 2rem;
-  font-weight: 800;
-  margin-bottom: 2rem;
-  text-align: center;
-  font-family: 'Inter', sans-serif;
+@keyframes fadeInAuth {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
+/* 2. The Dark Overlay (So text is readable) */ 
+.auth-container::before { 
+  content: ''; 
+  position: absolute; 
+  top: 0; 
+  left: 0; 
+  width: 100%; 
+  height: 100%; 
+  /* Darken the movie image so the form pops */ 
+  background: rgba(0, 0, 0, 0.7); 
+  z-index: 1; 
+  backdrop-filter: blur(5px);
+} 
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
+/* 3. The "Glass" Form Card */ 
+.auth-card { 
+  position: relative; 
+  z-index: 2; /* Sits above the overlay */ 
+  width: 100%; 
+  max-width: 420px; 
+  padding: 3rem; 
+  
+  /* The Glassmorphism Magic */ 
+  background: var(--card-bg); 
+  border: 1px solid var(--border-color);
+  border-radius: 12px; 
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
+  
+  text-align: center; 
+  color: var(--foreground); 
+} 
 
-.form-group label {
-  color: #808080;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.form-group input {
-  background: #1a1a1a;
-  border: 1px solid #333;
-  padding: 0.8rem 1rem;
-  border-radius: 6px;
-  color: #f8f8f8;
-  font-size: 1rem;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #00bfff;
-  box-shadow: 0 0 0 2px rgba(0, 191, 255, 0.2);
-}
-
-.auth-btn {
-  background: #00bfff;
-  color: #050505;
-  border: none;
-  padding: 1rem;
-  border-radius: 6px;
-  font-size: 1rem;
+/* 4. Typography Updates */ 
+.auth-title { 
+  font-family: 'Oswald', sans-serif; 
+  font-size: 2.5rem; 
   font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
-  margin-top: 1rem;
+  margin-bottom: 2rem; 
+  letter-spacing: -0.02em; 
+  text-transform: uppercase;
+} 
+
+/* 5. Modern Inputs */ 
+.auth-input { 
+  width: 100%; 
+  padding: 1rem; 
+  margin-bottom: 1rem; 
+  background: rgba(255, 255, 255, 0.05); 
+  border: 1px solid var(--border-color); 
+  border-radius: 6px; 
+  color: var(--foreground); 
+  font-family: 'Manrope', sans-serif;
+  font-size: 1rem; 
+  transition: all 0.3s ease; 
+} 
+
+.auth-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* When user clicks an input, it glows KINO Red */ 
+.auth-input:focus { 
+  outline: none; 
+  border-color: var(--accent-primary); 
+  box-shadow: 0 0 10px rgba(255, 10, 22, 0.2); 
+  background: rgba(255, 255, 255, 0.08); 
+} 
+
+/* 6. The Button */ 
+.auth-btn { 
+  width: 100%; 
+  padding: 1rem; 
+  margin-top: 1rem; 
+  background: var(--accent-primary); 
+  color: white; 
+  border: none; 
+  border-radius: 6px; 
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 10, 22, 0.3);
 }
 
 .auth-btn:hover {
-  background: #0099cc;
-  transform: translateY(-1px);
-}
-
-.auth-btn-signup {
-  background: #00c020;
-}
-
-.auth-btn-signup:hover {
-  background: #00d020;
-}
-
-.auth-footer {
-  margin-top: 2rem;
-  text-align: center;
-  color: #808080;
-  font-size: 0.9rem;
+  background: #ff2e3b;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 10, 22, 0.5);
 }
 
 .auth-link {
-  color: #00bfff;
-  cursor: pointer;
-  font-weight: 600;
-  text-decoration: underline;
+  margin-top: 1.5rem;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
-.auth-link:hover {
-  color: #0099cc;
+.auth-link span {
+  color: var(--accent-secondary);
+  font-weight: 600;
+  margin-left: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.auth-link span:hover {
+  color: var(--accent-primary);
+  text-decoration: underline;
 }

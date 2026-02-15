@@ -1,16 +1,23 @@
 .navbar {
-  position: sticky;
+  /* Make it float on top */
+  position: absolute;
   top: 0;
-  z-index: 50;
+  left: 0;
+  width: 100%;
+  z-index: 100; /* Ensure it stays above the image */
+  
+  /* Transparent background with a subtle gradient for readability */
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+  
+  /* Layout */
   border-bottom: none;
-  background: transparent;
   backdrop-filter: none;
 }
 
 .navbar-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1rem 1.5rem;
+  padding: 1.5rem 2rem; /* Adjusted padding for better look */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -22,25 +29,19 @@
   gap: 0.5rem;
 }
 
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #00bfff 0%, #0088cc 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.125rem;
-  font-weight: bold;
-  color: #050505;
-}
+/* Old logo-icon styles removed */
 
 .logo-text {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #f8f8f8;
+  font-family: 'Oswald', sans-serif; /* Use custom font */
+  font-size: 2.5rem; /* Slightly larger */
+  color: var(--foreground);
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
   margin: 0;
-  display: none;
+  display: block; /* Ensure it's always visible */
+  line-height: 1;
+  font-weight: 700;
 }
 
 @media (min-width: 640px) {
@@ -61,15 +62,18 @@
 }
 
 .nav-link {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #808080;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
   text-decoration: none;
   transition: color 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .nav-link:hover {
-  color: #f8f8f8;
+  color: var(--accent-primary);
 }
 
 .navbar-actions {
@@ -90,96 +94,61 @@
 
 .search-input {
   background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #f8f8f8;
+  border: 1px solid var(--border-color);
+  color: var(--foreground);
   padding: 0.5rem 0.75rem;
   border-radius: 8px;
   outline: none;
   width: 220px;
+  font-family: 'Manrope', sans-serif;
+  transition: all 0.2s ease;
 }
 
-.search-input::placeholder {
-  color: #808080;
+.search-input:focus {
+  border-color: var(--accent-secondary);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-.search-btn,
-.menu-btn {
-  border: none;
-  background: transparent;
-  color: #808080;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0.5rem;
+.sign-in-btn, .sign-up-btn {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 1rem;
   border-radius: 6px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
 }
 
 .sign-in-btn {
-  border: none;
-  background: transparent;
-  color: #f8f8f8;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  transition: color 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--foreground);
 }
 
 .sign-in-btn:hover {
-  color: #00bfff;
+  color: var(--accent-secondary);
 }
 
 .sign-up-btn {
-  border: none;
-  background: #00bfff;
-  color: #050505;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: 700;
-  padding: 0.6rem 1.2rem;
-  border-radius: 4px;
-  transition: background 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  background-color: var(--accent-primary);
+  color: white;
 }
 
 .sign-up-btn:hover {
-  background: #0099cc;
-}
-
-.search-btn:hover,
-.menu-btn:hover {
-  color: #f8f8f8;
-  background: rgba(20, 20, 20, 0.5);
+  background-color: #ff2e3b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255, 10, 22, 0.3);
 }
 
 .menu-btn {
-  display: block;
+  color: var(--foreground);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
 }
 
 @media (min-width: 768px) {
   .menu-btn {
     display: none;
   }
-}
-
-.sign-in-btn {
-  display: none;
-  background: #00bfff;
-  color: #050505;
-  padding: 0.5rem 1rem;
-  font-weight: 600;
-  border-radius: 6px;
-}
-
-@media (min-width: 640px) {
-  .sign-in-btn {
-    display: inline-block;
-  }
-}
-
-.sign-in-btn:hover {
-  background: #0099cc;
 }

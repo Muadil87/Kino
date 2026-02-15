@@ -1,63 +1,129 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import MovieCard from './MovieCard';
+import { getSimilarMovies } from '../services/tmdb';
 import './Watchlist.css';
 
-const Watchlist = ({ movies }) => {
-  const recentActivities = [
-    { id: 1, text: 'You added "The Ethereal Frame" to your watchlist', date: '2 hours ago' },
-    { id: 2, text: 'You marked "Neon Horizons" as watched', date: 'Yesterday' },
-  ];
+const Watchlist = ({ watchlist, history, onRemoveFromWatchlist, onRemoveFromHistory, onMoveToHistory }) => {
+  const [activeTab, setActiveTab] = useState('watchlist'); // 'watchlist' or 'history'
+  const [recommendations, setRecommendations] = useState([]);
 
-  const personalizedSuggestions = (movies || []).slice(3, 6);
+  // Decide which list to show
+  const currentList = activeTab === 'watchlist' ? watchlist : history;
+
+  const handleMarkWatched = (movie) => {
+    if (onMoveToHistory) {
+      onMoveToHistory(movie);
+      // alert(`Moved '${movie.title}' to History!`); // Optional: Handled by UI or parent
+    }
+  };
+
+  const handleRemove = (movie) => {
+    if (activeTab === 'watchlist' && onRemoveFromWatchlist) {
+      onRemoveFromWatchlist(movie);
+    } else if (activeTab === 'history' && onRemoveFromHistory) {
+      onRemoveFromHistory(movie);
+    }
+  };
+
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      // Only fetch recommendations based on watchlist for now
+      if (!watchlist || watchlist.length === 0) {
+        setRecommendations([]);
+        return;
+      }
+
+      try {
+        // Get the most recently added movie (last in the array)
+        const lastAddedMovie = watchlist[watchlist.length - 1];
+        if (!lastAddedMovie?.id) return;
+
+        const similar = await getSimilarMovies(lastAddedMovie.id);
+        
+        // Filter out movies already in watchlist or history
+        const filtered = similar.filter(
+          rec => !watchlist.some(m => m.id === rec.id) && (!history || !history.some(h => h.id === rec.id))
+        );
+
+        setRecommendations(filtered.slice(0, 12));
+      } catch (error) {
+        console.error('Failed to fetch recommendations:', error);
+      }
+    };
+
+    fetchRecommendations();
+  }, [watchlist, history]);
 
   return (
     <div className="watchlist-page">
-      <header className="page-header">
-        <h1 className="page-title">My Watchlist</h1>
-        <p className="page-subtitle">Films you're planning to see.</p>
-      </header>
+      <div className="watchlist-header">
+        <h1 className="page-title">My Library</h1>
+        
+        {/* THE TABS */}
+        <div className="tabs-container">
+          <button 
+            className={`tab-btn ${activeTab === 'watchlist' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('watchlist')}
+          >
+            Watchlist <span className="count">({(watchlist || []).length})</span>
+          </button>
+          <button 
+            className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('history')}
+          >
+            History <span className="count">({(history || []).length})</span>
+          </button>
+        </div>
+      </div>
 
       <section className="section">
-        <h2 className="section-title">Current Watchlist</h2>
+        {/* <h2 className="section-title">{activeTab === 'watchlist' ? "Current Watchlist" : "Watched History"}</h2> */}
+        
         <div className="movie-grid">
-          {(!movies || movies.length === 0) && <div>No movies yet.</div>}
-          {(movies || []).slice(0, 12).map(movie => (
-            <MovieCard key={movie.id} movie={movie} />
+          {(!currentList || currentList.length === 0) && (
+            <div className="empty-state">
+              <h3>{activeTab === 'watchlist' ? "Your Watchlist is Empty" : "No History Yet"}</h3>
+              <p>
+                {activeTab === 'watchlist' 
+                  ? "Browse movies and add them to your list to keep track of what you want to watch." 
+                  : "Movies you mark as watched will appear here."}
+              </p>
+              {activeTab === 'watchlist' && (
+                <Link to="/dashboard" className="btn-primary" style={{marginTop: '1.5rem', display: 'inline-flex', textDecoration: 'none'}}>
+                  Browse Movies
+                </Link>
+              )}
+            </div>
+          )}
+          {(currentList || []).map(movie => (
+            <MovieCard 
+              key={movie.id} 
+              movie={movie} 
+              onRemove={() => handleRemove(movie)}
+              onMarkWatched={activeTab === 'watchlist' ? () => handleMarkWatched(movie) : undefined}
+            />
           ))}
         </div>
       </section>
 
-      <div className="watchlist-grid-layout">
-        <div className="main-content">
-          <section className="section">
-            <h2 className="section-title">Personalized Suggestions</h2>
+      {/* Only show recommendations on Watchlist tab */}
+      {activeTab === 'watchlist' && (
+        <section className="section">
+          <h2 className="section-title">Recommended for You</h2>
+          {recommendations.length > 0 ? (
             <div className="movie-grid compact">
-              {personalizedSuggestions.map(movie => (
+              {recommendations.map(movie => (
                 <MovieCard key={movie.id} movie={movie} />
               ))}
             </div>
-          </section>
-
-          <section className="section">
-            <h2 className="section-title">Recommended for You</h2>
-            <p className="empty-state">Add more films to get better recommendations!</p>
-          </section>
-        </div>
-
-        <aside className="sidebar">
-          <section className="section">
-            <h2 className="section-title">Recent Activity</h2>
-            <div className="activity-list">
-              {recentActivities.map(activity => (
-                <div key={activity.id} className="activity-item">
-                  <p className="activity-text">{activity.text}</p>
-                  <span className="activity-date">{activity.date}</span>
-                </div>
-              ))}
+          ) : (
+            <div className="empty-state" style={{padding: '2rem'}}>
+              <p>Add more films to get better recommendations!</p>
             </div>
-          </section>
-        </aside>
-      </div>
+          )}
+        </section>
+      )}
     </div>
   );
 };

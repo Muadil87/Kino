@@ -1,23 +1,41 @@
 import React from 'react'
 import './LandingHero.css'
 
-export default function LandingHero({ onGetStarted }) {
+const LandingHero = ({ onGetStarted, onExplore }) => {
   return (
     <div className="landing-hero">
-      <div className="landing-hero-overlay"></div>
-      <div className="landing-hero-content">
-        <h1 className="landing-title">
-          Track films you've watched.<br />
-          Save those you want to see.<br />
-          Tell your friends what's good.
+      <img 
+        src="https://image.tmdb.org/t/p/w1280/tmU7GeKVybMWFButWEGl2M4GeiP.jpg" 
+        alt="The Godfather - Don Corleone's Study" 
+        className="hero-bg-image"
+        loading="lazy"
+        onError={(e) => { e.target.style.display = 'none' }} 
+      />
+      <div className="landing-content">
+        <h1 className="hero-title">
+          Curate Your <span className="highlight-text">Cinema.</span>
         </h1>
-        <div className="landing-cta">
-          <button className="get-started-btn" onClick={onGetStarted}>Get started — it's free!</button>
-        </div>
-        <p className="landing-subtext">
-          The social network for film lovers. Also available on <span className="device-link">iOS</span> and <span className="device-link">Android</span>.
+        <p className="hero-subtitle">
+          The ultimate destination for film enthusiasts. <br />
+          Discover hidden gems, build your collection, and share your taste.
         </p>
+        
+        <div className="hero-actions">
+          <button className="btn-primary" onClick={onGetStarted}>
+            Join the Club
+          </button>
+          <button className="btn-secondary" onClick={onExplore || onGetStarted}>
+            Explore Trending
+          </button>
+        </div>
+
+        {/* Removed the iOS/Android text entirely! */}
       </div>
+      
+      {/* A dark gradient overlay to make text pop */}
+      <div className="hero-overlay"></div>
     </div>
   )
 }
+
+export default LandingHero
