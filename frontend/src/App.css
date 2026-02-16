@@ -31,34 +31,49 @@
 }
 
 .section-header {
+  margin-bottom: 3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 1.5rem;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2rem;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: border-color 0.3s ease;
+}
+
+.section-header:hover {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
 }
 
 .section-title {
   font-family: 'Oswald', sans-serif;
-  font-size: 2.25rem;
+  font-size: 3rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   color: var(--foreground);
-  margin: 0 0 0.5rem 0;
+  margin: 0;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+  position: relative;
+  display: inline-block;
+  width: fit-content;
 }
 
-@media (min-width: 768px) {
-  .section-title {
-    font-size: 3rem;
-  }
+.section-title:hover {
+  color: var(--foreground);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
-.title-underline {
-  width: 80px;
-  height: 4px;
-  background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary), transparent);
-  border-radius: 2px;
+.section-subtitle {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  max-width: 600px;
+  line-height: 1.6;
 }
+
+/* Removed title-underline class as it is no longer used */
 
 .view-all-btn {
   background: transparent;

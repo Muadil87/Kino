@@ -1,14 +1,15 @@
 import React from 'react'
+import { tmdbImage } from '../utils/image'
 import './LandingHero.css'
 
 const LandingHero = ({ onGetStarted, onExplore }) => {
   return (
     <div className="landing-hero">
       <img 
-        src="https://image.tmdb.org/t/p/w1280/tmU7GeKVybMWFButWEGl2M4GeiP.jpg" 
+        src={tmdbImage("/tmU7GeKVybMWFButWEGl2M4GeiP.jpg", "w1280")}
         alt="The Godfather - Don Corleone's Study" 
         className="hero-bg-image"
-        loading="lazy"
+        loading="eager"
         onError={(e) => { e.target.style.display = 'none' }} 
       />
       <div className="landing-content">

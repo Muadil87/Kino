@@ -1,0 +1,42 @@
+.skeleton {
+  background: linear-gradient(90deg, #1a1a2e 25%, #2a2a3e 50%, #1a1a2e 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-card {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  aspect-ratio: 16 / 9; /* Match MovieCard aspect ratio */
+  display: flex;
+  flex-direction: column;
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* If we want to mimic the text overlay of MovieCard, we can position these absolute */
+.skeleton-content {
+  display: none; /* MovieCard usually hides text until hover or overlay, but for skeleton we just show the block */
+}
+
+/* For vertical cards if used elsewhere */
+.skeleton-poster {
+  aspect-ratio: 2/3;
+}

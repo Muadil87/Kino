@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getMoviesByGenre } from '../services/tmdb';
 import MovieCard from './MovieCard';
+import SkeletonCard from './SkeletonCard';
 import './Collections.css';
 
-const CollectionDetail = () => {
+const CollectionDetail = ({ isLoggedIn }) => {
   const { id, name } = useParams();
+  const navigate = useNavigate();
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [backdrop, setBackdrop] = useState(null);
@@ -17,6 +19,10 @@ const CollectionDetail = () => {
       try {
         // Check if it's a user collection
         if (id.startsWith('user-')) {
+          if (!isLoggedIn) {
+            navigate('/login');
+            return;
+          }
           const userCollections = JSON.parse(localStorage.getItem('kino_user_collections') || '[]');
           const collection = userCollections.find(c => c.id === id);
           
@@ -59,8 +65,18 @@ const CollectionDetail = () => {
 
   if (loading) {
     return (
-      <div className="loading-container" style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div className="spinner"></div>
+      <div className="collection-detail-page">
+        {/* Skeleton Hero */}
+        <div className="collection-hero skeleton" style={{ backgroundImage: 'none' }}></div>
+        
+        {/* Skeleton Grid */}
+        <div className="section" style={{ padding: '0 5%' }}>
+          <div className="movie-grid">
+            {[...Array(8)].map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

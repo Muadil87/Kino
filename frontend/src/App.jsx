@@ -12,27 +12,59 @@ import CollectionDetail from './components/CollectionDetail'
 import MovieDetail from './components/MovieDetail'
 import SearchResults from './components/SearchResults'
 import Favorites from './components/Favorites'
+import Profile from './components/Profile'
+import Settings from './components/Settings'
+import UserWelcomeBar from './components/UserWelcomeBar'
 import './App.css'
 import './components/SharedStyles.css'
 
 // ❌ DELETED: const mockMovies = [...] (We don't need this anymore!)
 
+import SkeletonCard from './components/SkeletonCard'
+
 // 1️⃣ The Dashboard Component (Updated to handle loading)
-const Dashboard = ({ movies }) => {
-  // ✅ Loading Check: If data hasn't arrived yet, show a loading text
+const Dashboard = ({ movies, username, watchlistCount, favoritesCount, historyCount, onLogout }) => {
+  // ✅ Loading Check: If data hasn't arrived yet, show skeleton grid
   if (!movies || movies.length === 0) {
-    return <div className="loading-screen">Loading amazing movies...</div>;
+    return (
+      <div className="dashboard-container">
+        <UserWelcomeBar 
+          username={username} 
+          watchlistCount={watchlistCount}
+          favoritesCount={favoritesCount}
+          historyCount={historyCount}
+          onLogout={onLogout}
+        />
+        <section className="section trending-section">
+          <div className="section-header">
+            <h2 className="section-title">Trending</h2>
+            <div className="skeleton" style={{ width: '300px', height: '1.2em', marginTop: '0.5rem' }}></div>
+          </div>
+          <div className="movie-grid">
+            {[...Array(8)].map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        </section>
+      </div>
+    );
   }
 
   return (
     <div className="dashboard-container">
+      <UserWelcomeBar 
+        username={username} 
+        watchlistCount={watchlistCount}
+        favoritesCount={favoritesCount}
+        historyCount={historyCount}
+        onLogout={onLogout}
+      />
+      
       {/* Trending Section */}
       <section className="section trending-section">
         <div className="section-header">
-          <div>
-            <h2 className="section-title">Trending</h2>
-            <div className="title-underline"></div>
-          </div>
+          <h2 className="section-title">Trending</h2>
+          <p className="section-subtitle">Discover the most popular movies everyone is talking about.</p>
         </div>
         <div className="movie-grid">
           {/* Show top 12 movies from API */}
@@ -45,10 +77,8 @@ const Dashboard = ({ movies }) => {
       {/* Staff Picks Section (KEPT - Using API data now) */}
       <section className="section staff-picks-section">
         <div className="section-header">
-           <div>
-             <h2 className="section-title">Staff Picks</h2>
-             <div className="title-underline"></div>
-           </div>
+          <h2 className="section-title">Staff Picks</h2>
+          <p className="section-subtitle">Curated selection of must-watch films handpicked for you.</p>
         </div>
         <div className="picks-grid">
            {/* We take movies 4, 5, and 6 for "Staff Picks" just to show something different */}
@@ -79,6 +109,15 @@ function App() {
     return localStorage.getItem('kino_isLoggedIn') === 'true'
   })
   
+  const [username, setUsername] = useState(() => {
+    return localStorage.getItem('kino_username') || 'Movie Buff'
+  })
+
+  // ✅ NEW: Email State
+  const [email, setEmail] = useState(() => {
+    return localStorage.getItem('kino_email') || ''
+  })
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -125,10 +164,18 @@ function App() {
   })
   
   const toggleFavorite = (movie) => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
     setFavorites(prev => isFav(movie.id) ? prev.filter(x => x.id !== movie.id) : [...prev, upsertMinimal(movie)])
   }
   
   const toggleWatchlist = (movie) => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
     setWatchlist(prev => isInWatchlist(movie.id) ? prev.filter(x => x.id !== movie.id) : [...prev, upsertMinimal(movie)])
   }
 
@@ -148,9 +195,31 @@ function App() {
     setHistory(prev => prev.filter(x => x.id !== movie.id))
   }
 
-  const handleLogin = () => {
+  const handleLogin = (userEmailOrName) => {
     setIsLoggedIn(true);
     localStorage.setItem('kino_isLoggedIn', 'true');
+    
+    // Check if input is object (from SignUp) or string (from SignIn)
+    const input = typeof userEmailOrName === 'object' ? userEmailOrName.username || userEmailOrName.email : userEmailOrName;
+    const userEmail = typeof userEmailOrName === 'object' ? userEmailOrName.email : (userEmailOrName.includes('@') ? userEmailOrName : '');
+
+    // Extract name from email (e.g., "john@gmail.com" -> "john") 
+    const name = input.includes('@') 
+      ? input.split('@')[0] 
+      : input;
+  
+    // Capitalize first letter 
+    const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
+  
+    setUsername(formattedName); 
+    localStorage.setItem('kino_username', formattedName); // Save it!
+
+    // Update Email if provided
+    if (userEmail) {
+      setEmail(userEmail);
+      localStorage.setItem('kino_email', userEmail);
+    }
+    
     navigate('/dashboard');
   };
 
@@ -162,79 +231,92 @@ function App() {
 
   return (
     <div className="app">
-      <Navbar isLoggedIn={isLoggedIn} setIsLoggedIn={handleLogout} />
+      <Navbar isLoggedIn={isLoggedIn} />
       
-      <Routes>
-        <Route path="/" element={
-          isLoggedIn ? <Navigate to="/dashboard" /> : <Landing movies={movies} onGetStarted={() => navigate('/signup')} />
-        } />
-        
-        <Route path="/login" element={
-          isLoggedIn ? <Navigate to="/dashboard" /> : (
-            <SignIn onNavigateToSignUp={() => navigate('/signup')} onLogin={handleLogin} />
-          )
-        } />
-        
-        <Route path="/signup" element={
-          isLoggedIn ? <Navigate to="/dashboard" /> : (
-            <SignUp onNavigateToSignIn={() => navigate('/login')} onSignUp={handleLogin} />
-          )
-        } />
-
-        {/* Public Routes - Collections, Search, and Movie Details should be accessible to everyone */}
-        <Route 
-          path="/collections" 
-          element={<Collections movies={movies} isLoggedIn={isLoggedIn} />} 
-        />
-        <Route 
-          path="/collections/:id/:name" 
-          element={<CollectionDetail />} 
-        />
-        <Route 
-          path="/movie/:id" 
-          element={
-            <MovieDetail 
-              movies={movies} 
-              onToggleFavorite={toggleFavorite}
-              onToggleWatchlist={toggleWatchlist}
-              isFavorite={isFav}
-              isInWatchlist={isInWatchlist}
-            />
-          } 
-        />
-        <Route 
-          path="/search" 
-          element={<SearchResults />} 
-        />
-
-        {/* Protected Routes */}
-        <Route 
-          path="/dashboard" 
-          element={
-            isLoggedIn ? <Dashboard movies={movies} /> : <Navigate to="/login" />
-          } 
-        />
-        <Route 
-          path="/watchlist" 
-          element={
+      <div className="page-transition" key={location.pathname}>
+        <Routes>
+          <Route path="/" element={
+            isLoggedIn ? <Navigate to="/dashboard" /> : <Landing movies={movies} onGetStarted={() => navigate('/signup')} />
+          } />
+          
+          <Route path="/login" element={
+            isLoggedIn ? <Navigate to="/dashboard" /> : (
+              <SignIn onNavigateToSignUp={() => navigate('/signup')} onLogin={handleLogin} />
+            )
+          } />
+          
+          <Route path="/signup" element={
+            isLoggedIn ? <Navigate to="/dashboard" /> : (
+              <SignUp onNavigateToSignIn={() => navigate('/login')} onSignUp={handleLogin} />
+            )
+          } />
+          
+          <Route path="/dashboard" element={
+            isLoggedIn ? (
+              <Dashboard 
+                movies={movies} 
+                username={username}
+                watchlistCount={watchlist.length}
+                favoritesCount={favorites.length}
+                historyCount={history.length}
+                onLogout={handleLogout}
+              />
+            ) : <Navigate to="/login" />
+          } />
+          
+          <Route path="/collections" element={<Collections isLoggedIn={isLoggedIn} />} />
+          
+          <Route path="/collections/:id/:name" element={<CollectionDetail isLoggedIn={isLoggedIn} />} />
+          
+          <Route path="/watchlist" element={
             isLoggedIn ? (
               <Watchlist 
                 watchlist={watchlist} 
                 history={history}
-                onRemoveFromWatchlist={toggleWatchlist}
-                onRemoveFromHistory={removeFromHistory}
-                onMoveToHistory={moveToHistory}
+                onRemoveFromWatchlist={(movie) => toggleWatchlist(movie)}
+                onRemoveFromHistory={(movie) => removeFromHistory(movie)}
+                onMoveToHistory={(movie) => moveToHistory(movie)}
               />
             ) : <Navigate to="/login" />
-          } 
-        />
-        <Route 
-          path="/favorites" 
-          element={
-            isLoggedIn ? <Favorites movies={favorites} /> : <Navigate to="/login" />
-          } 
-        />
-      </Routes>
+          } />
+          
+          <Route path="/favorites" element={
+            isLoggedIn ? (
+              <Favorites movies={favorites} />
+            ) : <Navigate to="/login" />
+          } />
+
+          <Route path="/profile" element={
+            isLoggedIn ? (
+              <Profile 
+                username={username}
+                email={email}
+                watchlistCount={watchlist.length}
+                favoritesCount={favorites.length}
+                historyCount={history.length}
+              />
+            ) : <Navigate to="/login" />
+          } />
+
+          <Route path="/settings" element={
+            isLoggedIn ? (
+              <Settings username={username} setUsername={setUsername} />
+            ) : <Navigate to="/login" />
+          } />
+          
+          <Route path="/search" element={<SearchResults />} />
+          
+          <Route path="/movie/:id" element={
+            <MovieDetail 
+              isFavorite={isFav} 
+              onToggleFavorite={toggleFavorite}
+              isInWatchlist={isInWatchlist}
+              onToggleWatchlist={toggleWatchlist}
+              isLoggedIn={isLoggedIn}
+            />
+          } />
+        </Routes>
+      </div>
 
       {/* Hide footer on Landing, Login, and Signup pages */}
       {!['/', '/login', '/signup'].includes(location.pathname.replace(/\/$/, '') || '/') && (

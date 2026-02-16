@@ -5,18 +5,16 @@ import { Link } from 'react-router-dom'
 export default function Favorites({ movies }) {
   return (
     <section className="section favorites-section">
-      <div className="section-header">
-        <div>
-          <h2 className="section-title">Your Favorites</h2>
-          <div className="title-underline"></div>
-        </div>
+      <div className="favorites-header">
+        <h2 className="favorites-title">Your Favorites</h2>
+        <p className="favorites-subtitle">Your personal collection of beloved films</p>
       </div>
 
       {(!movies || movies.length === 0) && (
         <div className="empty-state">
           <h3>No favorites yet</h3>
           <p>Start building your collection by clicking the heart icon on movies you love.</p>
-          <Link to="/dashboard" className="btn-primary" style={{marginTop: '1.5rem', display: 'inline-flex', textDecoration: 'none'}}>
+          <Link to="/dashboard" className="btn-primary favorites-empty-btn">
             Explore Movies
           </Link>
         </div>

@@ -1,21 +1,14 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { tmdbImage } from '../utils/image'
 import './MovieCard.css'
 
 export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
   const [isHovered, setIsHovered] = useState(false)
 
-  const tmdbBase = 'https://image.tmdb.org/t/p/w500'
-  // Use backdrop_path instead of poster_path
-  const backdrop = movie.backdrop_path || movie.backdropUrl
-  const poster = movie.poster_path || movie.posterUrl
-  
-  // Prefer backdrop, fallback to poster if backdrop missing
-  const imagePath = backdrop || poster
-  
-  const imageUrl = imagePath
-    ? (String(imagePath).startsWith('http') ? imagePath : `${tmdbBase}${imagePath}`)
-    : 'https://via.placeholder.com/500x281?text=No+Image' // 16:9 placeholder
+  // Use backdrop_path instead of poster_path for landscape cards
+  const imagePath = movie.backdrop_path || movie.backdropUrl || movie.poster_path || movie.posterUrl
+  const imageUrl = tmdbImage(imagePath, 'w300') // Optimized size for grid cards
 
   return (
     <Link 

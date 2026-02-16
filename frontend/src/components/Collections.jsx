@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { getGenres, getMoviesByGenre, searchMovies } from '../services/tmdb';
+import { tmdbImage } from '../utils/image';
 import './Collections.css';
 
 const Collections = ({ isLoggedIn }) => {
+  const [loading, setLoading] = useState(true);
   const [genres, setGenres] = useState([]);
   const [userCollections, setUserCollections] = useState(() => {
     try {
@@ -44,7 +46,7 @@ const Collections = ({ isLoggedIn }) => {
                 if (moviesWithBackdrop.length > 0) {
                   const randomIndex = Math.floor(Math.random() * Math.min(moviesWithBackdrop.length, 20));
                   const randomMovie = moviesWithBackdrop[randomIndex];
-                  image = `https://image.tmdb.org/t/p/w500${randomMovie.backdrop_path}`;
+                  image = tmdbImage(randomMovie.backdrop_path, "w500");
                 }
               }
               
@@ -58,6 +60,8 @@ const Collections = ({ isLoggedIn }) => {
         setGenres(genresWithImages);
       } catch (error) {
         console.error("Error fetching collections:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -165,8 +169,8 @@ const Collections = ({ isLoggedIn }) => {
       </div>
 
       <div className="collections-grid">
-        {/* User Collections */}
-        {userCollections.map((collection) => (
+        {/* User Collections - Only visible if logged in */}
+        {isLoggedIn && userCollections.map((collection) => (
           <Link 
             key={collection.id} 
             to={`/collections/${collection.id}/${encodeURIComponent(collection.name)}`}
@@ -174,7 +178,7 @@ const Collections = ({ isLoggedIn }) => {
           >
             {collection.movies && collection.movies.length > 0 && collection.movies[0].poster_path ? (
                <img 
-                 src={`https://image.tmdb.org/t/p/w500${collection.movies[0].poster_path}`} 
+                 src={tmdbImage(collection.movies[0].poster_path, "w500")}
                  alt={collection.name} 
                  className="card-bg" 
                />
@@ -201,23 +205,31 @@ const Collections = ({ isLoggedIn }) => {
           </Link>
         ))}
 
-        {genres.map((genre) => (
-          <Link 
-            key={genre.id} 
-            to={`/collections/${genre.id}/${encodeURIComponent(genre.name)}`}
-            className="collection-card"
-          >
-            {genre.image ? (
-              <img src={genre.image} alt={genre.name} className="card-bg" />
-            ) : (
-              <div className="card-bg-placeholder"></div>
-            )}
-            
-            <div className="card-overlay">
-              <h3>{genre.name}</h3>
+        {loading ? (
+          [...Array(8)].map((_, i) => (
+            <div key={i} className="collection-card" style={{ border: 'none' }}>
+              <div className="skeleton" style={{ width: '100%', height: '100%', borderRadius: '12px' }}></div>
             </div>
-          </Link>
-        ))}
+          ))
+        ) : (
+          genres.map((genre) => (
+            <Link 
+              key={genre.id} 
+              to={`/collections/${genre.id}/${encodeURIComponent(genre.name)}`}
+              className="collection-card"
+            >
+              {genre.image ? (
+                <img src={genre.image} alt={genre.name} className="card-bg" />
+              ) : (
+                <div className="card-bg-placeholder"></div>
+              )}
+              
+              <div className="card-overlay">
+                <h3>{genre.name}</h3>
+              </div>
+            </Link>
+          ))
+        )}
       </div>
 
       {/* Create Collection Modal */}
@@ -322,7 +334,7 @@ const Collections = ({ isLoggedIn }) => {
                           onClick={() => addMovieToCollection(movie)}
                         >
                           <img 
-                            src={movie.poster_path ? `https://image.tmdb.org/t/p/w92${movie.poster_path}` : 'https://via.placeholder.com/40x60?text=No+Img'} 
+                            src={tmdbImage(movie.poster_path, "w92")} 
                             alt={movie.title} 
                           />
                           <div className="result-info">

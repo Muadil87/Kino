@@ -11,6 +11,14 @@
   --border-color: #2a2e38;            /* Borders */
   --overlay-light: rgba(255, 255, 255, 0.05);
   --overlay-dark: rgba(0, 0, 0, 0.4);
+
+  /* Spacing System */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
 }
 
 * {
@@ -47,6 +55,22 @@ button {
   border: none;
   background: none;
   font-family: inherit;
+}
+
+/* Page Transitions */
+@keyframes pageFadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(10px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+.page-transition {
+  animation: pageFadeIn 0.4s ease-out forwards;
 }
 
 /* Global States */
