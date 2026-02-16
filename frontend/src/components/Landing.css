@@ -13,21 +13,6 @@
   width: 100%;
 }
 
-.landing-trending-section .section-title {
-  color: var(--foreground);
-  font-family: 'Oswald', sans-serif;
-  font-size: 2rem;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-}
-
-.landing-trending-section .title-underline {
-  width: 60px;
-  height: 4px;
-  background-color: var(--accent-primary);
-  margin-bottom: 2rem;
-}
-
 .landing-trending-section .loading-state {
   display: flex;
   justify-content: center;

@@ -44,8 +44,17 @@ const SignUp = ({ onNavigateToSignIn }) => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
-      // Redirect to Dashboard
-      navigate('/dashboard');
+      // Pass user data to App's handleLogin (aliased as onSignUp here)
+      if (onSignUp) {
+        // Pass object to maintain compatibility with new handleLogin logic that checks for object/string
+        onSignUp({
+          username: formData.username,
+          email: formData.email
+        });
+      } else {
+        // Fallback if onSignUp prop is missing (shouldn't happen based on App.jsx)
+        navigate('/dashboard');
+      }
       
     } catch (err) {
       // If Laravel complains (e.g., email taken), show it

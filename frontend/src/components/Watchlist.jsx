@@ -77,39 +77,40 @@ const Watchlist = ({ watchlist, history, onRemoveFromWatchlist, onRemoveFromHist
         </div>
       </div>
 
-      <section className="section">
+      <div className="watchlist-content">
         {/* <h2 className="section-title">{activeTab === 'watchlist' ? "Current Watchlist" : "Watched History"}</h2> */}
         
-        <div className="movie-grid">
-          {(!currentList || currentList.length === 0) && (
-            <div className="empty-state">
-              <h3>{activeTab === 'watchlist' ? "Your Watchlist is Empty" : "No History Yet"}</h3>
-              <p>
-                {activeTab === 'watchlist' 
-                  ? "Browse movies and add them to your list to keep track of what you want to watch." 
-                  : "Movies you mark as watched will appear here."}
-              </p>
-              {activeTab === 'watchlist' && (
-                <Link to="/dashboard" className="btn-primary" style={{marginTop: '1.5rem', display: 'inline-flex', textDecoration: 'none'}}>
-                  Browse Movies
-                </Link>
-              )}
-            </div>
-          )}
-          {(currentList || []).map(movie => (
-            <MovieCard 
-              key={movie.id} 
-              movie={movie} 
-              onRemove={() => handleRemove(movie)}
-              onMarkWatched={activeTab === 'watchlist' ? () => handleMarkWatched(movie) : undefined}
-            />
-          ))}
-        </div>
-      </section>
+        {(!currentList || currentList.length === 0) ? (
+          <div className="empty-state">
+            <h3>{activeTab === 'watchlist' ? "Your Watchlist is Empty" : "No History Yet"}</h3>
+            <p>
+              {activeTab === 'watchlist' 
+                ? "Browse movies and add them to your list to keep track of what you want to watch." 
+                : "Movies you mark as watched will appear here."}
+            </p>
+            {activeTab === 'watchlist' && (
+              <Link to="/dashboard" className="btn-primary favorites-empty-btn">
+                Browse Movies
+              </Link>
+            )}
+          </div>
+        ) : (
+          <div className="movie-grid">
+            {currentList.map(movie => (
+              <MovieCard 
+                key={movie.id} 
+                movie={movie} 
+                onRemove={handleRemove}
+                onMarkWatched={activeTab === 'watchlist' ? handleMarkWatched : null}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Only show recommendations on Watchlist tab */}
       {activeTab === 'watchlist' && (
-        <section className="section">
+        <div className="watchlist-content" style={{ marginTop: '4rem' }}>
           <h2 className="section-title">Recommended for You</h2>
           {recommendations.length > 0 ? (
             <div className="movie-grid compact">
@@ -122,7 +123,7 @@ const Watchlist = ({ watchlist, history, onRemoveFromWatchlist, onRemoveFromHist
               <p>Add more films to get better recommendations!</p>
             </div>
           )}
-        </section>
+        </div>
       )}
     </div>
   );

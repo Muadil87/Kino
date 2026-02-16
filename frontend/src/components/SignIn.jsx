@@ -2,9 +2,15 @@ import React from 'react'
 import './Auth.css'
 
 export default function SignIn({ onNavigateToSignUp, onLogin }) {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
   const handleSubmit = (e) => {
     e.preventDefault()
-    onLogin()
+    // ⚡️ THIS IS THE FIX: Pass the email back to App.jsx 
+    if (email && password) { 
+      onLogin(email); 
+    }
   }
 
   return (
@@ -25,6 +31,8 @@ export default function SignIn({ onNavigateToSignUp, onLogin }) {
             placeholder="Email" 
             className="auth-input"
             required 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input 
             type="password" 
@@ -32,6 +40,8 @@ export default function SignIn({ onNavigateToSignUp, onLogin }) {
             placeholder="Password" 
             className="auth-input"
             required 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <button type="submit" className="auth-btn">Sign In</button>
         </form>

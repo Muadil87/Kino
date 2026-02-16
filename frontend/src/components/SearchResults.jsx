@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { searchMovies } from '../services/tmdb'
 import MovieCard from './MovieCard'
+import SkeletonCard from './SkeletonCard'
 
 export default function SearchResults() {
   const [params] = useSearchParams()
@@ -32,16 +33,19 @@ export default function SearchResults() {
   return (
     <section className="section search-results-section">
       <div className="section-header">
-        <div>
-          <h2 className="section-title">Search Results</h2>
-          <div className="title-underline"></div>
-        </div>
+        <h2 className="section-title">Search Results</h2>
+        {loading ? (
+          <div className="skeleton" style={{ width: '200px', height: '1.2em', marginTop: '0.5rem' }}></div>
+        ) : (
+          <p className="section-subtitle">Found {results.length} matches for "{query}"</p>
+        )}
       </div>
 
       {loading && (
-        <div className="loading-state">
-          <div className="spinner"></div>
-          <p>Searching for "{query}"...</p>
+        <div className="movie-grid">
+          {[...Array(8)].map((_, i) => (
+            <SkeletonCard key={i} />
+          ))}
         </div>
       )}
 

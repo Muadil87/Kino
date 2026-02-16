@@ -4,6 +4,8 @@ import LandingHero from './LandingHero';
 import MovieCard from './MovieCard';
 import './Landing.css';
 
+import SkeletonCard from './SkeletonCard';
+
 const Landing = ({ movies, onGetStarted }) => {
   const trendingRef = useRef(null);
   const location = useLocation();
@@ -27,10 +29,8 @@ const Landing = ({ movies, onGetStarted }) => {
       <section ref={trendingRef} id="trending" className="section landing-trending-section">
         <div className="section-container">
           <div className="section-header">
-            <div>
-              <h2 className="section-title">Trending Now</h2>
-              <div className="title-underline"></div>
-            </div>
+            <h2 className="section-title">Trending Now</h2>
+            <p className="section-subtitle">Catch up on the hottest movies everyone is watching.</p>
           </div>
           
           {movies && movies.length > 0 ? (
@@ -40,8 +40,10 @@ const Landing = ({ movies, onGetStarted }) => {
               ))}
             </div>
           ) : (
-            <div className="loading-state">
-              <div className="spinner"></div>
+            <div className="movie-grid">
+              {[...Array(8)].map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           )}
         </div>
