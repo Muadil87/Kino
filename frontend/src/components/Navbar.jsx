@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { searchMovies } from '../services/tmdb'
 import { tmdbImage } from '../utils/image'
 import './Navbar.css'
@@ -14,6 +14,10 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
   const searchRef = useRef(null)
   const userMenuRef = useRef(null)
   const navigate = useNavigate()
+  const location = useLocation()
+
+  // Check if we are on a page that requires a transparent navbar
+  const isTransparentPage = ['/', '/login', '/signup', '/signin'].includes(location.pathname)
 
   // Click outside to close dropdowns
   useEffect(() => {
@@ -67,7 +71,7 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
   }
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar ${isTransparentPage ? 'transparent' : ''}`}>
       <div className="navbar-container">
         
         <Link to={isLoggedIn ? "/dashboard" : "/"} className="navbar-logo" style={{ textDecoration: 'none' }}>
@@ -94,49 +98,51 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
         </div>
 
         <div className="navbar-actions">
-          <div className="search-container" ref={searchRef}>
-            <form className="search-form" onSubmit={handleSearchSubmit}>
-              <input
-                type="search"
-                className="search-input"
-                placeholder="Search movies..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onFocus={() => {
-                  if (searchTerm.trim().length > 1) setShowDropdown(true)
-                }}
-              />
-            </form>
-            
-            {showDropdown && (
-              <div className="search-dropdown">
-                {searchResults.length > 0 ? (
-                  searchResults.map(movie => (
-                    <Link 
-                      key={movie.id} 
-                      to={`/movie/${movie.id}`} 
-                      className="search-result-item"
-                      onClick={handleResultClick}
-                    >
-                      <img 
-                        src={tmdbImage(movie.poster_path, 'w92')} 
-                        alt={movie.title} 
-                        className="search-result-poster"
-                      />
-                      <div className="search-result-info">
-                        <span className="search-result-title">{movie.title}</span>
-                        <span className="search-result-year">
-                          {movie.release_date ? movie.release_date.substring(0, 4) : 'N/A'}
-                        </span>
-                      </div>
-                    </Link>
-                  ))
-                ) : (
-                  <div className="no-results">No results found</div>
-                )}
-              </div>
-            )}
-          </div>
+          {!isTransparentPage && (
+            <div className="search-container" ref={searchRef}>
+              <form className="search-form" onSubmit={handleSearchSubmit}>
+                <input
+                  type="search"
+                  className="search-input"
+                  placeholder="Search movies..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onFocus={() => {
+                    if (searchTerm.trim().length > 1) setShowDropdown(true)
+                  }}
+                />
+              </form>
+              
+              {showDropdown && (
+                <div className="search-dropdown">
+                  {searchResults.length > 0 ? (
+                    searchResults.map(movie => (
+                      <Link 
+                        key={movie.id} 
+                        to={`/movie/${movie.id}`} 
+                        className="search-result-item"
+                        onClick={handleResultClick}
+                      >
+                        <img 
+                          src={tmdbImage(movie.poster_path, 'w92')} 
+                          alt={movie.title} 
+                          className="search-result-poster"
+                        />
+                        <div className="search-result-info">
+                          <span className="search-result-title">{movie.title}</span>
+                          <span className="search-result-year">
+                            {movie.release_date ? movie.release_date.substring(0, 4) : 'N/A'}
+                          </span>
+                        </div>
+                      </Link>
+                    ))
+                  ) : (
+                    <div className="no-results">No results found</div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           
           {isLoggedIn ? (
             <>
@@ -194,12 +200,16 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
             </>
           ) : (
             <>
-              <button className="sign-in-btn" onClick={() => navigate('/login')}>
-                Sign In
-              </button>
-              <button className="sign-up-btn" onClick={() => navigate('/signup')}>
-                Create Account
-              </button>
+              {location.pathname !== '/login' && (
+                <button className="sign-in-btn" onClick={() => navigate('/login')}>
+                  Sign In
+                </button>
+              )}
+              {location.pathname !== '/signup' && (
+                <button className="sign-up-btn" onClick={() => navigate('/signup')}>
+                  Create Account
+                </button>
+              )}
             </>
           )}
 

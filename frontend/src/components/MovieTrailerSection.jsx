@@ -1,4 +1,5 @@
 import React from 'react'
+import './MovieTrailerSection.css'
 
 export function MovieTrailerSection({ videos }) {
   if (!videos || videos.length === 0) return null
@@ -13,7 +14,7 @@ export function MovieTrailerSection({ videos }) {
   const embedUrl = `https://www.youtube.com/embed/${trailer.key}`
 
   return (
-    <div className="content-section">
+    <div className="trailer-section">
       <h2 className="section-title">Trailer</h2>
       <div className="video-container">
         <iframe

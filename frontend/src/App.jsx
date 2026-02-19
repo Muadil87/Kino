@@ -160,19 +160,15 @@ function App() {
     navigate('/');
   };
 
-  const showNavbar = !['/', '/login', '/signup'].includes(location.pathname.replace(/\/$/, '') || '/');
-
   return (
     <div className="app">
-      {showNavbar && (
-        <Navbar 
-          isLoggedIn={isLoggedIn} 
-          username={username} 
-          onLogout={handleLogout}
-          watchlistCount={watchlist.length}
-          favoritesCount={favorites.length}
-        />
-      )}
+      <Navbar 
+        isLoggedIn={isLoggedIn} 
+        username={username} 
+        onLogout={handleLogout}
+        watchlistCount={watchlist.length}
+        favoritesCount={favorites.length}
+      />
       
       <div className="page-transition" key={location.pathname}>
         <Routes>

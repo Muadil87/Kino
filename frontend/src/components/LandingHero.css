@@ -3,13 +3,15 @@
   min-height: 100vh; /* Full screen impact */
   width: 100%; 
   display: flex; 
+  flex-direction: column; /* Better control for vertical spacing */
+  justify-content: flex-start; /* Start from top (plus padding) */
   align-items: center; 
-  justify-content: center; 
   text-align: center; 
   background-color: var(--background);
   color: var(--foreground); 
   overflow: hidden;
   border-bottom: 2px solid var(--foreground);
+  padding-top: 120px; /* Force content below navbar */
 } 
 
 .hero-bg-image {
@@ -30,9 +32,28 @@
   to { opacity: 0.5; } /* More visible background image */
 }
 
-/* No dark overlay, just the cream background letting the subtle image through */ 
+/* No dark overlay, just a subtle wash to help text readability */ 
 .hero-overlay { 
-  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(250, 248, 243, 0.3); /* Light cream wash */
+  z-index: 1;
+} 
+
+/* Gradient for Navbar readability */
+.landing-hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 120px; /* Slightly more than navbar height */
+  background: linear-gradient(to bottom, rgba(250, 248, 243, 0.9) 0%, rgba(250, 248, 243, 0) 100%);
+  z-index: 1;
+  pointer-events: none;
 } 
 
 .landing-content { 
@@ -40,6 +61,8 @@
   z-index: 2; 
   max-width: 1200px; 
   padding: 0 2rem; 
+  margin-top: auto; /* Vertically center in remaining space */
+  margin-bottom: auto;
   animation: fadeInUp 1s cubic-bezier(0.22, 1, 0.36, 1); 
   display: flex;
   flex-direction: column;
