@@ -37,7 +37,6 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
               e.target.src = 'https://via.placeholder.com/500x281?text=No+Image';
             }}
           />
-          <div className="movie-gradient-overlay" />
           
           {/* Quick Actions Overlay - Only shows if handlers are provided */}
           {(onRemove || onMarkWatched) && (
@@ -76,14 +75,14 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
               )}
             </div>
           )}
+        </div>
 
-          <div className="movie-text-overlay">
-            <div className="movie-info-container">
-              <h3 className="movie-title">{movie.title}</h3>
-              {movie.dateWatched && (
-                <div className="watched-date">Watched: {movie.dateWatched}</div>
-              )}
-            </div>
+        <div className="movie-text-overlay">
+          <div className="movie-info-container">
+            <h3 className="movie-title">{movie.title}</h3>
+            {movie.dateWatched && (
+              <div className="watched-date">Watched: {movie.dateWatched}</div>
+            )}
           </div>
         </div>
       </div>

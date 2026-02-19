@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import MovieCard from './MovieCard'
+import './SimilarMoviesSection.css'
 
 export function SimilarMoviesSection({ movies, onMovieSelect }) {
   const navigate = useNavigate()
@@ -17,7 +18,7 @@ export function SimilarMoviesSection({ movies, onMovieSelect }) {
   }
 
   return (
-    <div className="content-section">
+    <div className="similar-section">
       <h2 className="section-title">Similar Movies</h2>
       <div className="similar-grid">
         {movies.slice(0, 10).map(movie => (

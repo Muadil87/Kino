@@ -1,8 +1,8 @@
 .skeleton {
-  background: linear-gradient(90deg, #1a1a2e 25%, #2a2a3e 50%, #1a1a2e 75%);
+  background: linear-gradient(90deg, #EBEBE9 25%, #F5F5F2 50%, #EBEBE9 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 @keyframes shimmer {
@@ -16,9 +16,9 @@
 
 .skeleton-card {
   width: 100%;
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
-  background: var(--card-bg);
+  background: var(--background-secondary);
   border: 1px solid var(--border-color);
   aspect-ratio: 16 / 9; /* Match MovieCard aspect ratio */
   display: flex;

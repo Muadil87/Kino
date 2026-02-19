@@ -1,12 +1,28 @@
 /* 1. Fix the layout so it doesn't hide behind the Navbar */ 
 .collections-page { 
   padding-top: 140px; /* Standardized to match Dashboard */ 
-  padding-left: 5%; 
-  padding-right: 5%; 
+  padding-left: 2rem; 
+  padding-right: 2rem; 
   min-height: 100vh; 
   background-color: var(--background); 
   color: var(--foreground); 
 } 
+
+@media (min-width: 768px) {
+  .collections-page {
+    padding-left: 4rem;
+    padding-right: 4rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .collections-page {
+    padding-left: 6rem;
+    padding-right: 6rem;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+}
 
 .collection-detail-page {
   padding-top: 0;
@@ -19,75 +35,77 @@
 .header-content {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 3rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 4rem;
+  border-bottom: 2px solid var(--foreground);
+  padding-bottom: 1rem;
 }
 
 .collections-header h1 { 
-  font-size: 3rem; 
-  margin-bottom: 0.5rem; 
+  font-size: 4rem; 
+  margin-bottom: 0; 
   font-family: 'Oswald', sans-serif; 
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: -0.02em;
   color: var(--foreground);
+  line-height: 1;
 } 
 
 .collections-header p { 
   color: var(--text-muted); 
-  margin: 0;
+  margin: 0.5rem 0 0 0;
   font-family: 'Manrope', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 } 
 
 .btn-create {
-  background-color: transparent;
-  border: 1px solid var(--accent-secondary); /* Electric Blue */
-  color: var(--accent-secondary);
-  padding: 10px 24px;
-  border-radius: 6px;
+  background-color: var(--foreground);
+  border: 1px solid var(--foreground);
+  color: var(--background);
+  padding: 0.8rem 2rem;
+  border-radius: 0;
   font-family: 'Oswald', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 10px rgba(0, 212, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: none;
 }
 
 .btn-create:hover {
-  background-color: var(--accent-secondary);
-  color: var(--background);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--foreground);
+  transform: translateY(-2px);
 }
 
 /* 3. The Grid Layout */ 
 .collections-grid { 
   display: grid; 
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Responsive columns */ 
-  gap: 2rem; 
-  padding-bottom: 50px; 
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive columns */ 
+  gap: 2.5rem; 
+  padding-bottom: 4rem; 
 } 
 
 /* 4. The Card Design */ 
 .collection-card { 
   position: relative; 
-  height: 200px; 
-  border-radius: 12px; 
+  height: 240px; 
+  border-radius: 0; 
   overflow: hidden; 
   cursor: pointer; 
-  transition: transform 0.3s ease; 
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1); 
   border: 1px solid var(--border-color); 
-  background-color: var(--card-bg);
+  background-color: var(--background-secondary);
 } 
 
 .collection-card:hover { 
-  transform: translateY(-5px); 
-  border-color: var(--accent-secondary); /* Blue border on hover */ 
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transform: translateY(-8px); 
+  border-color: var(--accent-primary); 
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 } 
 
 /* The Background Image */ 
@@ -95,19 +113,21 @@
   width: 100%; 
   height: 100%; 
   object-fit: cover; 
-  opacity: 0.6; /* Darken image so text is readable */ 
-  transition: opacity 0.3s ease;
+  opacity: 1; 
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
+  filter: grayscale(20%);
 } 
 
 .collection-card:hover .card-bg {
-  opacity: 0.4;
+  transform: scale(1.05);
+  filter: grayscale(0%);
 }
 
 /* Fallback if no image exists */ 
 .card-bg-placeholder { 
   width: 100%; 
   height: 100%; 
-  background: linear-gradient(45deg, var(--card-bg), #1a1c23); 
+  background: var(--background-secondary); 
 } 
 
 /* The Text Overlay */ 
@@ -117,29 +137,42 @@
   left: 0; 
   width: 100%; 
   padding: 1.5rem; 
-  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); 
+  background: linear-gradient(to top, rgba(26, 26, 26, 0.9) 0%, rgba(26, 26, 26, 0.7) 60%, transparent 100%); 
+  transition: all 0.3s ease;
 } 
+
+.collection-card:hover .card-overlay {
+  background: linear-gradient(to top, rgba(212, 165, 116, 0.9) 0%, rgba(212, 165, 116, 0.7) 60%, transparent 100%); 
+}
 
 .card-overlay h3 {
   font-family: 'Oswald', sans-serif;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 700;
   text-transform: uppercase;
   margin: 0 0 0.25rem 0;
+  color: #fff; /* Always white on overlay */
+}
+
+.collection-card:hover .card-overlay h3 {
   color: var(--foreground);
 }
 
 .card-overlay p {
   font-family: 'Manrope', sans-serif;
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
   margin: 0;
+}
+
+.collection-card:hover .card-overlay p {
+  color: var(--foreground);
 }
 
 /* Collection Detail Hero */
 .collection-hero {
   position: relative;
-  height: 60vh; /* Taller hero like MovieDetail */
+  height: 50vh; /* Taller hero like MovieDetail */
   min-height: 400px;
   background-size: cover;
   background-position: center;
@@ -147,8 +180,8 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin-bottom: 2rem;
-  padding-top: 80px; /* Ensure content doesn't hit navbar */
+  margin-bottom: 4rem;
+  padding-top: 90px; /* Ensure content doesn't hit navbar */
 }
 
 .collection-hero::before {
@@ -158,15 +191,17 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(15, 16, 20, 1) 100%);
+  background: rgba(26, 26, 26, 0.4); /* Dark overlay for readability */
   z-index: 1;
 }
 
 .collection-hero-content {
   text-align: center;
   z-index: 2;
-  padding: 2rem;
-  max-width: 800px;
+  padding: 3rem;
+  max-width: 900px;
+  background: rgba(250, 248, 243, 0.9); /* Cream background box */
+  border: 1px solid var(--foreground);
 }
 
 .genre-title {
@@ -177,7 +212,7 @@
   color: var(--foreground);
   margin: 0 0 1rem 0;
   letter-spacing: -0.02em;
-  text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  text-shadow: none;
 }
 
 .genre-subtitle {
@@ -207,8 +242,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.85); /* Darker backdrop */
-  backdrop-filter: blur(8px); /* Strong blur for focus */
+  background-color: rgba(26, 26, 26, 0.8); /* Darker backdrop */
+  backdrop-filter: blur(4px);
   z-index: 2000; /* High z-index to sit on top of everything */
   display: flex;
   align-items: center;
@@ -222,15 +257,14 @@
 }
 
 .modal-content {
-  background-color: var(--card-bg);
+  background-color: var(--background);
   width: 95%;
   max-width: 850px;
   max-height: 90vh;
   overflow-y: auto;
   border-radius: 0; /* Sharp corners */
-  border: 1px solid var(--border-color);
-  border-top: 4px solid var(--accent-primary); /* Top red accent */
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
+  border: 1px solid var(--foreground);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -243,9 +277,9 @@
 
 /* Modal Header */
 .modal-header {
-  padding: 1.5rem 2.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(15, 16, 20, 0.95);
+  padding: 2rem 2.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--background);
   display: flex;
   align-items: center;
   position: relative;
@@ -262,13 +296,13 @@
   padding-left: 1rem;
   border-left: 4px solid var(--accent-primary);
   position: relative;
-  text-shadow: 2px 2px 0px rgba(0, 212, 255, 0.2); /* Cyan glitch shadow */
+  text-shadow: none;
 }
 
 /* Modal Form */
 .collection-form {
   padding: 2.5rem;
-  background: linear-gradient(to bottom, var(--background-secondary), var(--background));
+  background: var(--background);
 }
 
 .modal-body-grid {
@@ -300,10 +334,10 @@
 }
 
 .form-group label {
-  font-family: 'Oswald', sans-serif; /* Changed to Oswald for headers/labels */
+  font-family: 'Oswald', sans-serif;
   font-size: 1rem;
   font-weight: 500;
-  color: var(--accent-secondary); /* Cyan for labels */
+  color: var(--foreground);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin-bottom: 0.25rem;
@@ -313,7 +347,7 @@
 .form-group textarea,
 .form-group select {
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: var(--background-secondary);
   border: 1px solid var(--border-color);
   border-radius: 0; /* Sharper edges */
   padding: 1rem;
@@ -321,16 +355,15 @@
   font-family: 'Manrope', sans-serif;
   font-size: 1rem;
   transition: all 0.3s ease;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+  box-shadow: none;
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: var(--accent-secondary); /* Cyan focus */
-  background-color: rgba(0, 212, 255, 0.05);
-  box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
+  border-color: var(--accent-primary);
+  background-color: var(--background);
 }
 
 .form-group textarea {
@@ -378,7 +411,7 @@
 .select-wrapper::after {
   content: '▼';
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--foreground);
   position: absolute;
   right: 1rem;
   top: 50%;
@@ -403,12 +436,12 @@
 }
 
 .add-film-section label {
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-family: 'Oswald', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--foreground);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
 }
 
 .add-film-input-wrapper {
@@ -424,9 +457,9 @@
 .add-film-input input {
   width: 100%;
   padding-left: 3rem;
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: var(--background-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 1rem 1rem 1rem 3rem;
   color: var(--foreground);
   font-family: 'Manrope', sans-serif;
@@ -439,6 +472,7 @@
   transform: translateY(-50%);
   opacity: 0.5;
   font-size: 1.2rem;
+  color: var(--foreground);
 }
 
 .spinner-small {
@@ -448,7 +482,7 @@
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--border-color);
   border-top: 2px solid var(--accent-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -460,10 +494,10 @@
   top: 100%;
   left: 0;
   width: 100%;
-  background-color: var(--card-bg);
-  border: 1px solid var(--accent-secondary);
+  background-color: var(--background);
+  border: 1px solid var(--foreground);
   border-radius: 0;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
   max-height: 300px;
   overflow-y: auto;
   z-index: 100;
@@ -477,7 +511,7 @@
   padding: 0.75rem 1rem;
   cursor: pointer;
   transition: all 0.2s;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .search-result-item:last-child {
@@ -485,7 +519,7 @@
 }
 
 .search-result-item:hover {
-  background-color: rgba(0, 212, 255, 0.1);
+  background-color: var(--background-secondary);
   padding-left: 1.5rem; /* Slight shift on hover */
 }
 
@@ -527,15 +561,15 @@
 }
 
 .selected-movie-chip {
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--accent-secondary);
+  background-color: var(--background-secondary);
+  border: 1px solid var(--border-color);
   padding: 0.5rem 1rem;
   border-radius: 0; /* Sharp edges */
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 0.9rem;
-  color: var(--accent-secondary);
+  color: var(--foreground);
   font-family: 'Manrope', sans-serif;
   letter-spacing: 0.05em;
   position: relative;
@@ -547,9 +581,9 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 2px;
+  width: 4px;
   height: 100%;
-  background-color: var(--accent-secondary);
+  background-color: var(--accent-primary);
 }
 
 .remove-movie-btn {
@@ -573,8 +607,8 @@
 /* Modal Footer */
 .modal-footer {
   padding: 1.5rem 2.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(15, 16, 20, 0.95);
+  border-top: 1px solid var(--border-color);
+  background: var(--background);
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
@@ -602,19 +636,19 @@
 .btn-cancel:hover {
   color: var(--foreground);
   border-color: var(--foreground);
-  background: rgba(255, 255, 255, 0.05);
 }
 
 .btn-save {
-  background: var(--accent-primary);
-  border: 1px solid var(--accent-primary);
-  color: white;
-  box-shadow: 0 0 10px rgba(255, 10, 22, 0.2);
+  background: var(--foreground);
+  border: 1px solid var(--foreground);
+  color: var(--background);
+  box-shadow: none;
 }
 
 .btn-save:hover {
-  background: #ff2e3b;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--foreground);
   transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(255, 10, 22, 0.6);
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  text-shadow: none;
 }

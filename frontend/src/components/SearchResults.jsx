@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { searchMovies } from '../services/tmdb'
 import MovieCard from './MovieCard'
 import SkeletonCard from './SkeletonCard'
+import './SearchResults.css'
 
 export default function SearchResults() {
   const [params] = useSearchParams()
@@ -31,13 +32,13 @@ export default function SearchResults() {
   }, [query])
 
   return (
-    <section className="section search-results-section">
-      <div className="section-header">
-        <h2 className="section-title">Search Results</h2>
+    <section className="search-results-section">
+      <div className="search-header">
+        <h2 className="search-title">Search Results</h2>
         {loading ? (
           <div className="skeleton" style={{ width: '200px', height: '1.2em', marginTop: '0.5rem' }}></div>
         ) : (
-          <p className="section-subtitle">Found {results.length} matches for "{query}"</p>
+          <p className="search-subtitle">Found {results.length} matches for "{query}"</p>
         )}
       </div>
 

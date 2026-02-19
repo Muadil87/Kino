@@ -1,3 +1,5 @@
+/* Settings Page - Editorial Redesign */
+
 .settings-page {
   padding-top: 140px; /* Account for fixed navbar */
   min-height: 100vh;
@@ -5,60 +7,98 @@
   color: var(--foreground);
   display: flex;
   justify-content: center;
+  padding-bottom: 4rem;
 }
 
 .settings-container {
   width: 100%;
-  max-width: 600px;
-  padding: 2rem;
-  background-color: var(--card-bg);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  max-width: 700px;
+  padding: 4rem;
+  background-color: var(--background-secondary);
+  border: 1px solid var(--foreground);
+  box-shadow: 20px 20px 0 rgba(0, 0, 0, 0.1);
   margin-top: 2rem;
+  position: relative;
+}
+
+/* Decorative corner accents */
+.settings-container::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 20px;
+  height: 20px;
+  border-top: 4px solid var(--accent-secondary);
+  border-left: 4px solid var(--accent-secondary);
+}
+
+.settings-container::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 20px;
+  height: 20px;
+  border-bottom: 4px solid var(--accent-secondary);
+  border-right: 4px solid var(--accent-secondary);
 }
 
 .settings-title {
   font-family: 'Oswald', sans-serif;
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
+  font-size: 3rem;
+  margin-bottom: 3rem;
   text-align: center;
   color: var(--foreground);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  border-bottom: 2px solid var(--foreground);
+  padding-bottom: 1.5rem;
+  line-height: 1;
 }
 
 .settings-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.8rem;
 }
 
 .form-group label {
-  font-weight: 600;
-  color: var(--text-muted);
-  font-size: 0.9rem;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 500;
+  color: var(--foreground);
+  font-size: 1rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
 }
 
 .form-input {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--background);
   border: 1px solid var(--border-color);
   color: var(--foreground);
-  padding: 0.75rem 1rem;
-  border-radius: 6px;
-  font-size: 1rem;
+  padding: 1rem 1.2rem;
+  border-radius: 0; /* Sharp corners */
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
+  border-color: var(--foreground);
+  box-shadow: 5px 5px 0 rgba(0,0,0,0.05);
+  background-color: var(--background-secondary);
+}
+
+.form-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
 }
 
 .radio-group {
@@ -70,54 +110,64 @@
 .radio-label {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.8rem;
   cursor: pointer;
   color: var(--foreground);
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
 }
 
 .radio-label input {
-  accent-color: var(--accent-primary);
+  accent-color: var(--foreground);
+  width: 1.2rem;
+  height: 1.2rem;
 }
 
 .error-message {
-  color: #ff4d4f;
-  background-color: rgba(255, 77, 79, 0.1);
-  padding: 0.75rem;
-  border-radius: 6px;
-  text-align: center;
-  border: 1px solid rgba(255, 77, 79, 0.2);
+  color: #d32f2f;
+  background-color: rgba(211, 47, 47, 0.05);
+  padding: 1rem;
+  border-left: 4px solid #d32f2f;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
 }
 
 .success-message {
-  color: #52c41a;
-  background-color: rgba(82, 196, 26, 0.1);
-  padding: 0.75rem;
-  border-radius: 6px;
-  text-align: center;
-  border: 1px solid rgba(82, 196, 26, 0.2);
+  color: #2e7d32;
+  background-color: rgba(46, 125, 50, 0.05);
+  padding: 1rem;
+  border-left: 4px solid #2e7d32;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 500;
 }
 
 .form-actions {
-  margin-top: 1rem;
+  margin-top: 2rem;
   display: flex;
   justify-content: center;
 }
 
 .save-btn {
   width: 100%;
-  padding: 1rem;
-  font-size: 1.1rem;
+  padding: 1.2rem;
+  font-size: 1.2rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  font-weight: 700;
-  background-color: var(--accent-primary);
-  border: none;
-  border-radius: 6px;
-  color: white;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  background-color: var(--foreground);
+  border: 1px solid var(--foreground);
+  border-radius: 0;
+  color: var(--background);
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 5px 5px 0 var(--accent-primary);
 }
 
 .save-btn:hover {
-  background-color: #ff1f1f;
+  background-color: var(--accent-primary);
+  color: var(--foreground);
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 8px 8px 0 rgba(0,0,0,0.15);
 }

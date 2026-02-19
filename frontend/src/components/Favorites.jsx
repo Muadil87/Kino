@@ -1,10 +1,11 @@
 import React from 'react'
 import MovieCard from './MovieCard'
 import { Link } from 'react-router-dom'
+import './Favorites.css'
 
 export default function Favorites({ movies }) {
   return (
-    <section className="section favorites-section">
+    <section className="favorites-section">
       <div className="favorites-header">
         <h2 className="favorites-title">Your Favorites</h2>
         <p className="favorites-subtitle">Your personal collection of beloved films</p>
@@ -14,7 +15,7 @@ export default function Favorites({ movies }) {
         <div className="empty-state">
           <h3>No favorites yet</h3>
           <p>Start building your collection by clicking the heart icon on movies you love.</p>
-          <Link to="/dashboard" className="btn-primary favorites-empty-btn">
+          <Link to="/dashboard" className="favorites-empty-btn">
             Explore Movies
           </Link>
         </div>

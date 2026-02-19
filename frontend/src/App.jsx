@@ -14,82 +14,13 @@ import SearchResults from './components/SearchResults'
 import Favorites from './components/Favorites'
 import Profile from './components/Profile'
 import Settings from './components/Settings'
-import UserWelcomeBar from './components/UserWelcomeBar'
 import './App.css'
 import './components/SharedStyles.css'
 
 // ❌ DELETED: const mockMovies = [...] (We don't need this anymore!)
 
 import SkeletonCard from './components/SkeletonCard'
-
-// 1️⃣ The Dashboard Component (Updated to handle loading)
-const Dashboard = ({ movies, username, watchlistCount, favoritesCount, historyCount, onLogout }) => {
-  // ✅ Loading Check: If data hasn't arrived yet, show skeleton grid
-  if (!movies || movies.length === 0) {
-    return (
-      <div className="dashboard-container">
-        <UserWelcomeBar 
-          username={username} 
-          watchlistCount={watchlistCount}
-          favoritesCount={favoritesCount}
-          historyCount={historyCount}
-          onLogout={onLogout}
-        />
-        <section className="section trending-section">
-          <div className="section-header">
-            <h2 className="section-title">Trending</h2>
-            <div className="skeleton" style={{ width: '300px', height: '1.2em', marginTop: '0.5rem' }}></div>
-          </div>
-          <div className="movie-grid">
-            {[...Array(8)].map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
-        </section>
-      </div>
-    );
-  }
-
-  return (
-    <div className="dashboard-container">
-      <UserWelcomeBar 
-        username={username} 
-        watchlistCount={watchlistCount}
-        favoritesCount={favoritesCount}
-        historyCount={historyCount}
-        onLogout={onLogout}
-      />
-      
-      {/* Trending Section */}
-      <section className="section trending-section">
-        <div className="section-header">
-          <h2 className="section-title">Trending</h2>
-          <p className="section-subtitle">Discover the most popular movies everyone is talking about.</p>
-        </div>
-        <div className="movie-grid">
-          {/* Show top 12 movies from API */}
-          {movies.slice(0, 12).map(movie => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
-        </div>
-      </section>
-
-      {/* Staff Picks Section (KEPT - Using API data now) */}
-      <section className="section staff-picks-section">
-        <div className="section-header">
-          <h2 className="section-title">Staff Picks</h2>
-          <p className="section-subtitle">Curated selection of must-watch films handpicked for you.</p>
-        </div>
-        <div className="picks-grid">
-           {/* We take movies 4, 5, and 6 for "Staff Picks" just to show something different */}
-           {movies.slice(4, 7).map((movie) => (
-             <MovieCard key={movie.id} movie={movie} />
-           ))}
-        </div>
-      </section>
-    </div>
-  )
-};
+import Dashboard from './components/Dashboard'
 
 // 2️⃣ The Main App Component
 function App() {
@@ -229,9 +160,19 @@ function App() {
     navigate('/');
   };
 
+  const showNavbar = !['/', '/login', '/signup'].includes(location.pathname.replace(/\/$/, '') || '/');
+
   return (
     <div className="app">
-      <Navbar isLoggedIn={isLoggedIn} />
+      {showNavbar && (
+        <Navbar 
+          isLoggedIn={isLoggedIn} 
+          username={username} 
+          onLogout={handleLogout}
+          watchlistCount={watchlist.length}
+          favoritesCount={favorites.length}
+        />
+      )}
       
       <div className="page-transition" key={location.pathname}>
         <Routes>
@@ -253,14 +194,7 @@ function App() {
           
           <Route path="/dashboard" element={
             isLoggedIn ? (
-              <Dashboard 
-                movies={movies} 
-                username={username}
-                watchlistCount={watchlist.length}
-                favoritesCount={favorites.length}
-                historyCount={history.length}
-                onLogout={handleLogout}
-              />
+              <Dashboard movies={movies} />
             ) : <Navigate to="/login" />
           } />
           

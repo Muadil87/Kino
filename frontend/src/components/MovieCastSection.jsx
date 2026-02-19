@@ -1,4 +1,5 @@
 import React from 'react'
+import './MovieCastSection.css'
 
 export function MovieCastSection({ cast, isLoading }) {
   if (isLoading && !cast) return <div className="loading-message">Loading cast...</div>
@@ -8,7 +9,7 @@ export function MovieCastSection({ cast, isLoading }) {
   const displayCast = cast.slice(0, 12)
 
   return (
-    <div className="content-section">
+    <div className="cast-section">
       <h2 className="section-title">Top Cast</h2>
       <div className="cast-grid">
         {displayCast.map(p => {

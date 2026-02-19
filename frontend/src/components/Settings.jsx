@@ -77,19 +77,6 @@ const Settings = ({ username, setUsername }) => {
             />
           </div>
 
-          {/* Theme Preference (Simulated) */}
-          <div className="form-group">
-            <label>Theme Preference</label>
-            <div className="radio-group">
-              <label className="radio-label">
-                <input type="radio" name="theme" defaultChecked /> Dark
-              </label>
-              <label className="radio-label">
-                <input type="radio" name="theme" disabled /> Light (Coming Soon)
-              </label>
-            </div>
-          </div>
-
           {/* Feedback Messages */}
           {error && <div className="error-message">{error}</div>}
           {message && <div className="success-message">{message}</div>}

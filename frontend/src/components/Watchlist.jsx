@@ -110,7 +110,7 @@ const Watchlist = ({ watchlist, history, onRemoveFromWatchlist, onRemoveFromHist
 
       {/* Only show recommendations on Watchlist tab */}
       {activeTab === 'watchlist' && (
-        <div className="watchlist-content" style={{ marginTop: '4rem' }}>
+        <div className="watchlist-content recommendations-section">
           <h2 className="section-title">Recommended for You</h2>
           {recommendations.length > 0 ? (
             <div className="movie-grid compact">
@@ -119,7 +119,7 @@ const Watchlist = ({ watchlist, history, onRemoveFromWatchlist, onRemoveFromHist
               ))}
             </div>
           ) : (
-            <div className="empty-state" style={{padding: '2rem'}}>
+            <div className="empty-state recommendations-empty">
               <p>Add more films to get better recommendations!</p>
             </div>
           )}
