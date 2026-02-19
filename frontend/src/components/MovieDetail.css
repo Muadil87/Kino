@@ -1,7 +1,7 @@
 /* Movie Detail Page - Editorial Redesign */
 
 .detail-page {
-  padding-top: 90px; /* Account for navbar */
+  padding-top: 120px; /* Account for navbar + breathing room */
   min-height: 100vh;
   background-color: var(--background);
   color: var(--foreground);
@@ -110,7 +110,7 @@
 .detail-title {
   font-family: 'Oswald', sans-serif;
   font-size: 3.5rem;
-  line-height: 0.95;
+  line-height: 1.1; /* Increased for better clearance */
   font-weight: 700;
   text-transform: uppercase;
   color: var(--foreground);
@@ -130,7 +130,7 @@
   color: var(--accent-primary); /* Gold tagline */
   font-style: italic;
   font-weight: 500;
-  margin-top: -1rem;
+  margin-top: 1rem; /* Positive margin to prevent collision */
   border-left: 3px solid var(--foreground);
   padding-left: 1.5rem;
   line-height: 1.4;
