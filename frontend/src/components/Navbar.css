@@ -1,85 +1,85 @@
 .navbar {
-  /* Make it float on top */
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 100; /* Ensure it stays above the image */
-  
-  /* Transparent background with a subtle gradient for readability */
-  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
-  
-  /* Layout */
-  border-bottom: none;
-  backdrop-filter: none;
+  height: 90px; /* Slightly taller for editorial feel */
+  background-color: var(--background);
+  z-index: 1000;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
 .navbar-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 1.5rem 2rem; /* Adjusted padding for better look */
+  width: 100%;
+  max-width: 1600px; /* Wider container */
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
+  padding: 0 4rem;
 }
 
 .navbar-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  text-decoration: none;
+  z-index: 1001;
 }
-
-/* Old logo-icon styles removed */
 
 .logo-text {
-  font-family: 'Oswald', sans-serif; /* Use custom font */
-  font-size: 2.5rem; /* Slightly larger */
-  color: var(--foreground);
-  letter-spacing: -0.05em;
-  text-transform: uppercase;
-  cursor: pointer;
-  margin: 0;
-  display: block; /* Ensure it's always visible */
-  line-height: 1;
+  font-family: 'Oswald', sans-serif;
+  font-size: 2.5rem;
   font-weight: 700;
-}
-
-@media (min-width: 640px) {
-  .logo-text {
-    display: block;
-  }
+  color: var(--foreground);
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 .navbar-links {
-  display: none;
-  gap: 2rem;
-}
-
-@media (min-width: 768px) {
-  .navbar-links {
-    display: flex;
-  }
+  display: flex;
+  gap: 3rem; /* More breathing room */
+  align-items: center;
 }
 
 .nav-link {
   font-family: 'Manrope', sans-serif;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--foreground);
   text-decoration: none;
   transition: color 0.3s ease;
+  position: relative;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  font-size: 0.85rem;
 }
 
-.nav-link:hover {
+.nav-link:hover, .nav-link.active {
   color: var(--accent-primary);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--accent-primary);
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+  width: 100%;
 }
 
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1.5rem;
 }
 
 .search-container {
@@ -93,20 +93,26 @@
 }
 
 .search-input {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-color);
+  background: transparent;
+  border: 1px solid var(--text-muted);
   color: var(--foreground);
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  border-radius: 0; /* Sharp edges */
   outline: none;
-  width: 220px;
+  width: 260px;
   font-family: 'Manrope', sans-serif;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
 }
 
 .search-input:focus {
-  border-color: var(--accent-secondary);
-  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--foreground);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .sign-in-btn, .sign-up-btn {
@@ -114,9 +120,9 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0; /* Sharp edges */
+  transition: all 0.3s ease;
   font-size: 0.9rem;
 }
 
@@ -125,18 +131,20 @@
 }
 
 .sign-in-btn:hover {
-  color: var(--accent-secondary);
+  color: var(--accent-primary);
 }
 
 .sign-up-btn {
-  background-color: var(--accent-primary);
-  color: white;
+  background-color: var(--foreground);
+  color: var(--background);
+  border: 1px solid var(--foreground);
 }
 
 .sign-up-btn:hover {
-  background-color: #ff2e3b;
+  background-color: transparent;
+  color: var(--foreground);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(255, 10, 22, 0.3);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
 }
 
 .menu-btn {
@@ -157,7 +165,7 @@
 .settings-btn {
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: var(--foreground);
   cursor: pointer;
   padding: 0.5rem;
   transition: all 0.3s ease;
@@ -169,4 +177,131 @@
 .settings-btn:hover {
   color: var(--accent-primary);
   transform: rotate(90deg);
+}
+
+/* User Menu & Dropdown Styles */
+.user-menu-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.user-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+  margin-left: 0.5rem;
+}
+
+.user-btn:hover {
+  transform: scale(1.05);
+}
+
+.user-avatar-small {
+  width: 40px;
+  height: 40px;
+  background-color: var(--foreground);
+  color: var(--background);
+  border-radius: 0; /* Sharp edges for editorial look */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  border: 1px solid var(--foreground);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 250px;
+  background-color: var(--background);
+  border: 1px solid var(--foreground);
+  box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+  z-index: 1000;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-dropdown-header {
+  padding: 1.5rem;
+  background-color: var(--background-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.user-dropdown-greeting {
+  display: block;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.user-dropdown-name {
+  display: block;
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.user-dropdown-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 0;
+}
+
+.user-dropdown-item {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-size: 1rem;
+  color: var(--foreground);
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.user-dropdown-item:hover {
+  background-color: var(--background-secondary);
+  padding-left: 1.75rem; /* Slight shift */
+  color: var(--accent-primary);
+}
+
+.badge-count {
+  background-color: var(--foreground);
+  color: var(--background);
+  font-size: 0.75rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.logout-item {
+  color: var(--text-muted);
+  border-top: 1px solid var(--border-color);
+  margin-top: 0.5rem;
+}
+
+.logout-item:hover {
+  color: #e53935; /* Red for logout */
+  background-color: rgba(229, 57, 53, 0.05);
 }

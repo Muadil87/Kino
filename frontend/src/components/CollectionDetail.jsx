@@ -87,7 +87,8 @@ const CollectionDetail = ({ isLoggedIn }) => {
       <div 
         className="collection-hero" 
         style={{ 
-          backgroundImage: backdrop ? `linear-gradient(to bottom, rgba(0,0,0,0.3), #0f1014), url(${backdrop})` : 'linear-gradient(to bottom, #1e2029, #0f1014)' 
+          backgroundImage: backdrop ? `url(${backdrop})` : 'none',
+          backgroundColor: backdrop ? 'transparent' : 'var(--background-secondary)'
         }}
       >
         <div className="collection-hero-content">

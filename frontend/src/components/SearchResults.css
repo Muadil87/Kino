@@ -1,0 +1,65 @@
+.search-results-section {
+  padding-top: 120px;
+  max-width: 1600px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.search-header {
+  margin-bottom: 3rem;
+  border-bottom: 2px solid var(--foreground);
+  padding-bottom: 1rem;
+}
+
+.search-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--foreground);
+  margin: 0;
+  line-height: 1;
+}
+
+.search-subtitle {
+  font-family: 'Manrope', sans-serif;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: var(--background-secondary);
+  border: 1px solid var(--border-color);
+  margin-top: 2rem;
+  position: relative;
+}
+
+.empty-state::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 20px;
+  height: 20px;
+  border-top: 3px solid var(--accent-primary);
+  border-left: 3px solid var(--accent-primary);
+}
+
+.empty-state h3 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--foreground);
+  text-transform: uppercase;
+}
+
+.empty-state p {
+  font-family: 'Manrope', sans-serif;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}

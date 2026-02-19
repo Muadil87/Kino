@@ -1,16 +1,16 @@
-/* 1. The Full Page Background */ 
+/* Auth Pages - Editorial Redesign */
+
 .auth-container { 
   min-height: 100vh; 
   width: 100%; 
   display: flex; 
-  align-items: flex-start; /* Changed from center to prevent navbar overlap */
+  align-items: center;
   justify-content: center; 
-  padding-top: 140px; /* Push down to clear fixed navbar */
+  padding-top: 0; /* Navbar is hidden */
   padding-bottom: 2rem;
-  
-  /* ICONIC MOVIE SCENE BACKGROUND */ 
   background-color: var(--background);
   position: relative; 
+  overflow: hidden;
 } 
 
 .auth-bg-image {
@@ -21,123 +21,137 @@
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  opacity: 0;
+  opacity: 0.1; /* Initial state */
+  filter: grayscale(100%) contrast(1.2);
   animation: fadeInAuth 1.5s ease-out forwards;
 }
 
 @keyframes fadeInAuth {
   from { opacity: 0; }
-  to { opacity: 1; }
+  to { opacity: 0.5; } /* Much more visible */
 }
 
-/* 2. The Dark Overlay (So text is readable) */ 
-.auth-container::before { 
-  content: ''; 
-  position: absolute; 
-  top: 0; 
-  left: 0; 
-  width: 100%; 
-  height: 100%; 
-  /* Darken the movie image so the form pops */ 
-  background: rgba(0, 0, 0, 0.7); 
-  z-index: 1; 
-  backdrop-filter: blur(5px);
-} 
-
-/* 3. The "Glass" Form Card */ 
+/* Auth Card - Paper/Magazine Style */ 
 .auth-card { 
   position: relative; 
-  z-index: 2; /* Sits above the overlay */ 
+  z-index: 2; 
   width: 100%; 
-  max-width: 420px; 
-  padding: 3rem; 
+  max-width: 450px; 
+  padding: 4rem; 
   
-  /* The Glassmorphism Magic */ 
-  background: var(--card-bg); 
-  border: 1px solid var(--border-color);
-  border-radius: 12px; 
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); 
+  background: var(--background-secondary); 
+  border: 1px solid var(--foreground);
+  border-radius: 0; /* Sharp corners */
+  box-shadow: 20px 20px 0 rgba(0, 0, 0, 0.1); 
   
   text-align: center; 
   color: var(--foreground); 
 } 
 
-/* 4. Typography Updates */ 
+/* Decorative corner accents */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 20px;
+  height: 20px;
+  border-top: 4px solid var(--accent-primary);
+  border-left: 4px solid var(--accent-primary);
+}
+
+.auth-card::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 20px;
+  height: 20px;
+  border-bottom: 4px solid var(--accent-primary);
+  border-right: 4px solid var(--accent-primary);
+}
+
 .auth-title { 
   font-family: 'Oswald', sans-serif; 
-  font-size: 2.5rem; 
+  font-size: 3rem; 
   font-weight: 700;
-  margin-bottom: 2rem; 
+  margin-bottom: 2.5rem; 
   letter-spacing: -0.02em; 
   text-transform: uppercase;
+  color: var(--foreground);
+  line-height: 1;
 } 
 
-/* 5. Modern Inputs */ 
 .auth-input { 
   width: 100%; 
-  padding: 1rem; 
-  margin-bottom: 1rem; 
-  background: rgba(255, 255, 255, 0.05); 
+  padding: 1rem 1.2rem; 
+  margin-bottom: 1.2rem; 
+  background: var(--background); 
   border: 1px solid var(--border-color); 
-  border-radius: 6px; 
+  border-radius: 0; 
   color: var(--foreground); 
   font-family: 'Manrope', sans-serif;
-  font-size: 1rem; 
+  font-size: 1.1rem; 
   transition: all 0.3s ease; 
 } 
 
 .auth-input::placeholder {
   color: var(--text-muted);
+  opacity: 0.6;
 }
 
-/* When user clicks an input, it glows KINO Red */ 
 .auth-input:focus { 
   outline: none; 
-  border-color: var(--accent-primary); 
-  box-shadow: 0 0 10px rgba(255, 10, 22, 0.2); 
-  background: rgba(255, 255, 255, 0.08); 
+  border-color: var(--foreground); 
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.05); 
+  background: var(--background-secondary); 
 } 
 
-/* 6. The Button */ 
 .auth-btn { 
   width: 100%; 
-  padding: 1rem; 
-  margin-top: 1rem; 
-  background: var(--accent-primary); 
-  color: white; 
-  border: none; 
-  border-radius: 6px; 
+  padding: 1.2rem; 
+  margin-top: 1.5rem; 
+  background: var(--foreground); 
+  color: var(--background); 
+  border: 1px solid var(--foreground); 
+  border-radius: 0; 
   font-family: 'Oswald', sans-serif;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 10, 22, 0.3);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 5px 5px 0 var(--accent-primary);
 }
 
 .auth-btn:hover {
-  background: #ff2e3b;
+  background: var(--accent-primary);
+  color: var(--foreground);
+  border-color: var(--accent-primary);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 10, 22, 0.5);
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.15);
 }
 
 .auth-link {
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   font-family: 'Manrope', sans-serif;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--text-muted);
 }
 
 .auth-link span {
-  color: var(--accent-secondary);
-  font-weight: 600;
+  color: var(--foreground);
+  font-weight: 700;
   margin-left: 0.25rem;
   transition: color 0.2s ease;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid transparent;
 }
 
 .auth-link span:hover {
   color: var(--accent-primary);
-  text-decoration: underline;
+  border-bottom-color: var(--accent-primary);
 }

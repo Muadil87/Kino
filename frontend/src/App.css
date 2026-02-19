@@ -1,237 +1,141 @@
 .app {
   min-height: 100vh;
   background-color: var(--background);
+  color: var(--foreground);
 }
 
 .dashboard-container {
-  padding-top: 140px; /* Push content down to clear fixed navbar */
+  padding-top: 120px; /* Push content down to clear fixed navbar */
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 .favorites-section,
 .search-results-section {
-  padding-top: 140px; /* Push content down to clear fixed navbar */
+  padding-top: 120px; /* Push content down to clear fixed navbar */
   min-height: 100vh;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 /* Section Styles */
 .section {
-  padding: 4rem 1.5rem;
+  padding: 6rem 2rem; /* More vertical whitespace */
 }
 
 @media (min-width: 768px) {
   .section {
-    padding: 4rem 3rem;
+    padding: 6rem 4rem;
   }
 }
 
 @media (min-width: 1024px) {
   .section {
-    padding: 4rem 5rem;
+    padding: 6rem 6rem;
   }
 }
 
 .section-header {
-  margin-bottom: 3rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding-bottom: 1.5rem;
+  margin-bottom: 4rem;
+  border-bottom: 2px solid var(--foreground); /* Thicker, bolder line */
+  padding-bottom: 1rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  transition: border-color 0.3s ease;
-}
-
-.section-header:hover {
-  border-bottom-color: rgba(255, 255, 255, 0.1);
+  flex-direction: row; /* Horizontal alignment for editorial feel */
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 2rem;
 }
 
 .section-title {
   font-family: 'Oswald', sans-serif;
-  font-size: 3rem;
+  font-size: 4rem; /* Larger */
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   color: var(--foreground);
   margin: 0;
-  transition: color 0.3s ease, text-shadow 0.3s ease;
-  position: relative;
-  display: inline-block;
-  width: fit-content;
-}
-
-.section-title:hover {
-  color: var(--foreground);
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  line-height: 0.9;
 }
 
 .section-subtitle {
   font-family: 'Manrope', sans-serif;
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--text-muted);
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0.02em;
-  max-width: 600px;
-  line-height: 1.6;
+  max-width: 400px;
+  line-height: 1.5;
+  text-align: right;
+  margin-bottom: 5px;
 }
 
-/* Removed title-underline class as it is no longer used */
-
+/* View All Button */
 .view-all-btn {
-  background: transparent;
-  color: var(--accent-secondary);
+  background: var(--foreground);
+  color: var(--background);
   border: none;
   cursor: pointer;
-  font-family: 'Manrope', sans-serif;
-  font-size: 0.875rem;
+  font-family: 'Oswald', sans-serif;
+  font-size: 0.9rem;
   font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  display: flex;
+  text-transform: uppercase;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0;
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   transition: all 0.3s ease;
+  letter-spacing: 0.05em;
 }
 
 .view-all-btn:hover {
-  background: rgba(0, 212, 255, 0.1);
-  transform: translateX(5px);
+  background: var(--accent-primary);
+  color: var(--foreground);
+  transform: translateY(-2px);
 }
 
 /* Movie Grid */
 .movie-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Larger cards */
+  gap: 2.5rem; /* More space between cards */
 }
 
-@media (min-width: 768px) {
-  .movie-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .movie-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 1280px) {
-  .movie-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* CTA Section */
-.cta-section {
-  position: relative;
-  margin: 4rem 1.5rem;
-  padding: 5rem 1.5rem;
-  background: var(--card-bg);
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-  overflow: hidden;
-}
-
-@media (min-width: 768px) {
-  .cta-section {
-    margin: 4rem 3rem;
-    padding: 5rem 3rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .cta-section {
-    margin: 4rem 5rem;
-    padding: 5rem 5rem;
-  }
-}
-
-.cta-section::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at center, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
-  filter: blur(40px);
-  z-index: 0;
-}
-
-.cta-content {
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: center;
-  position: relative;
-  z-index: 1;
-}
-
-.cta-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 2rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--foreground);
-  margin: 0 0 1.5rem 0;
-}
-
-@media (min-width: 768px) {
-  .cta-title {
-    font-size: 2.5rem;
-  }
-}
-
-.cta-text {
-  font-family: 'Manrope', sans-serif;
-  font-size: 1.125rem;
-  color: var(--text-muted);
-  margin: 0 0 2rem 0;
-  line-height: 1.6;
-}
-
-.btn-primary {
-  background: var(--accent-primary);
-  color: var(--foreground);
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 6px;
-  font-family: 'Oswald', sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 10, 22, 0.3);
-}
-
-.btn-primary:hover {
-  background: #ff2e3b;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 10, 22, 0.5);
-}
-
-/* Staff Picks Section */
-.staff-picks-section {
-  border-top: 1px solid var(--border-color);
-  margin-top: 2rem;
-  padding-top: 4rem;
+/* Collections Grid */
+.collections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2.5rem;
 }
 
 .picks-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 1024px) {
   .picks-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (min-width: 1024px) {
+@media (max-width: 640px) {
   .picks-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .section-subtitle {
+    text-align: left;
+  }
+  
+  .section-title {
+    font-size: 3rem;
   }
 }

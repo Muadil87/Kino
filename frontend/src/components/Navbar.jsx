@@ -5,12 +5,14 @@ import { tmdbImage } from '../utils/image'
 import './Navbar.css'
 import './NavbarSearch.css'
 
-export default function Navbar({ isLoggedIn }) {
+export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount = 0, favoritesCount = 0 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [showDropdown, setShowDropdown] = useState(false)
+  const [showUserDropdown, setShowUserDropdown] = useState(false)
   const searchRef = useRef(null)
+  const userMenuRef = useRef(null)
   const navigate = useNavigate()
 
   // Click outside to close dropdowns
@@ -18,6 +20,9 @@ export default function Navbar({ isLoggedIn }) {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowDropdown(false)
+      }
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserDropdown(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -134,16 +139,59 @@ export default function Navbar({ isLoggedIn }) {
           </div>
           
           {isLoggedIn ? (
-            <button 
-              className="settings-btn" 
-              onClick={() => navigate('/settings')}
-              aria-label="Settings"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-              </svg>
-            </button>
+            <>
+              <button 
+                className="settings-btn" 
+                onClick={() => navigate('/settings')}
+                aria-label="Settings"
+                title="Settings"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+              </button>
+
+              <div className="user-menu-container" ref={userMenuRef}>
+                <button 
+                  className="user-btn" 
+                  onClick={() => setShowUserDropdown(!showUserDropdown)}
+                  aria-label="User Profile"
+                  title={username || "User"}
+                >
+                  <div className="user-avatar-small">
+                    {username ? username.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                </button>
+                
+                {showUserDropdown && (
+                  <div className="user-dropdown">
+                    <div className="user-dropdown-header">
+                      <span className="user-dropdown-greeting">Signed in as</span>
+                      <span className="user-dropdown-name">{username || 'User'}</span>
+                    </div>
+                    
+                    <div className="user-dropdown-divider"></div>
+                    
+                    <button className="user-dropdown-item" onClick={() => { navigate('/profile'); setShowUserDropdown(false); }}>
+                      Profile
+                    </button>
+                    <button className="user-dropdown-item" onClick={() => { navigate('/watchlist'); setShowUserDropdown(false); }}>
+                      Watchlist <span className="badge-count">{watchlistCount}</span>
+                    </button>
+                    <button className="user-dropdown-item" onClick={() => { navigate('/favorites'); setShowUserDropdown(false); }}>
+                      Favorites <span className="badge-count">{favoritesCount}</span>
+                    </button>
+                    
+                    <div className="user-dropdown-divider"></div>
+                    
+                    <button className="user-dropdown-item logout-item" onClick={() => { if(onLogout) onLogout(); setShowUserDropdown(false); }}>
+                      Log Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
           ) : (
             <>
               <button className="sign-in-btn" onClick={() => navigate('/login')}>
