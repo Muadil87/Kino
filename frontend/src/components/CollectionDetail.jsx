@@ -61,7 +61,7 @@ const CollectionDetail = ({ isLoggedIn }) => {
     };
 
     fetchMovies();
-  }, [id]);
+  }, [id, isLoggedIn, navigate]);
 
   if (loading) {
     return (

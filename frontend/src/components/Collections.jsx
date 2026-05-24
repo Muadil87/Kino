@@ -51,7 +51,7 @@ const Collections = ({ isLoggedIn }) => {
               }
               
               return { ...genre, image };
-            } catch (e) {
+            } catch {
               return { ...genre, image: null };
             }
           })

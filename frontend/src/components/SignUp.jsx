@@ -3,7 +3,7 @@ import axios from 'axios'; // Import the messenger
 import { useNavigate } from 'react-router-dom';
 import './Auth.css'; // Assuming you have styles here
 
-const SignUp = ({ onNavigateToSignIn }) => {
+const SignUp = ({ onNavigateToSignIn, onSignUp }) => {
   const navigate = useNavigate();
   
   // 1. State to hold the user's input

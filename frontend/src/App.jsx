@@ -3,7 +3,6 @@ import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-
 import { getTrendingMovies } from './services/tmdb' // ✅ Import the API service
 import Navbar from './components/Navbar'
 import Landing from './components/Landing'
-import MovieCard from './components/MovieCard'
 import SignIn from './components/SignIn'
 import SignUp from './components/SignUp'
 import Watchlist from './components/Watchlist'
@@ -19,7 +18,6 @@ import './components/SharedStyles.css'
 
 // ❌ DELETED: const mockMovies = [...] (We don't need this anymore!)
 
-import SkeletonCard from './components/SkeletonCard'
 import Dashboard from './components/Dashboard'
 
 // 2️⃣ The Main App Component
@@ -82,8 +80,6 @@ function App() {
 
   const isFav = (id) => favorites.some(m => m.id === id)
   const isInWatchlist = (id) => watchlist.some(m => m.id === id)
-  const isInHistory = (id) => history.some(m => m.id === id)
-  
   const upsertMinimal = (m) => ({
     id: m.id,
     title: m.title,
