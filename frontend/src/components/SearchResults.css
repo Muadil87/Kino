@@ -1,33 +1,15 @@
 .search-results-section {
-  padding-top: 120px;
-  max-width: 1600px;
+  padding-top: 104px;
+  width: var(--kino-page-width);
   margin: 0 auto;
   min-height: 100vh;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  padding-left: var(--kino-shell-x);
+  padding-right: var(--kino-shell-x);
+  padding-bottom: var(--kino-section-y);
 }
 
 .search-header {
-  margin-bottom: 3rem;
-  border-bottom: 2px solid var(--foreground);
-  padding-bottom: 1rem;
-}
-
-.search-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 3.5rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--foreground);
-  margin: 0;
-  line-height: 1;
-}
-
-.search-subtitle {
-  font-family: 'Manrope', sans-serif;
-  font-size: 1.1rem;
-  color: var(--text-muted);
-  margin-top: 0.5rem;
+  margin-bottom: clamp(1.8rem, 4vw, 3rem);
 }
 
 .empty-state {

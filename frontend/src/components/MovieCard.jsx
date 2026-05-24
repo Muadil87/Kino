@@ -7,13 +7,14 @@ import './MovieCard.css'
 export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
   const [isHovered, setIsHovered] = useState(false)
 
-  // Use backdrop_path instead of poster_path for landscape cards
-  const imagePath = movie.backdrop_path || movie.backdropUrl || movie.poster_path || movie.posterUrl
-  const imageUrl = tmdbImage(imagePath, 'w300') // Optimized size for grid cards
+  const imagePath = movie.poster_path || movie.posterUrl || movie.backdrop_path || movie.backdropUrl
+  const imageUrl = tmdbImage(imagePath, 'w500')
+  const year = movie.release_date ? movie.release_date.slice(0, 4) : null
+  const rating = typeof movie.vote_average === 'number' ? movie.vote_average.toFixed(1) : null
 
   return (
-    <Link 
-      to={`/movie/${movie.id}`} 
+    <Link
+      to={`/movie/${movie.id}`}
       className="movie-card-link"
       onClick={(e) => {
         if (onClick) {
@@ -29,28 +30,27 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
       >
         <div className="movie-image-wrapper">
           <img
-            src={imageUrl} 
+            src={imageUrl}
             alt={movie.title}
             className="movie-backdrop"
             loading="lazy"
             onError={(e) => {
-              e.target.onerror = null; 
-              e.target.src = 'https://via.placeholder.com/500x281?text=No+Image';
+              e.target.onerror = null
+              e.target.src = 'https://via.placeholder.com/500x750?text=No+Image'
             }}
           />
-          
-          {/* Quick Actions Overlay - Only shows if handlers are provided */}
+
           {(onRemove || onMarkWatched) && (
             <div className={`movie-actions-overlay ${isHovered ? 'visible' : ''}`}>
               {onMarkWatched && (
                 <Button
                   variant="unstyled"
                   size="none"
-                  className="action-btn watched-btn" 
+                  className="action-btn watched-btn"
                   onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onMarkWatched(movie);
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onMarkWatched(movie)
                   }}
                   title="Mark as Watched"
                 >
@@ -64,11 +64,11 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
                 <Button
                   variant="unstyled"
                   size="none"
-                  className="action-btn remove-btn" 
+                  className="action-btn remove-btn"
                   onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onRemove(movie);
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onRemove(movie)
                   }}
                   title="Remove from List"
                 >
@@ -85,9 +85,11 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
         <div className="movie-text-overlay">
           <div className="movie-info-container">
             <h3 className="movie-title">{movie.title}</h3>
-            {movie.dateWatched && (
-              <div className="watched-date">Watched: {movie.dateWatched}</div>
-            )}
+            <div className="movie-meta-row">
+              {year && <span className="movie-meta-chip">{year}</span>}
+              {rating && <span className="movie-meta-chip">? {rating}</span>}
+              {movie.dateWatched && <span className="movie-meta-chip subtle">Watched</span>}
+            </div>
           </div>
         </div>
       </div>

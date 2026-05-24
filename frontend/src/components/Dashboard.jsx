@@ -1,9 +1,27 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import MovieCard from './MovieCard';
 import SkeletonCard from './SkeletonCard';
 import './Dashboard.css';
 
+const MOODS = [
+  { name: 'Noir Tension', genres: [53, 80, 9648] },
+  { name: 'Quiet Character Study', genres: [18] },
+  { name: 'Adrenaline Rush', genres: [28, 12] },
+  { name: 'Warm Nostalgia', genres: [10751, 16, 35] },
+  { name: 'Mind-Bending', genres: [878, 14, 9648] },
+]
+
 const Dashboard = ({ movies }) => {
+  const [activeMood, setActiveMood] = useState(MOODS[0].name)
+
+  const moodMovies = useMemo(() => {
+    const mood = MOODS.find((m) => m.name === activeMood) || MOODS[0]
+    const filtered = (movies || []).filter((movie) =>
+      (movie.genre_ids || []).some((id) => mood.genres.includes(id)),
+    )
+    return filtered.length > 0 ? filtered : movies
+  }, [activeMood, movies])
+
   if (!movies || movies.length === 0) {
     return (
       <div className="dashboard-container">
@@ -33,8 +51,15 @@ const Dashboard = ({ movies }) => {
           <p className="section-subtitle">Jump into curated tones and discover films that match your headspace.</p>
         </div>
         <div className="mood-row">
-          {['Noir Tension', 'Quiet Character Study', 'Adrenaline Rush', 'Warm Nostalgia', 'Mind-Bending'].map((mood) => (
-            <button key={mood} className="mood-pill" type="button">{mood}</button>
+          {MOODS.map((mood) => (
+            <button
+              key={mood.name}
+              className={`mood-pill ${activeMood === mood.name ? 'active' : ''}`}
+              type="button"
+              onClick={() => setActiveMood(mood.name)}
+            >
+              {mood.name}
+            </button>
           ))}
         </div>
       </section>
@@ -43,10 +68,12 @@ const Dashboard = ({ movies }) => {
       <section className="trending-section">
         <div className="section-header">
           <h2 className="section-title">Trending</h2>
-          <p className="section-subtitle">Discover the most popular movies everyone is talking about.</p>
+          <p className="section-subtitle">
+            {activeMood} picks from what is trending right now.
+          </p>
         </div>
         <div className="movie-grid">
-          {movies.slice(0, 12).map(movie => (
+          {moodMovies.slice(0, 12).map(movie => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
@@ -59,7 +86,7 @@ const Dashboard = ({ movies }) => {
           <p className="section-subtitle">Curated selection of must-watch films handpicked for you.</p>
         </div>
         <div className="picks-grid">
-           {movies.slice(4, 7).map((movie) => (
+           {moodMovies.slice(2, 5).map((movie) => (
              <MovieCard key={movie.id} movie={movie} />
            ))}
         </div>
@@ -71,7 +98,7 @@ const Dashboard = ({ movies }) => {
           <p className="section-subtitle">A rotating column of visually iconic and critically loved films.</p>
         </div>
         <div className="movie-grid">
-          {movies.slice(8, 14).map(movie => (
+          {moodMovies.slice(6, 12).map(movie => (
             <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>

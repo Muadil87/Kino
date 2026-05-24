@@ -6,9 +6,12 @@ import './Favorites.css'
 export default function Favorites({ movies }) {
   return (
     <section className="favorites-section">
-      <div className="favorites-header">
-        <h2 className="favorites-title">Your Favorites</h2>
-        <p className="favorites-subtitle">Your personal collection of beloved films</p>
+      <div className="section-header favorites-header">
+        <div>
+          <p className="kino-overline">Your Library</p>
+          <h2 className="section-title">Your Favorites</h2>
+        </div>
+        <p className="section-subtitle">Your personal collection of beloved films.</p>
       </div>
 
       {(!movies || movies.length === 0) && (

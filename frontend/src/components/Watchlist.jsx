@@ -57,8 +57,11 @@ const Watchlist = ({ watchlist, history, onRemoveFromWatchlist, onRemoveFromHist
 
   return (
     <div className="watchlist-page">
-      <div className="watchlist-header">
-        <h1 className="page-title">My Library</h1>
+      <div className="watchlist-header section-header">
+        <div>
+          <p className="kino-overline">Your Library</p>
+          <h1 className="section-title">My Library</h1>
+        </div>
         
         {/* THE TABS */}
         <div className="tabs-container">
@@ -111,7 +114,13 @@ const Watchlist = ({ watchlist, history, onRemoveFromWatchlist, onRemoveFromHist
       {/* Only show recommendations on Watchlist tab */}
       {activeTab === 'watchlist' && (
         <div className="watchlist-content recommendations-section">
-          <h2 className="section-title">Recommended for You</h2>
+          <div className="section-header">
+            <div>
+              <p className="kino-overline">Personalized</p>
+              <h2 className="section-title">Recommended for You</h2>
+            </div>
+            <p className="section-subtitle">Suggestions based on your latest watchlist additions.</p>
+          </div>
           {recommendations.length > 0 ? (
             <div className="movie-grid compact">
               {recommendations.map(movie => (

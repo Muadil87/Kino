@@ -1,18 +1,17 @@
 /* Watchlist Editorial Theme */
 .watchlist-page {
   min-height: 100vh;
-  padding-top: 140px; /* Increased from 90px to prevent navbar collision */
-  padding-left: 5%;
-  padding-right: 5%;
-  padding-bottom: 4rem;
+  width: var(--kino-page-width);
+  margin: 0 auto;
+  padding-top: 104px;
+  padding-inline: var(--kino-shell-x);
+  padding-bottom: var(--kino-section-y);
   background-color: var(--background);
   color: var(--foreground);
 }
 
 .watchlist-header {
-  margin-bottom: 3rem;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 1rem;
+  margin-bottom: clamp(1.8rem, 4vw, 3rem);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -26,18 +25,6 @@
   }
 }
 
-.page-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 3rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 0;
-  padding-left: 1rem;
-  border-left: 4px solid var(--accent-primary);
-  line-height: 1;
-}
-
 /* Tabs Styling */
 .tabs-container {
   display: flex;
@@ -47,10 +34,10 @@
 .tab-btn {
   background: transparent;
   border: none;
-  font-family: 'Oswald', sans-serif;
-  font-size: 1.1rem;
+  font-family: var(--font-label);
+  font-size: 0.84rem;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.14em;
   color: var(--text-muted);
   cursor: pointer;
   padding: 0.5rem 0;
@@ -89,8 +76,8 @@
 
 .movie-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: clamp(0.85rem, 1.5vw, 1.2rem);
   width: 100%;
 }
 

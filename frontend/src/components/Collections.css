@@ -14,20 +14,8 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: var(--space-6);
-  padding-bottom: var(--space-6);
-  margin-bottom: var(--space-10);
-  border-bottom: 1px solid var(--kino-line);
-}
-
-.collections-header h1 {
-  margin: 0;
-  font-size: clamp(2.1rem, 5vw, 3.5rem);
-}
-
-.collections-header p {
-  margin: var(--space-2) 0 0;
-  color: var(--kino-text-muted);
+  gap: 1.2rem;
+  margin-bottom: clamp(1.8rem, 4vw, 3rem);
 }
 
 .btn-create {

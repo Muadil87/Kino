@@ -152,11 +152,12 @@ const Collections = ({ isLoggedIn }) => {
   return (
     <div className="collections-page">
       <div className="collections-header">
-        <div className="header-content">
+        <div className="header-content section-header">
           <div>
-            <h1>Collections</h1>
-            <p>Explore cinema by genre and mood.</p>
+            <p className="kino-overline">Curated Catalog</p>
+            <h1 className="section-title">Collections</h1>
           </div>
+          <p className="section-subtitle">Explore cinema by genre and mood.</p>
           {isLoggedIn && (
             <button 
               className="btn-create" 

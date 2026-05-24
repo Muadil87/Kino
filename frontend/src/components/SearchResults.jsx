@@ -33,12 +33,15 @@ export default function SearchResults() {
 
   return (
     <section className="search-results-section">
-      <div className="search-header">
-        <h2 className="search-title">Search Results</h2>
+      <div className="section-header search-header">
+        <div>
+          <p className="kino-overline">Discovery</p>
+          <h2 className="section-title">Search Results</h2>
+        </div>
         {loading ? (
           <div className="skeleton" style={{ width: '200px', height: '1.2em', marginTop: '0.5rem' }}></div>
         ) : (
-          <p className="search-subtitle">Found {results.length} matches for "{query}"</p>
+          <p className="section-subtitle">Found {results.length} matches for "{query}"</p>
         )}
       </div>
 
