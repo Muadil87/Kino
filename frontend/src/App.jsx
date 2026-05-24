@@ -1,85 +1,112 @@
-import { useState, useEffect } from 'react' // ✅ Added useEffect
+import { useState, useEffect } from 'react'
 import { Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom'
-import { getTrendingMovies } from './services/tmdb' // ✅ Import the API service
+import { getTrendingMovies } from './services/tmdb'
+import { authApi, watchlistApi, favoritesApi, historyApi } from './services/api'
 import Navbar from './components/Navbar'
-import Landing from './components/Landing'
-import SignIn from './components/SignIn'
-import SignUp from './components/SignUp'
-import Watchlist from './components/Watchlist'
-import Collections from './components/Collections'
-import CollectionDetail from './components/CollectionDetail'
-import MovieDetail from './components/MovieDetail'
-import SearchResults from './components/SearchResults'
-import Favorites from './components/Favorites'
-import Profile from './components/Profile'
-import Settings from './components/Settings'
+import LandingPage from './pages/LandingPage'
+import LoginPage from './pages/LoginPage'
+import SignupPage from './pages/SignupPage'
+import WatchlistPage from './pages/WatchlistPage'
+import CollectionsPage from './pages/CollectionsPage'
+import CollectionDetailPage from './pages/CollectionDetailPage'
+import MovieDetailPage from './pages/MovieDetailPage'
+import SearchResultsPage from './pages/SearchResultsPage'
+import FavoritesPage from './pages/FavoritesPage'
+import ProfilePage from './pages/ProfilePage'
+import SettingsPage from './pages/SettingsPage'
+import DashboardPage from './pages/DashboardPage'
 import './App.css'
 import './components/SharedStyles.css'
 
-// ❌ DELETED: const mockMovies = [...] (We don't need this anymore!)
+function ProtectedRoute({ isLoggedIn, children }) {
+  return isLoggedIn ? children : <Navigate to="/login" />
+}
 
-import Dashboard from './components/Dashboard'
+function PublicOnlyRoute({ isLoggedIn, children }) {
+  return isLoggedIn ? <Navigate to="/dashboard" /> : children
+}
 
-// 2️⃣ The Main App Component
 function App() {
-  // ✅ STATE CHANGE: Start with empty array, not mock data
-  const [movies, setMovies] = useState([]) 
-  const [favorites, setFavorites] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('kino_favorites') || '[]') } catch { return [] }
-  })
-  const [watchlist, setWatchlist] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('kino_watchlist') || '[]') } catch { return [] }
-  })
-  const [history, setHistory] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('kino_history') || '[]') } catch { return [] }
-  })
-  
-  const [isLoggedIn, setIsLoggedIn] = useState(() => {
-    return localStorage.getItem('kino_isLoggedIn') === 'true'
-  })
-  
-  const [username, setUsername] = useState(() => {
-    return localStorage.getItem('kino_username') || 'Movie Buff'
-  })
+  const [movies, setMovies] = useState([])
+  const [favorites, setFavorites] = useState([])
+  const [watchlist, setWatchlist] = useState([])
+  const [history, setHistory] = useState([])
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [username, setUsername] = useState('Movie Buff')
+  const [email, setEmail] = useState('')
+  const [authBootstrapped, setAuthBootstrapped] = useState(false)
 
-  // ✅ NEW: Email State
-  const [email, setEmail] = useState(() => {
-    return localStorage.getItem('kino_email') || ''
-  })
+  const navigate = useNavigate()
+  const location = useLocation()
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  // ✅ NEW: Fetch Data from TMDB when App loads
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        console.log("Fetching movies...");
-        const trendingMovies = await getTrendingMovies();
-        setMovies(trendingMovies);
-        console.log("Movies loaded:", trendingMovies);
+        const trendingMovies = await getTrendingMovies()
+        setMovies(trendingMovies)
       } catch (error) {
-        console.error("Error loading movies:", error);
+        console.error('Error loading movies:', error)
       }
-    };
+    }
 
-    fetchMovies();
-  }, []); // Run once on mount
-  
-  useEffect(() => {
-    localStorage.setItem('kino_favorites', JSON.stringify(favorites))
-  }, [favorites])
-  
-  useEffect(() => {
-    localStorage.setItem('kino_watchlist', JSON.stringify(watchlist))
-  }, [watchlist])
-  
-  useEffect(() => {
-    localStorage.setItem('kino_history', JSON.stringify(history))
-  }, [history])
+    fetchMovies()
+  }, [])
 
-  const isFav = (id) => favorites.some(m => m.id === id)
-  const isInWatchlist = (id) => watchlist.some(m => m.id === id)
+  const loadUserLists = async () => {
+    const [watchlistData, favoritesData, historyData] = await Promise.all([
+      watchlistApi.list(),
+      favoritesApi.list(),
+      historyApi.list(),
+    ])
+
+    setWatchlist(watchlistData)
+    setFavorites(favoritesData)
+    setHistory(historyData)
+  }
+
+  useEffect(() => {
+    const bootstrapAuth = async () => {
+      const token = authApi.getToken()
+      if (!token) {
+        setAuthBootstrapped(true)
+        return
+      }
+
+      try {
+        const user = await authApi.me()
+        setIsLoggedIn(true)
+        setUsername(user.name || 'Movie Buff')
+        setEmail(user.email || '')
+        await loadUserLists()
+      } catch {
+        authApi.clearToken()
+        setIsLoggedIn(false)
+        setWatchlist([])
+        setFavorites([])
+        setHistory([])
+      } finally {
+        setAuthBootstrapped(true)
+      }
+    }
+
+    bootstrapAuth()
+  }, [])
+
+  useEffect(() => {
+    authApi.onUnauthorized(() => {
+      setIsLoggedIn(false)
+      setWatchlist([])
+      setFavorites([])
+      setHistory([])
+      setUsername('Movie Buff')
+      setEmail('')
+      navigate('/login')
+    })
+  }, [navigate])
+
+  const isFav = (id) => favorites.some((m) => m.id === id)
+  const isInWatchlist = (id) => watchlist.some((m) => m.id === id)
+
   const upsertMinimal = (m) => ({
     id: m.id,
     title: m.title,
@@ -89,152 +116,193 @@ function App() {
     vote_average: m.vote_average ?? m.rating ?? null,
     overview: m.overview || m.description || ''
   })
-  
-  const toggleFavorite = (movie) => {
+
+  const toggleFavorite = async (movie) => {
     if (!isLoggedIn) {
-      navigate('/login');
-      return;
+      navigate('/login')
+      return
     }
-    setFavorites(prev => isFav(movie.id) ? prev.filter(x => x.id !== movie.id) : [...prev, upsertMinimal(movie)])
+
+    try {
+      if (isFav(movie.id)) {
+        await favoritesApi.remove(movie.id)
+        setFavorites((prev) => prev.filter((x) => x.id !== movie.id))
+      } else {
+        const savedMovie = await favoritesApi.add(upsertMinimal(movie))
+        setFavorites((prev) => [...prev, savedMovie])
+      }
+    } catch (error) {
+      console.error('Favorites update failed:', error)
+    }
   }
-  
-  const toggleWatchlist = (movie) => {
+
+  const toggleWatchlist = async (movie) => {
     if (!isLoggedIn) {
-      navigate('/login');
-      return;
+      navigate('/login')
+      return
     }
-    setWatchlist(prev => isInWatchlist(movie.id) ? prev.filter(x => x.id !== movie.id) : [...prev, upsertMinimal(movie)])
+
+    try {
+      if (isInWatchlist(movie.id)) {
+        await watchlistApi.remove(movie.id)
+        setWatchlist((prev) => prev.filter((x) => x.id !== movie.id))
+      } else {
+        const savedMovie = await watchlistApi.add(upsertMinimal(movie))
+        setWatchlist((prev) => [...prev, savedMovie])
+      }
+    } catch (error) {
+      console.error('Watchlist update failed:', error)
+    }
   }
 
-  const moveToHistory = (movie) => {
-    const movieWithDate = { ...upsertMinimal(movie), dateWatched: new Date().toLocaleDateString() }
-    
-    // Add to history (avoid duplicates if already there, just update date)
-    setHistory(prev => [movieWithDate, ...prev.filter(x => x.id !== movie.id)])
-    
-    // Remove from watchlist if present
-    if (isInWatchlist(movie.id)) {
-      setWatchlist(prev => prev.filter(x => x.id !== movie.id))
+  const moveToHistory = async (movie) => {
+    const today = new Date().toISOString().slice(0, 10)
+
+    try {
+      await historyApi.add(upsertMinimal(movie), today)
+      setHistory((prev) => [
+        { ...upsertMinimal(movie), dateWatched: today },
+        ...prev.filter((x) => x.id !== movie.id),
+      ])
+
+      if (isInWatchlist(movie.id)) {
+        await watchlistApi.remove(movie.id)
+        setWatchlist((prev) => prev.filter((x) => x.id !== movie.id))
+      }
+    } catch (error) {
+      console.error('History update failed:', error)
     }
   }
 
-  const removeFromHistory = (movie) => {
-    setHistory(prev => prev.filter(x => x.id !== movie.id))
+  const removeFromHistory = async (movie) => {
+    try {
+      await historyApi.remove(movie.id)
+      setHistory((prev) => prev.filter((x) => x.id !== movie.id))
+    } catch (error) {
+      console.error('Remove history failed:', error)
+    }
   }
 
-  const handleLogin = (userEmailOrName) => {
-    setIsLoggedIn(true);
-    localStorage.setItem('kino_isLoggedIn', 'true');
-    
-    // Check if input is object (from SignUp) or string (from SignIn)
-    const input = typeof userEmailOrName === 'object' ? userEmailOrName.username || userEmailOrName.email : userEmailOrName;
-    const userEmail = typeof userEmailOrName === 'object' ? userEmailOrName.email : (userEmailOrName.includes('@') ? userEmailOrName : '');
+  const handleLogin = async (user) => {
+    setIsLoggedIn(true)
+    setUsername(user?.name || 'Movie Buff')
+    setEmail(user?.email || '')
 
-    // Extract name from email (e.g., "john@gmail.com" -> "john") 
-    const name = input.includes('@') 
-      ? input.split('@')[0] 
-      : input;
-  
-    // Capitalize first letter 
-    const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
-  
-    setUsername(formattedName); 
-    localStorage.setItem('kino_username', formattedName); // Save it!
-
-    // Update Email if provided
-    if (userEmail) {
-      setEmail(userEmail);
-      localStorage.setItem('kino_email', userEmail);
+    try {
+      await loadUserLists()
+    } catch (error) {
+      console.error('Failed to load lists after login:', error)
+      setWatchlist([])
+      setFavorites([])
+      setHistory([])
     }
-    
-    navigate('/dashboard');
-  };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem('kino_isLoggedIn');
-    navigate('/');
-  };
+    navigate('/dashboard')
+  }
+
+  const handleLogout = async () => {
+    try {
+      await authApi.logout()
+    } catch {
+      // If token already expired/revoked, we still clear client session.
+    }
+
+    authApi.clearToken()
+    setIsLoggedIn(false)
+    setWatchlist([])
+    setFavorites([])
+    setHistory([])
+    setUsername('Movie Buff')
+    setEmail('')
+    navigate('/')
+  }
+
+  if (!authBootstrapped) {
+    return <div className="loading-screen">Loading authentication...</div>
+  }
 
   return (
     <div className="app">
-      <Navbar 
-        isLoggedIn={isLoggedIn} 
-        username={username} 
+      <Navbar
+        isLoggedIn={isLoggedIn}
+        username={username}
         onLogout={handleLogout}
         watchlistCount={watchlist.length}
         favoritesCount={favorites.length}
       />
-      
+
       <div className="page-transition" key={location.pathname}>
         <Routes>
           <Route path="/" element={
-            isLoggedIn ? <Navigate to="/dashboard" /> : <Landing movies={movies} onGetStarted={() => navigate('/signup')} />
+            <PublicOnlyRoute isLoggedIn={isLoggedIn}>
+              <LandingPage movies={movies} onGetStarted={() => navigate('/signup')} />
+            </PublicOnlyRoute>
           } />
-          
+
           <Route path="/login" element={
-            isLoggedIn ? <Navigate to="/dashboard" /> : (
-              <SignIn onNavigateToSignUp={() => navigate('/signup')} onLogin={handleLogin} />
-            )
+            <PublicOnlyRoute isLoggedIn={isLoggedIn}>
+              <LoginPage onNavigateToSignUp={() => navigate('/signup')} onLogin={handleLogin} />
+            </PublicOnlyRoute>
           } />
-          
+
           <Route path="/signup" element={
-            isLoggedIn ? <Navigate to="/dashboard" /> : (
-              <SignUp onNavigateToSignIn={() => navigate('/login')} onSignUp={handleLogin} />
-            )
+            <PublicOnlyRoute isLoggedIn={isLoggedIn}>
+              <SignupPage onNavigateToSignIn={() => navigate('/login')} onSignUp={handleLogin} />
+            </PublicOnlyRoute>
           } />
-          
+
           <Route path="/dashboard" element={
-            isLoggedIn ? (
-              <Dashboard movies={movies} />
-            ) : <Navigate to="/login" />
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <DashboardPage movies={movies} />
+            </ProtectedRoute>
           } />
-          
-          <Route path="/collections" element={<Collections isLoggedIn={isLoggedIn} />} />
-          
-          <Route path="/collections/:id/:name" element={<CollectionDetail isLoggedIn={isLoggedIn} />} />
-          
+
+          <Route path="/collections" element={<CollectionsPage isLoggedIn={isLoggedIn} />} />
+
+          <Route path="/collections/:id/:name" element={<CollectionDetailPage isLoggedIn={isLoggedIn} />} />
+
           <Route path="/watchlist" element={
-            isLoggedIn ? (
-              <Watchlist 
-                watchlist={watchlist} 
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <WatchlistPage
+                watchlist={watchlist}
                 history={history}
                 onRemoveFromWatchlist={(movie) => toggleWatchlist(movie)}
                 onRemoveFromHistory={(movie) => removeFromHistory(movie)}
                 onMoveToHistory={(movie) => moveToHistory(movie)}
               />
-            ) : <Navigate to="/login" />
+            </ProtectedRoute>
           } />
-          
+
           <Route path="/favorites" element={
-            isLoggedIn ? (
-              <Favorites movies={favorites} />
-            ) : <Navigate to="/login" />
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <FavoritesPage movies={favorites} />
+            </ProtectedRoute>
           } />
 
           <Route path="/profile" element={
-            isLoggedIn ? (
-              <Profile 
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <ProfilePage
                 username={username}
                 email={email}
                 watchlistCount={watchlist.length}
                 favoritesCount={favorites.length}
                 historyCount={history.length}
               />
-            ) : <Navigate to="/login" />
+            </ProtectedRoute>
           } />
 
           <Route path="/settings" element={
-            isLoggedIn ? (
-              <Settings username={username} setUsername={setUsername} />
-            ) : <Navigate to="/login" />
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <SettingsPage username={username} setUsername={setUsername} />
+            </ProtectedRoute>
           } />
-          
-          <Route path="/search" element={<SearchResults />} />
-          
+
+          <Route path="/search" element={<SearchResultsPage />} />
+
           <Route path="/movie/:id" element={
-            <MovieDetail 
-              isFavorite={isFav} 
+            <MovieDetailPage
+              movies={movies}
+              isFavorite={isFav}
               onToggleFavorite={toggleFavorite}
               isInWatchlist={isInWatchlist}
               onToggleWatchlist={toggleWatchlist}
@@ -244,7 +312,6 @@ function App() {
         </Routes>
       </div>
 
-      {/* Hide footer on Landing, Login, and Signup pages */}
       {!['/', '/login', '/signup'].includes(location.pathname.replace(/\/$/, '') || '/') && (
         <footer className="footer">
           <div className="footer-container">

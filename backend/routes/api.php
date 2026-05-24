@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\WatchlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +21,18 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/logout', [AuthController::class, 'logout']);
-    
-    // We will add Watchlist & Review routes here later!
+    Route::get('/watchlist', [WatchlistController::class, 'index']);
+    Route::post('/watchlist', [WatchlistController::class, 'store']);
+    Route::delete('/watchlist/{tmdbId}', [WatchlistController::class, 'destroy']);
+    Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::post('/favorites', [FavoriteController::class, 'store']);
+    Route::delete('/favorites/{tmdbId}', [FavoriteController::class, 'destroy']);
+    Route::get('/history', [HistoryController::class, 'index']);
+    Route::post('/history', [HistoryController::class, 'store']);
+    Route::delete('/history/{tmdbId}', [HistoryController::class, 'destroy']);
+
+    Route::post('/movies/{tmdbId}/reviews', [ReviewController::class, 'store']);
+    Route::delete('/reviews/{reviewId}', [ReviewController::class, 'destroy']);
 });
+
+Route::get('/movies/{tmdbId}/reviews', [ReviewController::class, 'index']);

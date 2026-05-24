@@ -21,29 +21,7 @@
 /* Favorites Header Redesign - MOVED TO Favorites.css */
 
 
-/* Loading State */
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8rem 0;
-  color: var(--text-muted);
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 2px solid var(--border-color);
-  border-radius: 50%;
-  border-top-color: var(--foreground);
-  animation: spin 1s cubic-bezier(0.76, 0, 0.24, 1) infinite;
-  margin-bottom: 1.5rem;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* Loading state lives in index.css; keep only page-scoped overrides here. */
 
 /* Empty State */
 .empty-state {
@@ -52,12 +30,13 @@
   align-items: center;
   justify-content: center;
   padding: 6rem 2rem;
-  background: var(--background-secondary);
+  background: var(--surface);
   border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
   text-align: center;
   max-width: 600px;
   margin: 4rem auto;
-  position: relative; /* For decorative corner */
+  position: relative;
 }
 
 /* Editorial Decorative Corner */
@@ -85,5 +64,5 @@
   font-size: 1.1rem;
   max-width: 400px;
   margin: 0 auto;
-  font-family: 'Manrope', sans-serif;
+  font-family: var(--font-body);
 }

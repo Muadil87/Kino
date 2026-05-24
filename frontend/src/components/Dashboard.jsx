@@ -24,6 +24,21 @@ const Dashboard = ({ movies }) => {
 
   return (
     <div className="dashboard-container">
+      <section className="trending-section">
+        <div className="section-header">
+          <div>
+            <p className="kino-overline">Mood Discovery</p>
+            <h2 className="section-title">Pick a Tonight Mood</h2>
+          </div>
+          <p className="section-subtitle">Jump into curated tones and discover films that match your headspace.</p>
+        </div>
+        <div className="mood-row">
+          {['Noir Tension', 'Quiet Character Study', 'Adrenaline Rush', 'Warm Nostalgia', 'Mind-Bending'].map((mood) => (
+            <button key={mood} className="mood-pill" type="button">{mood}</button>
+          ))}
+        </div>
+      </section>
+
       {/* Trending Section */}
       <section className="trending-section">
         <div className="section-header">
@@ -47,6 +62,18 @@ const Dashboard = ({ movies }) => {
            {movies.slice(4, 7).map((movie) => (
              <MovieCard key={movie.id} movie={movie} />
            ))}
+        </div>
+      </section>
+
+      <section className="staff-picks-section">
+        <div className="section-header">
+          <h2 className="section-title">Editorial Spotlight</h2>
+          <p className="section-subtitle">A rotating column of visually iconic and critically loved films.</p>
+        </div>
+        <div className="movie-grid">
+          {movies.slice(8, 14).map(movie => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
         </div>
       </section>
     </div>

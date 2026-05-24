@@ -6,11 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -58,5 +59,17 @@ class User extends Authenticatable
     public function watchlist()
     {
         return $this->belongsToMany(Movie::class, 'watchlists', 'user_id', 'movie_id')->withTimestamps();
+    }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Movie::class, 'favorites', 'user_id', 'movie_id')->withTimestamps();
+    }
+
+    public function history()
+    {
+        return $this->belongsToMany(Movie::class, 'histories', 'user_id', 'movie_id')
+            ->withPivot('watched_on')
+            ->withTimestamps();
     }
 }

@@ -11,15 +11,14 @@
   top: 100%;
   left: 0;
   width: 100%;
-  background: var(--background);
-  border: 1px solid var(--foreground);
-  border-top: none;
-  margin-top: 0;
+  background: var(--kino-surface);
+  border: 1px solid var(--kino-line);
+  margin-top: 0.5rem;
   max-height: 450px;
   overflow-y: auto;
-  box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: var(--kino-shadow-soft);
   z-index: 1000;
-  border-radius: 0;
+  border-radius: 14px;
 }
 
 .search-result-item {
@@ -27,10 +26,10 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--kino-line);
   text-decoration: none;
   transition: all 0.2s ease;
-  background: var(--background);
+  background: transparent;
 }
 
 .search-result-item:last-child {
@@ -38,16 +37,14 @@
 }
 
 .search-result-item:hover {
-  background: var(--background-secondary);
-  border-left: 4px solid var(--accent-primary);
-  padding-left: calc(1rem - 4px);
+  background: rgba(212, 165, 116, 0.08);
 }
 
 .search-result-poster {
   width: 45px;
   height: 68px;
   object-fit: cover;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--kino-line);
   flex-shrink: 0;
   filter: contrast(1.1);
 }
@@ -59,15 +56,14 @@
 
 .search-result-title {
   display: block;
-  font-family: 'Oswald', sans-serif;
+  font-family: var(--font-body);
   font-size: 1rem;
   color: var(--foreground);
   margin-bottom: 0.25rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .search-result-year {

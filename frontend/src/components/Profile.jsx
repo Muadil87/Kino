@@ -1,11 +1,11 @@
-import React from 'react';
-import './Profile.css';
+import React from 'react'
+import { Card } from './ui/card'
+import './Profile.css'
 
 const Profile = ({ username, email, watchlistCount, favoritesCount, historyCount }) => {
   return (
     <div className="profile-page">
       <div className="profile-container">
-        {/* Profile Header */}
         <div className="profile-header">
           <div className="profile-avatar">
             <span className="avatar-initials">{username ? username.substring(0, 2).toUpperCase() : 'US'}</span>
@@ -20,36 +20,34 @@ const Profile = ({ username, email, watchlistCount, favoritesCount, historyCount
           </div>
         </div>
 
-        {/* Stats Grid */}
         <div className="stats-grid">
-          <div className="stat-card">
+          <Card className="stat-card">
             <div className="stat-value">{watchlistCount}</div>
             <div className="stat-label">Watchlist</div>
-          </div>
-          <div className="stat-card">
+          </Card>
+          <Card className="stat-card">
             <div className="stat-value">{favoritesCount}</div>
             <div className="stat-label">Favorites</div>
-          </div>
-          <div className="stat-card">
+          </Card>
+          <Card className="stat-card">
             <div className="stat-value">{historyCount}</div>
             <div className="stat-label">Watched</div>
-          </div>
-          <div className="stat-card">
+          </Card>
+          <Card className="stat-card">
             <div className="stat-value">0</div>
             <div className="stat-label">Reviews</div>
-          </div>
+          </Card>
         </div>
 
-        {/* Activity Section (Placeholder) */}
-        <div className="activity-section">
+        <Card className="activity-section">
           <h2 className="section-title">Recent Activity</h2>
           <div className="empty-state-small">
             <p>No recent activity to show.</p>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Profile;
+export default Profile

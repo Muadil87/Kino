@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { searchMovies } from '../services/tmdb'
 import { tmdbImage } from '../utils/image'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
 import './Navbar.css'
 import './NavbarSearch.css'
 
@@ -101,7 +103,8 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
           {!isTransparentPage && (
             <div className="search-container" ref={searchRef}>
               <form className="search-form" onSubmit={handleSearchSubmit}>
-                <input
+                <Input
+                  variant="unstyled"
                   type="search"
                   className="search-input"
                   placeholder="Search movies..."
@@ -146,7 +149,9 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
           
           {isLoggedIn ? (
             <>
-              <button 
+              <Button
+                variant="unstyled"
+                size="none"
                 className="settings-btn" 
                 onClick={() => navigate('/settings')}
                 aria-label="Settings"
@@ -156,10 +161,12 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
                   <circle cx="12" cy="12" r="3"></circle>
                   <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                 </svg>
-              </button>
+              </Button>
 
               <div className="user-menu-container" ref={userMenuRef}>
-                <button 
+                <Button
+                  variant="unstyled"
+                  size="none"
                   className="user-btn" 
                   onClick={() => setShowUserDropdown(!showUserDropdown)}
                   aria-label="User Profile"
@@ -168,7 +175,7 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
                   <div className="user-avatar-small">
                     {username ? username.charAt(0).toUpperCase() : 'U'}
                   </div>
-                </button>
+                </Button>
                 
                 {showUserDropdown && (
                   <div className="user-dropdown">
@@ -179,21 +186,21 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
                     
                     <div className="user-dropdown-divider"></div>
                     
-                    <button className="user-dropdown-item" onClick={() => { navigate('/profile'); setShowUserDropdown(false); }}>
+                    <Button variant="unstyled" size="none" className="user-dropdown-item" onClick={() => { navigate('/profile'); setShowUserDropdown(false); }}>
                       Profile
-                    </button>
-                    <button className="user-dropdown-item" onClick={() => { navigate('/watchlist'); setShowUserDropdown(false); }}>
+                    </Button>
+                    <Button variant="unstyled" size="none" className="user-dropdown-item" onClick={() => { navigate('/watchlist'); setShowUserDropdown(false); }}>
                       Watchlist <span className="badge-count">{watchlistCount}</span>
-                    </button>
-                    <button className="user-dropdown-item" onClick={() => { navigate('/favorites'); setShowUserDropdown(false); }}>
+                    </Button>
+                    <Button variant="unstyled" size="none" className="user-dropdown-item" onClick={() => { navigate('/favorites'); setShowUserDropdown(false); }}>
                       Favorites <span className="badge-count">{favoritesCount}</span>
-                    </button>
+                    </Button>
                     
                     <div className="user-dropdown-divider"></div>
                     
-                    <button className="user-dropdown-item logout-item" onClick={() => { if(onLogout) onLogout(); setShowUserDropdown(false); }}>
+                    <Button variant="unstyled" size="none" className="user-dropdown-item logout-item" onClick={() => { if(onLogout) onLogout(); setShowUserDropdown(false); }}>
                       Log Out
-                    </button>
+                    </Button>
                   </div>
                 )}
               </div>
@@ -201,19 +208,21 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
           ) : (
             <>
               {location.pathname !== '/login' && (
-                <button className="sign-in-btn" onClick={() => navigate('/login')}>
+                <Button variant="unstyled" size="none" className="sign-in-btn" onClick={() => navigate('/login')}>
                   Sign In
-                </button>
+                </Button>
               )}
               {location.pathname !== '/signup' && (
-                <button className="sign-up-btn" onClick={() => navigate('/signup')}>
+                <Button variant="unstyled" size="none" className="sign-up-btn" onClick={() => navigate('/signup')}>
                   Create Account
-                </button>
+                </Button>
               )}
             </>
           )}
 
-          <button 
+          <Button
+            variant="unstyled"
+            size="none"
             className="menu-btn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
@@ -222,7 +231,7 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
               <line x1="3" y1="12" x2="21" y2="12"></line>
               <line x1="3" y1="18" x2="21" y2="18"></line>
             </svg>
-          </button>
+          </Button>
         </div>
       </div>
     </nav>

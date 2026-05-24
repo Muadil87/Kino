@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
+const hasApiKey = Boolean(API_KEY);
 
 // Create a configured instance of axios for TMDB
 const tmdbClient = axios.create({
@@ -12,18 +13,27 @@ const tmdbClient = axios.create({
     }
 });
 
+const ensureApiKey = () => {
+    if (!hasApiKey) {
+        throw new Error('TMDB API key missing. Set VITE_TMDB_API_KEY in frontend/.env');
+    }
+};
+
 // Helper functions to get data
 export const getTrendingMovies = async () => {
+    ensureApiKey();
     const response = await tmdbClient.get('/trending/movie/week');
     return response.data.results;
 };
 
 export const getPopularMovies = async () => {
+    ensureApiKey();
     const response = await tmdbClient.get('/movie/popular');
     return response.data.results;
 };
 
 export const searchMovies = async (query) => {
+    ensureApiKey();
     const response = await tmdbClient.get('/search/movie', {
         params: { query }
     });
@@ -31,38 +41,45 @@ export const searchMovies = async (query) => {
 };
 
 export const getMovieDetails = async (id) => {
+    ensureApiKey();
     const response = await tmdbClient.get(`/movie/${id}`);
     return response.data;
 };
 
 export const getMovieCredits = async (id) => {
+    ensureApiKey();
     const response = await tmdbClient.get(`/movie/${id}/credits`);
     return response.data;
 };
 
 export const getMovieVideos = async (id) => {
+    ensureApiKey();
     const response = await tmdbClient.get(`/movie/${id}/videos`);
     return response.data.results;
 };
 
 export const getSimilarMovies = async (id) => {
+    ensureApiKey();
     const response = await tmdbClient.get(`/movie/${id}/similar`);
     return response.data.results;
 };
 
 export const getMovieReviews = async (id) => {
+    ensureApiKey();
     const response = await tmdbClient.get(`/movie/${id}/reviews`);
     return response.data.results;
 };
 
 // 1. Get the list of official Genres (Action, Horror, Comedy, etc.) 
 export const getGenres = async () => { 
+  ensureApiKey();
   const response = await tmdbClient.get('/genre/movie/list'); 
   return response.data.genres; 
 }; 
 
 // 2. Get a list of movies for a specific genre (so we can steal a cover image) 
 export const getMoviesByGenre = async (genreId) => { 
+  ensureApiKey();
   const response = await tmdbClient.get('/discover/movie', { 
     params: { 
       with_genres: genreId, 
@@ -74,6 +91,7 @@ export const getMoviesByGenre = async (genreId) => {
 };
 
 export const getMovieProviders = async (id) => {
+    ensureApiKey();
     const response = await tmdbClient.get(`/movie/${id}/watch/providers`);
     return response.data.results;
 };

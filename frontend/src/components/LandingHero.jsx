@@ -13,12 +13,15 @@ const LandingHero = ({ onGetStarted, onExplore }) => {
         onError={(e) => { e.target.style.display = 'none' }} 
       />
       <div className="landing-content">
+        <p className="hero-kicker">KINO Curated Experience</p>
         <h1 className="hero-title">
-          Curate Your <span className="highlight-text">Cinema.</span>
+          Discover films with
+          <span className="highlight-text"> intention.</span>
         </h1>
         <p className="hero-subtitle">
-          The ultimate destination for film enthusiasts. <br />
-          Discover hidden gems, build your collection, and share your taste.
+          A premium discovery platform for viewers who care about mood, craft,
+          and storytelling. Build watchlists, save favorites, and explore what
+          is defining cinema right now.
         </p>
         
         <div className="hero-actions">

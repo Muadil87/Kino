@@ -1,141 +1,105 @@
 .app {
   min-height: 100vh;
-  background-color: var(--background);
+  background:
+    radial-gradient(circle at 80% -10%, rgba(212, 165, 116, 0.13), transparent 36%),
+    radial-gradient(circle at 0% 15%, rgba(255, 255, 255, 0.04), transparent 30%),
+    var(--background);
   color: var(--foreground);
 }
 
-.dashboard-container {
-  padding-top: 120px; /* Push content down to clear fixed navbar */
-  max-width: 1600px;
-  margin: 0 auto;
-}
-
+.dashboard-container,
 .favorites-section,
 .search-results-section {
-  padding-top: 120px; /* Push content down to clear fixed navbar */
-  min-height: 100vh;
-  max-width: 1600px;
+  width: var(--kino-page-width);
   margin: 0 auto;
+  padding-top: 104px;
+  padding-inline: var(--kino-shell-x);
 }
 
-/* Section Styles */
 .section {
-  padding: 6rem 2rem; /* More vertical whitespace */
-}
-
-@media (min-width: 768px) {
-  .section {
-    padding: 6rem 4rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .section {
-    padding: 6rem 6rem;
-  }
+  padding: var(--kino-section-y) 0;
 }
 
 .section-header {
-  margin-bottom: 4rem;
-  border-bottom: 2px solid var(--foreground); /* Thicker, bolder line */
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+  border-bottom: 1px solid var(--kino-line);
   padding-bottom: 1rem;
   display: flex;
-  flex-direction: row; /* Horizontal alignment for editorial feel */
   justify-content: space-between;
   align-items: flex-end;
-  gap: 2rem;
+  gap: 1.2rem;
 }
 
 .section-title {
-  font-family: 'Oswald', sans-serif;
-  font-size: 4rem; /* Larger */
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: -0.02em;
-  color: var(--foreground);
+  font-size: clamp(1.9rem, 3.6vw, 3.8rem);
+  line-height: 0.98;
+  letter-spacing: 0.01em;
   margin: 0;
-  line-height: 0.9;
 }
 
 .section-subtitle {
-  font-family: 'Manrope', sans-serif;
-  font-size: 1rem;
-  color: var(--text-muted);
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  max-width: 400px;
-  line-height: 1.5;
+  font-size: 0.98rem;
+  color: var(--kino-text-muted);
+  max-width: 62ch;
+  margin-bottom: 2px;
   text-align: right;
-  margin-bottom: 5px;
+  line-height: 1.65;
 }
 
-/* View All Button */
 .view-all-btn {
-  background: var(--foreground);
+  background: var(--accent-primary);
   color: var(--background);
-  border: none;
-  cursor: pointer;
-  font-family: 'Oswald', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
+  border-radius: var(--radius-pill);
+  padding: 0.68rem 1.2rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  padding: 0.8rem 1.5rem;
-  border-radius: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  letter-spacing: 0.05em;
+  box-shadow: var(--shadow-accent);
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .view-all-btn:hover {
-  background: var(--accent-primary);
-  color: var(--foreground);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md), var(--shadow-accent);
 }
 
-/* Movie Grid */
 .movie-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Larger cards */
-  gap: 2.5rem; /* More space between cards */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: clamp(1rem, 2.1vw, 1.8rem);
 }
 
-/* Collections Grid */
 .collections-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-8);
 }
 
 .picks-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-8);
 }
 
 @media (max-width: 1024px) {
   .picks-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 640px) {
-  .picks-grid {
-    grid-template-columns: 1fr;
-  }
-  
+@media (max-width: 768px) {
   .section-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
+    gap: var(--space-4);
   }
-  
+
   .section-subtitle {
     text-align: left;
   }
-  
-  .section-title {
-    font-size: 3rem;
+
+  .picks-grid {
+    grid-template-columns: 1fr;
   }
 }

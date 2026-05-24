@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { tmdbImage } from '../utils/image'
+import { Button } from './ui/button'
 import './MovieCard.css'
 
 export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
@@ -42,7 +43,9 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
           {(onRemove || onMarkWatched) && (
             <div className={`movie-actions-overlay ${isHovered ? 'visible' : ''}`}>
               {onMarkWatched && (
-                <button 
+                <Button
+                  variant="unstyled"
+                  size="none"
                   className="action-btn watched-btn" 
                   onClick={(e) => {
                     e.preventDefault();
@@ -55,10 +58,12 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                     <circle cx="12" cy="12" r="3"></circle>
                   </svg>
-                </button>
+                </Button>
               )}
               {onRemove && (
-                <button 
+                <Button
+                  variant="unstyled"
+                  size="none"
                   className="action-btn remove-btn" 
                   onClick={(e) => {
                     e.preventDefault();
@@ -71,7 +76,7 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                   </svg>
-                </button>
+                </Button>
               )}
             </div>
           )}

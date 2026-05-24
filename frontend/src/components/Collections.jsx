@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+﻿import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { getGenres, getMoviesByGenre, searchMovies } from '../services/tmdb';
 import { tmdbImage } from '../utils/image';
@@ -184,22 +184,14 @@ const Collections = ({ isLoggedIn }) => {
                />
             ) : (
               <div className="card-bg-placeholder" style={{ background: 'linear-gradient(135deg, #1e2029 0%, #17181d 100%)' }}>
-                 <div style={{ 
-                   position: 'absolute', 
-                   top: '50%', 
-                   left: '50%', 
-                   transform: 'translate(-50%, -50%)', 
-                   fontSize: '3rem', 
-                   opacity: 0.1,
-                   filter: 'grayscale(100%)' 
-                 }}>📁</div>
+                 <div className="collection-placeholder-icon" aria-hidden="true">Collection</div>
               </div>
             )}
             
             <div className="card-overlay">
               <h3>{collection.name}</h3>
               <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                {collection.movies ? collection.movies.length : 0} items • {collection.privacy}
+                {collection.movies ? collection.movies.length : 0} items · {collection.privacy}
               </p>
             </div>
           </Link>
@@ -282,9 +274,9 @@ const Collections = ({ isLoggedIn }) => {
                         value={privacy} 
                         onChange={(e) => setPrivacy(e.target.value)}
                       >
-                        <option value="public">Anyone — Public list</option>
+                        <option value="public">Anyone â€” Public list</option>
                         <option value="friends">Friends only</option>
-                        <option value="private">Just me — Private</option>
+                        <option value="private">Just me â€” Private</option>
                       </select>
                     </div>
                   </div>
@@ -314,7 +306,7 @@ const Collections = ({ isLoggedIn }) => {
                 <label>Add Movies</label>
                 <div className="add-film-input-wrapper">
                   <div className="add-film-input">
-                    <span className="search-icon">🔍</span>
+                    <span className="search-icon" aria-hidden="true">Search</span>
                     <input 
                       type="text" 
                       placeholder="Search for a movie..." 
@@ -341,7 +333,7 @@ const Collections = ({ isLoggedIn }) => {
                             <span className="result-title">{movie.title}</span>
                             <span className="result-year">{movie.release_date ? movie.release_date.split('-')[0] : ''}</span>
                           </div>
-                          <span className="plus-icon">+</span>
+                          <span className="plus-icon" aria-hidden="true">Add</span>
                         </div>
                       ))}
                     </div>
@@ -359,7 +351,7 @@ const Collections = ({ isLoggedIn }) => {
                           className="remove-movie-btn"
                           onClick={() => removeMovieFromCollection(movie.id)}
                         >
-                          ×
+                          Ã—
                         </button>
                       </div>
                     ))}
@@ -386,3 +378,5 @@ const Collections = ({ isLoggedIn }) => {
 };
 
 export default Collections;
+
+
