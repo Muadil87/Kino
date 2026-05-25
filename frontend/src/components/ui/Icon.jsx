@@ -2,6 +2,7 @@ import {
   BookMarked,
   Bookmark,
   Bot,
+  Camera,
   Check,
   Clapperboard,
   Compass,
@@ -36,6 +37,7 @@ const ICONS = {
   watched: Check,
   star: Star,
   ai: Bot,
+  camera: Camera,
   sparkles: Sparkles,
   cinema: Clapperboard,
 }

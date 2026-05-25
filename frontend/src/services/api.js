@@ -291,6 +291,34 @@ export const activityApi = {
 }
 
 export const profileApi = {
+  async me() {
+    const response = await client.get('/me/profile')
+    return response.data.data
+  },
+  async update(payload) {
+    const response = await client.patch('/me/profile', payload)
+    return response.data
+  },
+  async updatePassword(payload) {
+    const response = await client.patch('/me/password', payload)
+    return response.data
+  },
+  async updateAvatar(file) {
+    const formData = new FormData()
+    formData.append('avatar', file)
+    const response = await client.post('/me/profile/avatar', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return response.data
+  },
+  async updateCover(file) {
+    const formData = new FormData()
+    formData.append('cover', file)
+    const response = await client.post('/me/profile/cover', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    return response.data
+  },
   async meProgress() {
     const response = await client.get('/me/profile-progress')
     return response.data.data

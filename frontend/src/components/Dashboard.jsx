@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { communityApi, profileApi, recommendationApi } from '../services/api'
+import { profileApi } from '../services/api'
 import MovieCard from './MovieCard'
 import SkeletonCard from './SkeletonCard'
 import BadgeChip from './BadgeChip'
@@ -21,24 +21,16 @@ const badgeLabel = (code) => {
 
 export default function Dashboard({ movies, history }) {
   const [profileProgress, setProfileProgress] = useState(null)
-  const [communities, setCommunities] = useState({ joined: [], discover: [] })
-  const [recommendations, setRecommendations] = useState([])
 
   useEffect(() => {
     let ignore = false
     ;(async () => {
       try {
-        const [progress, myCommunities, inbox] = await Promise.all([
-          profileApi.meProgress(),
-          communityApi.list(),
-          recommendationApi.inbox(),
-        ])
+        const progress = await profileApi.meProgress()
         if (ignore) return
         setProfileProgress(progress || null)
-        setCommunities(myCommunities || { joined: [], discover: [] })
-        setRecommendations((inbox.items || []).slice(0, 4))
       } catch (error) {
-        if (!ignore) console.error('Failed loading home ecosystem data:', error)
+        if (!ignore) console.error('Failed loading home data:', error)
       }
     })()
     return () => { ignore = true }
@@ -50,7 +42,7 @@ export default function Dashboard({ movies, history }) {
   if (!movies || movies.length === 0) {
     return (
       <div className="dashboard-container">
-        <CinematicSection overline="KINO Home" title="Loading Your Cinema Pulse">
+        <CinematicSection overline="KINO Home" title="Loading Your Cinema Home">
           <div className="movie-grid">{[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}</div>
         </CinematicSection>
       </div>
@@ -61,8 +53,8 @@ export default function Dashboard({ movies, history }) {
     <div className="dashboard-container">
       <CinematicSection
         overline="KINO Home"
-        title="Your Cinema Pulse"
-        subtitle="A live snapshot of your identity, your circles, and what to watch next."
+        title="Your Cinema Home"
+        subtitle="Discover movies, track your progress, and keep your watch journey moving."
       >
         <div className="social-hero-strip">
           <StatBlock label="Level" value={profileProgress?.level ?? 1} />
@@ -77,24 +69,11 @@ export default function Dashboard({ movies, history }) {
       </CinematicSection>
 
       <CinematicSection
-        overline="Social Momentum"
-        title="From Your Friends"
-        subtitle="Recent logs and reactions from people you trust."
+        overline="Friends"
+        title="From People You Follow"
+        subtitle="Recent watches, ratings, and watchlist adds from your network."
       >
         <ActivityLens mode="unified" defaultScope="friends" pageSize={6} />
-      </CinematicSection>
-
-      <CinematicSection
-        overline="Club Momentum"
-        title="From Your Communities"
-        subtitle="Shared progress and club activity from your movie circles."
-      >
-        <div className="social-hero-strip">
-          <StatBlock label="Joined Clubs" value={communities.joined?.length || 0} />
-          <StatBlock label="Discover Clubs" value={communities.discover?.length || 0} />
-          <StatBlock label="Recent Club Events" value="Live" />
-        </div>
-        <ActivityLens mode="unified" defaultScope="community" pageSize={6} />
       </CinematicSection>
 
       <CinematicSection
@@ -108,20 +87,12 @@ export default function Dashboard({ movies, history }) {
       </CinematicSection>
 
       <CinematicSection
-        overline="Personal Library"
+        overline="Library"
         title="Continue Your Journey"
-        subtitle="Your recent watch history and social recommendations."
+        subtitle="Your recent watched movies."
       >
         <div className="movie-grid">
           {recentHistory.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
-        </div>
-        <div className="post-list home-recommendations">
-          {recommendations.map((r) => (
-            <article className="kino-panel post-card" key={r.id}>
-              <p className="post-author">{r.from_user?.name || 'Member'} · recommended</p>
-              <p className="social-feature-text">{r.movie?.title || 'Movie recommendation'}</p>
-            </article>
-          ))}
         </div>
       </CinematicSection>
     </div>

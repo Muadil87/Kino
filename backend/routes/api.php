@@ -34,6 +34,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/watchlist', [WatchlistController::class, 'store']);
     Route::delete('/watchlist/{tmdbId}', [WatchlistController::class, 'destroy']);
     Route::get('/me/profile-progress', [ProfileController::class, 'meProgress']);
+    Route::get('/me/profile', [ProfileController::class, 'me']);
+    Route::patch('/me/profile', [ProfileController::class, 'update']);
+    Route::patch('/me/password', [ProfileController::class, 'updatePassword']);
+    Route::post('/me/profile/avatar', [ProfileController::class, 'updateAvatar']);
+    Route::post('/me/profile/cover', [ProfileController::class, 'updateCover']);
     Route::get('/favorites', [FavoriteController::class, 'index']);
     Route::post('/favorites', [FavoriteController::class, 'store']);
     Route::delete('/favorites/{tmdbId}', [FavoriteController::class, 'destroy']);

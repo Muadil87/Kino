@@ -6,17 +6,11 @@ import Navbar from './components/Navbar'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
-import CollectionsPage from './pages/CollectionsPage'
-import CollectionDetailPage from './pages/CollectionDetailPage'
 import MovieDetailPage from './pages/MovieDetailPage'
 import SearchResultsPage from './pages/SearchResultsPage'
 import ProfilePage from './pages/ProfilePage'
-import SettingsPage from './pages/SettingsPage'
 import DashboardPage from './pages/DashboardPage'
 import MoviesPage from './pages/MoviesPage'
-import CommunitiesPage from './pages/CommunitiesPage'
-import CommunityDetailPage from './pages/CommunityDetailPage'
-import FriendsPage from './pages/FriendsPage'
 import ActivityFeedPage from './pages/ActivityFeedPage'
 import MyCinemaPage from './pages/MyCinemaPage'
 import './App.css'
@@ -27,7 +21,7 @@ function ProtectedRoute({ isLoggedIn, children }) {
 }
 
 function PublicOnlyRoute({ isLoggedIn, children }) {
-  return isLoggedIn ? <Navigate to="/dashboard" /> : children
+  return isLoggedIn ? <Navigate to="/" /> : children
 }
 
 function App() {
@@ -42,8 +36,6 @@ function App() {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const cinemaTab = new URLSearchParams(location.search).get('tab') || 'watchlist'
-
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -160,34 +152,6 @@ function App() {
     }
   }
 
-  const moveToHistory = async (movie) => {
-    const today = new Date().toISOString().slice(0, 10)
-
-    try {
-      await historyApi.add(upsertMinimal(movie), today)
-      setHistory((prev) => [
-        { ...upsertMinimal(movie), dateWatched: today },
-        ...prev.filter((x) => x.id !== movie.id),
-      ])
-
-      if (isInWatchlist(movie.id)) {
-        await watchlistApi.remove(movie.id)
-        setWatchlist((prev) => prev.filter((x) => x.id !== movie.id))
-      }
-    } catch (error) {
-      console.error('History update failed:', error)
-    }
-  }
-
-  const removeFromHistory = async (movie) => {
-    try {
-      await historyApi.remove(movie.id)
-      setHistory((prev) => prev.filter((x) => x.id !== movie.id))
-    } catch (error) {
-      console.error('Remove history failed:', error)
-    }
-  }
-
   const handleLogin = async (user) => {
     setIsLoggedIn(true)
     setUsername(user?.name || 'Movie Buff')
@@ -202,7 +166,7 @@ function App() {
       setHistory([])
     }
 
-    navigate('/dashboard')
+    navigate('/')
   }
 
   const handleLogout = async () => {
@@ -238,11 +202,14 @@ function App() {
 
       <div className="page-transition" key={location.pathname}>
         <Routes>
-          <Route path="/" element={
-            <PublicOnlyRoute isLoggedIn={isLoggedIn}>
-              <LandingPage movies={movies} onGetStarted={() => navigate('/signup')} />
-            </PublicOnlyRoute>
-          } />
+          <Route
+            path="/"
+            element={
+              isLoggedIn
+                ? <DashboardPage movies={movies} history={history} />
+                : <LandingPage movies={movies} onGetStarted={() => navigate('/signup')} />
+            }
+          />
 
           <Route path="/login" element={
             <PublicOnlyRoute isLoggedIn={isLoggedIn}>
@@ -258,28 +225,12 @@ function App() {
 
           <Route path="/dashboard" element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <DashboardPage movies={movies} history={history} />
+              <Navigate to="/" replace />
             </ProtectedRoute>
           } />
 
           <Route path="/movies" element={<MoviesPage />} />
 
-          <Route path="/collections" element={<CollectionsPage isLoggedIn={isLoggedIn} />} />
-          <Route path="/communities" element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <CommunitiesPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/communities/:slug" element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <CommunityDetailPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/friends" element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <FriendsPage />
-            </ProtectedRoute>
-          } />
           <Route path="/activity" element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>
               <ActivityFeedPage />
@@ -287,29 +238,21 @@ function App() {
           } />
           <Route path="/settings/telegram" element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <Navigate to="/communities" replace />
+              <Navigate to="/activity" replace />
             </ProtectedRoute>
           } />
-
-          <Route path="/collections/:id/:name" element={<CollectionDetailPage isLoggedIn={isLoggedIn} />} />
-
           <Route path="/my-cinema" element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <MyCinemaPage
-                key={cinemaTab}
-                watchlist={watchlist}
-                favorites={favorites}
-                history={history}
-                onRemoveFromWatchlist={(movie) => toggleWatchlist(movie)}
-                onRemoveFromFavorites={(movie) => toggleFavorite(movie)}
-                onRemoveFromHistory={(movie) => removeFromHistory(movie)}
-                onMoveToHistory={(movie) => moveToHistory(movie)}
-                initialTab={cinemaTab}
-              />
+              <MyCinemaPage />
             </ProtectedRoute>
           } />
-          <Route path="/watchlist" element={<Navigate to="/my-cinema?tab=watchlist" replace />} />
-          <Route path="/favorites" element={<Navigate to="/my-cinema?tab=favorites" replace />} />
+          <Route path="/watchlist" element={<Navigate to="/profile" replace />} />
+          <Route path="/favorites" element={<Navigate to="/profile" replace />} />
+          <Route path="/collections" element={<Navigate to="/movies" replace />} />
+          <Route path="/collections/:id/:name" element={<Navigate to="/movies" replace />} />
+          <Route path="/communities" element={<Navigate to="/activity" replace />} />
+          <Route path="/communities/:slug" element={<Navigate to="/activity" replace />} />
+          <Route path="/friends" element={<Navigate to="/activity" replace />} />
 
           <Route path="/profile" element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>
@@ -323,11 +266,7 @@ function App() {
             </ProtectedRoute>
           } />
 
-          <Route path="/settings" element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <SettingsPage username={username} setUsername={setUsername} />
-            </ProtectedRoute>
-          } />
+          <Route path="/settings" element={<Navigate to="/profile" replace />} />
 
           <Route path="/search" element={<SearchResultsPage />} />
 
@@ -341,6 +280,7 @@ function App() {
               isLoggedIn={isLoggedIn}
             />
           } />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
 

@@ -1,49 +1,36 @@
 import { useEffect, useState } from 'react'
 import Profile from '../components/Profile'
-import { authApi, profileApi } from '../services/api'
+import { profileApi } from '../services/api'
 
-export default function ProfilePage({
-  username,
-  email,
-  watchlistCount,
-  favoritesCount,
-  historyCount,
-}) {
-  const [meProgress, setMeProgress] = useState(null)
-  const [publicProfile, setPublicProfile] = useState(null)
+export default function ProfilePage() {
+  const [profileData, setProfileData] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const loadProfile = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const data = await profileApi.me()
+      setProfileData(data)
+    } catch (err) {
+      const message = err?.response?.data?.message || 'Failed to load your profile.'
+      setError(message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    let ignore = false
-    ;(async () => {
-      try {
-        const me = await authApi.me()
-        const [progress, profile] = await Promise.all([
-          profileApi.meProgress(),
-          profileApi.show(me.id),
-        ])
-        if (ignore) return
-        setMeProgress(progress)
-        setPublicProfile(profile)
-      } catch (error) {
-        if (!ignore) {
-          console.error('Failed to load profile identity data:', error)
-        }
-      }
-    })()
-    return () => {
-      ignore = true
-    }
+    loadProfile()
   }, [])
 
   return (
     <Profile
-      username={username}
-      email={email}
-      watchlistCount={watchlistCount}
-      favoritesCount={favoritesCount}
-      historyCount={historyCount}
-      meProgress={meProgress}
-      publicProfile={publicProfile}
+      profileData={profileData}
+      loading={loading}
+      error={error}
+      onRefresh={loadProfile}
     />
   )
 }

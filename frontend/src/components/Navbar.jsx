@@ -10,13 +10,13 @@ import './NavbarSearch.css'
 
 export default function Navbar({ isLoggedIn, onLogout }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [showMenuDropdown, setShowMenuDropdown] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [showDropdown, setShowDropdown] = useState(false)
   
-  const [showQuickMenu, setShowQuickMenu] = useState(false)
   const searchRef = useRef(null)
-  const quickMenuRef = useRef(null)
+  const menuRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -29,8 +29,8 @@ export default function Navbar({ isLoggedIn, onLogout }) {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowDropdown(false)
       }
-      if (quickMenuRef.current && !quickMenuRef.current.contains(event.target)) {
-        setShowQuickMenu(false)
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenuDropdown(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -74,21 +74,16 @@ export default function Navbar({ isLoggedIn, onLogout }) {
     setMobileMenuOpen(false)
   }
 
-  const closeAllMenus = () => {
-    setShowQuickMenu(false)
-    setMobileMenuOpen(false)
-  }
-
   return (
     <nav className={`navbar ${isTransparentPage ? 'transparent' : ''}`}>
       <div className="navbar-container">
         
-        <Link to={isLoggedIn ? "/dashboard" : "/"} className="navbar-logo" style={{ textDecoration: 'none' }}>
+        <Link to="/" className="navbar-logo" style={{ textDecoration: 'none' }}>
           <h1 className="logo-text">KINO</h1>
         </Link>
 
         <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
-          <Link to={isLoggedIn ? "/dashboard" : "/#trending"} className="nav-link">
+          <Link to="/" className="nav-link">
             Home
           </Link>
           <Link to="/movies" className="nav-link">
@@ -97,11 +92,6 @@ export default function Navbar({ isLoggedIn, onLogout }) {
           {isLoggedIn && (
             <Link to="/activity" className="nav-link">
               Activity
-            </Link>
-          )}
-          {isLoggedIn && (
-            <Link to="/communities" className="nav-link">
-              Communities
             </Link>
           )}
           {isLoggedIn && (
@@ -166,7 +156,7 @@ export default function Navbar({ isLoggedIn, onLogout }) {
                 variant="unstyled"
                 size="none"
                 className="settings-btn" 
-                onClick={() => navigate('/settings')}
+                onClick={() => navigate('/profile')}
                 aria-label="Settings"
                 title="Settings"
               >
@@ -188,39 +178,34 @@ export default function Navbar({ isLoggedIn, onLogout }) {
             </>
           )}
 
-          <div className="quick-menu-wrap" ref={quickMenuRef}>
+          <div className="quick-menu-wrap" ref={menuRef}>
             <Button
               variant="unstyled"
               size="none"
               className="menu-btn"
-              onClick={() => {
-                if (window.innerWidth <= 768) {
-                  setMobileMenuOpen((v) => !v)
-                  setShowQuickMenu(false)
-                } else {
-                  setShowQuickMenu((v) => !v)
-                }
-              }}
-              aria-label="Open quick menu"
+              onClick={() => setShowMenuDropdown((v) => !v)}
+              aria-label="Open navigation menu"
             >
               <Icon name="menu" size={24} tone="muted" />
             </Button>
-            {showQuickMenu && (
+            {showMenuDropdown && isLoggedIn && (
               <div className="quick-menu-dropdown">
-                <Link to={isLoggedIn ? '/dashboard' : '/'} className="quick-menu-item" onClick={closeAllMenus}><Icon name="trending" size={16} />Trending</Link>
-                <Link to="/movies" className="quick-menu-item" onClick={closeAllMenus}><Icon name="browse" size={16} />Browse</Link>
-                {isLoggedIn && <Link to="/my-cinema" className="quick-menu-item" onClick={closeAllMenus}><Icon name="watchlist" size={16} />My Cinema</Link>}
-                <Link to="/collections" className="quick-menu-item" onClick={closeAllMenus}><Icon name="collections" size={16} />Collections</Link>
-                {isLoggedIn && <Link to="/profile" className="quick-menu-item" onClick={closeAllMenus}><Icon name="user" size={16} />Profile</Link>}
-                {isLoggedIn && <Link to="/settings" className="quick-menu-item" onClick={closeAllMenus}><Icon name="settings" size={16} />Settings</Link>}
-                {isLoggedIn && <Link to="/friends" className="quick-menu-item" onClick={closeAllMenus}><Icon name="user" size={16} />Friends</Link>}
-                {isLoggedIn && <Link to="/activity" className="quick-menu-item" onClick={closeAllMenus}><Icon name="sparkles" size={16} />Activity</Link>}
-                {isLoggedIn && (
-                  <Button variant="unstyled" size="none" className="quick-menu-item quick-menu-logout" onClick={() => { closeAllMenus(); if (onLogout) onLogout(); }}>
-                    <Icon name="logout" size={16} />
-                    Log Out
-                  </Button>
-                )}
+                <Link to="/profile" className="quick-menu-item" onClick={() => setShowMenuDropdown(false)}>
+                  <Icon name="user" size={16} />
+                  Profile
+                </Link>
+                <Button
+                  variant="unstyled"
+                  size="none"
+                  className="quick-menu-item quick-menu-logout"
+                  onClick={() => {
+                    setShowMenuDropdown(false)
+                    onLogout?.()
+                  }}
+                >
+                  <Icon name="logout" size={16} />
+                  Log Out
+                </Button>
               </div>
             )}
           </div>

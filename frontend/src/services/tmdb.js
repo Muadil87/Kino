@@ -83,6 +83,14 @@ export const getMovieDetails = async (id) => {
     return response.data;
 };
 
+export const searchPeople = async (query) => {
+    ensureApiKey();
+    const response = await tmdbClient.get('/search/person', {
+        params: { query }
+    });
+    return response.data.results;
+};
+
 export const getMovieCredits = async (id) => {
     ensureApiKey();
     const response = await tmdbClient.get(`/movie/${id}/credits`);
