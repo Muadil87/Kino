@@ -6,6 +6,7 @@ import {
   Check,
   Clapperboard,
   Compass,
+  Eye,
   Film,
   Heart,
   History,
@@ -40,6 +41,7 @@ const ICONS = {
   camera: Camera,
   sparkles: Sparkles,
   cinema: Clapperboard,
+  eye: Eye,
 }
 
 const SIZE_MAP = { 16: 16, 20: 20, 24: 24 }

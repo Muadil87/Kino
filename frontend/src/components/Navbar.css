@@ -1,22 +1,22 @@
 .navbar {
   position: fixed;
-  top: 14px;
-  left: 14px;
-  right: 14px;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 72px;
-  background: rgba(11, 11, 15, 0.72);
-  border: 1px solid var(--kino-line);
-  border-radius: 18px;
-  backdrop-filter: blur(10px);
+  background: rgba(19, 15, 15, 0.86);
+  border: 0;
+  border-radius: 0;
+  backdrop-filter: blur(14px);
   z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--kino-shadow-soft);
+  box-shadow: none;
 }
 
 .navbar.transparent {
-  background: rgba(11, 11, 15, 0.55);
+  background: rgba(8, 10, 14, 0.58);
 }
 
 .navbar.home-navbar {
@@ -24,7 +24,7 @@
   left: 44px;
   right: 44px;
   height: 54px;
-  border-color: transparent;
+  border: 0;
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;
@@ -37,6 +37,10 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-6);
+}
+
+.landing-navbar .navbar-container {
+  justify-content: flex-start;
 }
 
 .navbar-logo {
@@ -136,6 +140,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
+}
+
+.landing-navbar .navbar-actions {
+  margin-left: auto;
 }
 
 .search-container {
@@ -362,11 +370,11 @@
 
 @media (max-width: 768px) {
   .navbar.home-navbar {
-    left: 14px;
-    right: 14px;
+    left: 0;
+    right: 0;
     height: 64px;
     background: rgba(7, 10, 14, 0.82);
-    border-color: rgba(245, 242, 235, 0.08);
+    border: 0;
     backdrop-filter: blur(12px);
   }
 

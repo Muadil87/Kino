@@ -21,6 +21,7 @@ export default function Navbar({ isLoggedIn, onLogout }) {
 
   // Check if we are on a page that requires a transparent navbar
   const isHomePage = location.pathname === '/'
+  const isPublicLanding = isHomePage && !isLoggedIn
   const isTransparentPage = ['/', '/login', '/signup', '/signin'].includes(location.pathname)
   const showNavbarSearch = isHomePage || !isTransparentPage
 
@@ -73,31 +74,33 @@ export default function Navbar({ isLoggedIn, onLogout }) {
   }
 
   return (
-    <nav className={`navbar ${isTransparentPage ? 'transparent' : ''} ${isHomePage ? 'home-navbar' : ''}`}>
+    <nav className={`navbar ${isTransparentPage ? 'transparent' : ''} ${isHomePage ? 'home-navbar' : ''} ${isPublicLanding ? 'landing-navbar' : ''}`}>
       <div className="navbar-container">
         
         <Link to="/" className="navbar-logo" style={{ textDecoration: 'none' }}>
           <h1 className="logo-text">KINO</h1>
         </Link>
 
-        <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
-          <Link to="/" className={`nav-link ${isHomePage ? 'active' : ''}`}>
-            Home
-          </Link>
-          <Link to="/movies" className={`nav-link ${location.pathname === '/movies' ? 'active' : ''}`}>
-            Movies
-          </Link>
-          {(isLoggedIn || isHomePage) && (
-            <Link to={isLoggedIn ? '/activity' : '/login'} className={`nav-link ${location.pathname === '/activity' ? 'active' : ''}`}>
-              Activity
+        {!isPublicLanding && (
+          <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
+            <Link to="/" className={`nav-link ${isHomePage ? 'active' : ''}`}>
+              Home
             </Link>
-          )}
-          {(isLoggedIn || isHomePage) && (
-            <Link to={isLoggedIn ? '/profile' : '/signup'} className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}>
-              Profile
+            <Link to="/movies" className={`nav-link ${location.pathname === '/movies' ? 'active' : ''}`}>
+              Movies
             </Link>
-          )}
-        </div>
+            {isLoggedIn && (
+              <Link to="/activity" className={`nav-link ${location.pathname === '/activity' ? 'active' : ''}`}>
+                Activity
+              </Link>
+            )}
+            {isLoggedIn && (
+              <Link to="/profile" className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}>
+                Profile
+              </Link>
+            )}
+          </div>
+        )}
 
         <div className="navbar-actions">
           {showNavbarSearch && (
@@ -163,53 +166,51 @@ export default function Navbar({ isLoggedIn, onLogout }) {
             </>
           ) : (
             <>
-              {location.pathname !== '/login' && (
-                <Button variant="unstyled" size="none" className="sign-in-btn" onClick={() => navigate('/login')}>
-                  Sign In
-                </Button>
-              )}
-              {location.pathname !== '/signup' && (
-                <Button variant="unstyled" size="none" className="sign-up-btn" onClick={() => navigate('/signup')}>
-                  Create Account
-                </Button>
-              )}
+              <Button variant="unstyled" size="none" className="sign-in-btn" onClick={() => navigate('/login')}>
+                Sign In
+              </Button>
+              <Button variant="unstyled" size="none" className="sign-up-btn" onClick={() => navigate('/signup')}>
+                Create Account
+              </Button>
             </>
           )}
 
-          <DropdownMenu
-            className="quick-menu-wrap"
-            trigger={(
-              <Button
-                variant="unstyled"
-                size="none"
-                className="menu-btn"
-                aria-label="Open navigation menu"
-              >
-                <Icon name="menu" size={24} tone="muted" />
-              </Button>
-            )}
-          >
-            {({ close }) => isLoggedIn ? (
-              <div className="quick-menu-dropdown">
-                <Link to="/profile" className="quick-menu-item" onClick={close}>
-                  <Icon name="user" size={16} />
-                  Profile
-                </Link>
+          {!isPublicLanding && (
+            <DropdownMenu
+              className="quick-menu-wrap"
+              trigger={(
                 <Button
                   variant="unstyled"
                   size="none"
-                  className="quick-menu-item quick-menu-logout"
-                  onClick={() => {
-                    close()
-                    onLogout?.()
-                  }}
+                  className="menu-btn"
+                  aria-label="Open navigation menu"
                 >
-                  <Icon name="logout" size={16} />
-                  Log Out
+                  <Icon name="menu" size={24} tone="muted" />
                 </Button>
-              </div>
-            ) : null}
-          </DropdownMenu>
+              )}
+            >
+              {({ close }) => isLoggedIn ? (
+                <div className="quick-menu-dropdown">
+                  <Link to="/profile" className="quick-menu-item" onClick={close}>
+                    <Icon name="user" size={16} />
+                    Profile
+                  </Link>
+                  <Button
+                    variant="unstyled"
+                    size="none"
+                    className="quick-menu-item quick-menu-logout"
+                    onClick={() => {
+                      close()
+                      onLogout?.()
+                    }}
+                  >
+                    <Icon name="logout" size={16} />
+                    Log Out
+                  </Button>
+                </div>
+              ) : null}
+            </DropdownMenu>
+          )}
         </div>
       </div>
     </nav>

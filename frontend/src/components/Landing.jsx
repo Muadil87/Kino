@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronRight, Star, Bookmark } from 'lucide-react'
 import LandingHero from './LandingHero'
 import SkeletonCard from './SkeletonCard'
@@ -43,13 +43,28 @@ function RailMovieCard({ movie }) {
 export default function Landing({ movies, onGetStarted }) {
   const trendingRef = useRef(null)
   const location = useLocation()
-  const railMovies = useMemo(() => {
+  const navigate = useNavigate()
+  const [railOffset, setRailOffset] = useState(0)
+  const allRailMovies = useMemo(() => {
     const usable = (movies || []).filter((movie) => movie.backdrop_path || movie.poster_path)
-    return usable.length >= 6 ? usable.slice(0, 6) : fallbackTrending
+    return usable.length >= 6 ? usable : fallbackTrending
   }, [movies])
+  const railMovies = useMemo(() => {
+    return Array.from({ length: Math.min(6, allRailMovies.length) }, (_, index) => {
+      return allRailMovies[(railOffset + index) % allRailMovies.length]
+    })
+  }, [allRailMovies, railOffset])
 
   const scrollToTrending = () => {
     trendingRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const showNextRailMovies = () => {
+    setRailOffset((current) => (current + 1) % allRailMovies.length)
+  }
+
+  const openMovies = () => {
+    navigate('/movies')
   }
 
   useEffect(() => {
@@ -66,7 +81,7 @@ export default function Landing({ movies, onGetStarted }) {
         <section className="landing-panel landing-trending-panel">
           <div className="landing-section-heading">
             <h2>Trending Now</h2>
-            <button type="button" onClick={scrollToTrending}>
+            <button type="button" onClick={openMovies}>
               View All <ChevronRight size={18} />
             </button>
           </div>
@@ -76,7 +91,7 @@ export default function Landing({ movies, onGetStarted }) {
               {railMovies.map((movie) => (
                 <RailMovieCard key={movie.id} movie={movie} />
               ))}
-              <button type="button" className="landing-rail-next" aria-label="Show more trending movies">
+              <button type="button" className="landing-rail-next" onClick={showNextRailMovies} aria-label="Show more trending movies">
                 <ChevronRight size={26} />
               </button>
             </div>
@@ -90,7 +105,7 @@ export default function Landing({ movies, onGetStarted }) {
         <section className="landing-panel landing-collections-panel">
           <div className="landing-section-heading">
             <h2>Curated Collections</h2>
-            <button type="button" onClick={onGetStarted}>
+            <button type="button" onClick={openMovies}>
               View All <ChevronRight size={18} />
             </button>
           </div>
