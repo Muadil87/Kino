@@ -4,19 +4,18 @@ import { searchMovies } from '../services/tmdb'
 import { tmdbImage } from '../utils/image'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
+import { DropdownMenu } from './ui/dropdown-menu'
 import Icon from './ui/Icon'
 import './Navbar.css'
 import './NavbarSearch.css'
 
 export default function Navbar({ isLoggedIn, onLogout }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [showMenuDropdown, setShowMenuDropdown] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [showDropdown, setShowDropdown] = useState(false)
   
   const searchRef = useRef(null)
-  const menuRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -28,9 +27,6 @@ export default function Navbar({ isLoggedIn, onLogout }) {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowDropdown(false)
-      }
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowMenuDropdown(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -178,19 +174,22 @@ export default function Navbar({ isLoggedIn, onLogout }) {
             </>
           )}
 
-          <div className="quick-menu-wrap" ref={menuRef}>
-            <Button
-              variant="unstyled"
-              size="none"
-              className="menu-btn"
-              onClick={() => setShowMenuDropdown((v) => !v)}
-              aria-label="Open navigation menu"
-            >
-              <Icon name="menu" size={24} tone="muted" />
-            </Button>
-            {showMenuDropdown && isLoggedIn && (
+          <DropdownMenu
+            className="quick-menu-wrap"
+            trigger={(
+              <Button
+                variant="unstyled"
+                size="none"
+                className="menu-btn"
+                aria-label="Open navigation menu"
+              >
+                <Icon name="menu" size={24} tone="muted" />
+              </Button>
+            )}
+          >
+            {({ close }) => isLoggedIn ? (
               <div className="quick-menu-dropdown">
-                <Link to="/profile" className="quick-menu-item" onClick={() => setShowMenuDropdown(false)}>
+                <Link to="/profile" className="quick-menu-item" onClick={close}>
                   <Icon name="user" size={16} />
                   Profile
                 </Link>
@@ -199,7 +198,7 @@ export default function Navbar({ isLoggedIn, onLogout }) {
                   size="none"
                   className="quick-menu-item quick-menu-logout"
                   onClick={() => {
-                    setShowMenuDropdown(false)
+                    close()
                     onLogout?.()
                   }}
                 >
@@ -207,8 +206,8 @@ export default function Navbar({ isLoggedIn, onLogout }) {
                   Log Out
                 </Button>
               </div>
-            )}
-          </div>
+            ) : null}
+          </DropdownMenu>
         </div>
       </div>
     </nav>

@@ -264,16 +264,7 @@
 }
 
 .quick-menu-dropdown {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 10px);
   width: 210px;
-  border: 1px solid var(--kino-line);
-  border-radius: 12px;
-  background: var(--kino-surface);
-  box-shadow: var(--shadow-lg);
-  z-index: 10030;
-  overflow: hidden;
 }
 
 .quick-menu-item {

@@ -284,6 +284,143 @@ export default function Profile({ profileData, loading, error, onRefresh }) {
     setGenreDraft('')
   }
 
+  const renderEditor = (key) => {
+    if (activeEditor !== key) return null
+
+    if (key === 'name') {
+      return (
+        <div className="editor-inline">
+          <label>Username</label>
+          <input value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} />
+          <Button variant="secondary" onClick={saveProfile} disabled={saving}>Save</Button>
+        </div>
+      )
+    }
+
+    if (key === 'email') {
+      return (
+        <div className="editor-inline">
+          <label>Email</label>
+          <input type="email" value={form.email} onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))} />
+          <Button variant="secondary" onClick={saveProfile} disabled={saving}>Save</Button>
+        </div>
+      )
+    }
+
+    if (key === 'bio') {
+      return (
+        <div className="editor-inline">
+          <label>Bio</label>
+          <textarea rows={4} value={form.bio} onChange={(e) => setForm((prev) => ({ ...prev, bio: e.target.value }))} />
+          <Button variant="secondary" onClick={saveProfile} disabled={saving}>Save</Button>
+        </div>
+      )
+    }
+
+    if (key === 'taste') {
+      return (
+        <div className="editor-inline">
+          <label>Favorite Genres (press Enter)</label>
+          <input
+            value={genreDraft}
+            list="profile-genre-options"
+            placeholder="Type a genre"
+            onChange={(e) => setGenreDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                addGenre(genreDraft)
+              }
+            }}
+          />
+          <Button variant="secondary" onClick={() => addGenre(genreDraft)} disabled={!genreDraft.trim()}>Add Genre</Button>
+          <datalist id="profile-genre-options">
+            {genreSuggestions.map((g) => <option key={g} value={g} />)}
+          </datalist>
+          <div className="chips-row editable-chips">
+            {form.favorite_genres.map((g) => (
+              <button
+                key={g}
+                type="button"
+                className="chip remove-chip"
+                onClick={() => setForm((prev) => ({ ...prev, favorite_genres: prev.favorite_genres.filter((x) => x !== g) }))}
+              >
+                {g} x
+              </button>
+            ))}
+          </div>
+
+          <label>Favorite Movie</label>
+          <input value={form.favorite_movie} onChange={(e) => setForm((prev) => ({ ...prev, favorite_movie: e.target.value }))} placeholder="Start typing a movie title" />
+          {!!movieSuggestions.length && (
+            <div className="suggest-list">
+              {movieSuggestions.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => {
+                    setForm((prev) => ({
+                      ...prev,
+                      favorite_movie: m.title || '',
+                      favorite_movie_poster_path: m.poster_path || '',
+                      favorite_movie_year: m.release_date ? Number(m.release_date.slice(0, 4)) : null,
+                    }))
+                    setMovieSuggestions([])
+                  }}
+                >
+                  {m.poster_path && <img src={tmdbImage(m.poster_path, 'w92')} alt={m.title} />}
+                  <span>{m.title} {m.release_date ? `(${m.release_date.slice(0, 4)})` : ''}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <label>Favorite Director</label>
+          <input value={form.favorite_director} onChange={(e) => setForm((prev) => ({ ...prev, favorite_director: e.target.value }))} placeholder="Start typing a director name" />
+          {!!directorSuggestions.length && (
+            <div className="suggest-list">
+              {directorSuggestions.map((d) => (
+                <button
+                  key={d.id}
+                  type="button"
+                  onClick={() => {
+                    setForm((prev) => ({
+                      ...prev,
+                      favorite_director: d.name || '',
+                      favorite_director_image_path: d.profile_path || '',
+                    }))
+                    setDirectorSuggestions([])
+                  }}
+                >
+                  {d.profile_path && <img className="suggest-avatar" src={tmdbImage(d.profile_path, 'w185')} alt={d.name} />}
+                  <span>{d.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          <Button variant="secondary" onClick={saveProfile} disabled={saving}>Save Taste Profile</Button>
+        </div>
+      )
+    }
+
+    if (key === 'password') {
+      return (
+        <div className="editor-inline">
+          <label>Current Password</label>
+          <input type="password" value={form.current_password} onChange={(e) => setForm((prev) => ({ ...prev, current_password: e.target.value }))} />
+          <label>New Password</label>
+          <input type="password" value={form.password} onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))} />
+          <label>Confirm Password</label>
+          <input type="password" value={form.password_confirmation} onChange={(e) => setForm((prev) => ({ ...prev, password_confirmation: e.target.value }))} />
+          <Button variant="secondary" onClick={savePassword} disabled={saving}>Update Password</Button>
+        </div>
+      )
+    }
+
+    return null
+  }
+
   if (loading) return <div className="profile-page"><Card className="kino-panel profile-loading">Loading profile...</Card></div>
   if (error) return <div className="profile-page"><Card className="kino-panel profile-loading">{error}</Card></div>
 
@@ -378,133 +515,27 @@ export default function Profile({ profileData, loading, error, onRefresh }) {
               {saveError && <p className="err">{saveError}</p>}
 
               <div className="settings-rows">
-                <SettingsRow icon={<User size={18} />} title="Change Bio" subtitle="Update your short profile intro" onClick={() => setActiveEditor(activeEditor === 'bio' ? null : 'bio')} />
-                <SettingsRow icon={<AtSign size={18} />} title="Change Username" subtitle={form.name || '@username'} onClick={() => setActiveEditor(activeEditor === 'name' ? null : 'name')} />
-                <SettingsRow icon={<Mail size={18} />} title="Change Email" subtitle={form.email || 'user@email.com'} onClick={() => setActiveEditor(activeEditor === 'email' ? null : 'email')} />
-                <SettingsRow icon={<Tag size={18} />} title="Update Favorites" subtitle="Genres, movie, and director" onClick={() => setActiveEditor(activeEditor === 'taste' ? null : 'taste')} />
-                <SettingsRow icon={<Lock size={18} />} title="Change Password" subtitle="Update your password" onClick={() => setActiveEditor(activeEditor === 'password' ? null : 'password')} />
+                <div className="settings-row-block">
+                  <SettingsRow icon={<User size={18} />} title="Change Bio" subtitle="Update your short profile intro" onClick={() => setActiveEditor(activeEditor === 'bio' ? null : 'bio')} />
+                  {renderEditor('bio')}
+                </div>
+                <div className="settings-row-block">
+                  <SettingsRow icon={<AtSign size={18} />} title="Change Username" subtitle={form.name || '@username'} onClick={() => setActiveEditor(activeEditor === 'name' ? null : 'name')} />
+                  {renderEditor('name')}
+                </div>
+                <div className="settings-row-block">
+                  <SettingsRow icon={<Mail size={18} />} title="Change Email" subtitle={form.email || 'user@email.com'} onClick={() => setActiveEditor(activeEditor === 'email' ? null : 'email')} />
+                  {renderEditor('email')}
+                </div>
+                <div className="settings-row-block">
+                  <SettingsRow icon={<Tag size={18} />} title="Update Favorites" subtitle="Genres, movie, and director" onClick={() => setActiveEditor(activeEditor === 'taste' ? null : 'taste')} />
+                  {renderEditor('taste')}
+                </div>
+                <div className="settings-row-block">
+                  <SettingsRow icon={<Lock size={18} />} title="Change Password" subtitle="Update your password" onClick={() => setActiveEditor(activeEditor === 'password' ? null : 'password')} />
+                  {renderEditor('password')}
+                </div>
               </div>
-
-              {activeEditor === 'name' && (
-                <div className="editor-inline">
-                  <label>Username</label>
-                  <input value={form.name} onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))} />
-                  <Button variant="secondary" onClick={saveProfile} disabled={saving}>Save</Button>
-                </div>
-              )}
-
-              {activeEditor === 'email' && (
-                <div className="editor-inline">
-                  <label>Email</label>
-                  <input type="email" value={form.email} onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))} />
-                  <Button variant="secondary" onClick={saveProfile} disabled={saving}>Save</Button>
-                </div>
-              )}
-
-              {activeEditor === 'bio' && (
-                <div className="editor-inline">
-                  <label>Bio</label>
-                  <textarea rows={4} value={form.bio} onChange={(e) => setForm((prev) => ({ ...prev, bio: e.target.value }))} />
-                  <Button variant="secondary" onClick={saveProfile} disabled={saving}>Save</Button>
-                </div>
-              )}
-
-              {activeEditor === 'taste' && (
-                <div className="editor-inline">
-                  <label>Favorite Genres (press Enter)</label>
-                  <input
-                    value={genreDraft}
-                    list="profile-genre-options"
-                    placeholder="Type a genre"
-                    onChange={(e) => setGenreDraft(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault()
-                        addGenre(genreDraft)
-                      }
-                    }}
-                  />
-                  <Button variant="secondary" onClick={() => addGenre(genreDraft)} disabled={!genreDraft.trim()}>Add Genre</Button>
-                  <datalist id="profile-genre-options">
-                    {genreSuggestions.map((g) => <option key={g} value={g} />)}
-                  </datalist>
-                  <div className="chips-row editable-chips">
-                    {form.favorite_genres.map((g) => (
-                      <button
-                        key={g}
-                        type="button"
-                        className="chip remove-chip"
-                        onClick={() => setForm((prev) => ({ ...prev, favorite_genres: prev.favorite_genres.filter((x) => x !== g) }))}
-                      >
-                        {g} x
-                      </button>
-                    ))}
-                  </div>
-
-                  <label>Favorite Movie</label>
-                  <input value={form.favorite_movie} onChange={(e) => setForm((prev) => ({ ...prev, favorite_movie: e.target.value }))} placeholder="Start typing a movie title" />
-                  {!!movieSuggestions.length && (
-                    <div className="suggest-list">
-                      {movieSuggestions.map((m) => (
-                        <button
-                          key={m.id}
-                          type="button"
-                          onClick={() => {
-                            setForm((prev) => ({
-                              ...prev,
-                              favorite_movie: m.title || '',
-                              favorite_movie_poster_path: m.poster_path || '',
-                              favorite_movie_year: m.release_date ? Number(m.release_date.slice(0, 4)) : null,
-                            }))
-                            setMovieSuggestions([])
-                          }}
-                        >
-                          {m.poster_path && <img src={tmdbImage(m.poster_path, 'w92')} alt={m.title} />}
-                          <span>{m.title} {m.release_date ? `(${m.release_date.slice(0, 4)})` : ''}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  <label>Favorite Director</label>
-                  <input value={form.favorite_director} onChange={(e) => setForm((prev) => ({ ...prev, favorite_director: e.target.value }))} placeholder="Start typing a director name" />
-                  {!!directorSuggestions.length && (
-                    <div className="suggest-list">
-                      {directorSuggestions.map((d) => (
-                        <button
-                          key={d.id}
-                          type="button"
-                          onClick={() => {
-                            setForm((prev) => ({
-                              ...prev,
-                              favorite_director: d.name || '',
-                              favorite_director_image_path: d.profile_path || '',
-                            }))
-                            setDirectorSuggestions([])
-                          }}
-                        >
-                          {d.profile_path && <img className="suggest-avatar" src={tmdbImage(d.profile_path, 'w185')} alt={d.name} />}
-                          <span>{d.name}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-
-                  <Button variant="secondary" onClick={saveProfile} disabled={saving}>Save Taste Profile</Button>
-                </div>
-              )}
-
-              {activeEditor === 'password' && (
-                <div className="editor-inline">
-                  <label>Current Password</label>
-                  <input type="password" value={form.current_password} onChange={(e) => setForm((prev) => ({ ...prev, current_password: e.target.value }))} />
-                  <label>New Password</label>
-                  <input type="password" value={form.password} onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))} />
-                  <label>Confirm Password</label>
-                  <input type="password" value={form.password_confirmation} onChange={(e) => setForm((prev) => ({ ...prev, password_confirmation: e.target.value }))} />
-                  <Button variant="secondary" onClick={savePassword} disabled={saving}>Update Password</Button>
-                </div>
-              )}
             </Card>
           </section>
 

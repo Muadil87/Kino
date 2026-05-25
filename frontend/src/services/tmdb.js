@@ -26,17 +26,20 @@ export const getTrendingMovies = async () => {
     return response.data.results;
 };
 
-export const getPopularMovies = async () => {
+export const getPopularMovies = async (page = 1) => {
     ensureApiKey();
-    const response = await tmdbClient.get('/movie/popular');
-    return response.data.results;
+    const response = await tmdbClient.get('/movie/popular', {
+        params: { page }
+    });
+    return response.data;
 };
 
 export const discoverMovies = async ({
     page = 1,
     sortBy = 'popularity.desc',
     withGenres,
-    year,
+    releaseDateGte,
+    releaseDateLte,
     voteAverageGte,
     query,
 } = {}) => {
@@ -48,7 +51,8 @@ export const discoverMovies = async ({
                 query: query.trim(),
                 page,
                 include_adult: false,
-                ...(year ? { primary_release_year: year } : {}),
+                ...(releaseDateGte ? { primary_release_date_gte: releaseDateGte } : {}),
+                ...(releaseDateLte ? { primary_release_date_lte: releaseDateLte } : {}),
             },
         });
         return response.data;
@@ -61,11 +65,28 @@ export const discoverMovies = async ({
             include_adult: false,
             include_video: false,
             ...(withGenres ? { with_genres: withGenres } : {}),
-            ...(year ? { primary_release_year: year } : {}),
+            ...(releaseDateGte ? { 'primary_release_date.gte': releaseDateGte } : {}),
+            ...(releaseDateLte ? { 'primary_release_date.lte': releaseDateLte } : {}),
             ...(voteAverageGte ? { 'vote_average.gte': voteAverageGte } : {}),
         },
     });
 
+    return response.data;
+};
+
+export const getNowPlayingMovies = async (page = 1) => {
+    ensureApiKey();
+    const response = await tmdbClient.get('/movie/now_playing', {
+        params: { page }
+    });
+    return response.data;
+};
+
+export const getUpcomingMovies = async (page = 1) => {
+    ensureApiKey();
+    const response = await tmdbClient.get('/movie/upcoming', {
+        params: { page }
+    });
     return response.data;
 };
 

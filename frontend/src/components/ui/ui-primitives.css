@@ -1,0 +1,97 @@
+.kino-select {
+  position: relative;
+  z-index: 20;
+}
+
+.kino-select.is-open {
+  z-index: 120;
+}
+
+.kino-select-trigger {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(245, 244, 241, 0.16);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  color: var(--foreground);
+  padding: 0.62rem 2.2rem 0.62rem 0.72rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.kino-select-trigger:hover,
+.kino-select-trigger.is-open {
+  border-color: rgba(212, 165, 116, 0.48);
+}
+
+.kino-select-trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.kino-select-label.is-placeholder {
+  color: var(--text-muted);
+}
+
+.kino-select-chevron {
+  width: 0.52rem;
+  height: 0.52rem;
+  border-right: 1.8px solid rgba(212, 165, 116, 0.95);
+  border-bottom: 1.8px solid rgba(212, 165, 116, 0.95);
+  transform: rotate(45deg) translateY(-1px);
+  flex: 0 0 auto;
+}
+
+.kino-select-content {
+  z-index: 20000;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 244, 241, 0.14);
+  background: linear-gradient(180deg, rgba(16, 19, 28, 0.98), rgba(10, 12, 18, 0.95));
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+  padding: 0.34rem;
+  backdrop-filter: blur(12px);
+}
+
+.kino-select-item {
+  width: 100%;
+  text-align: left;
+  border-radius: 9px;
+  padding: 0.56rem 0.58rem;
+  color: var(--foreground-muted);
+  font-size: 0.85rem;
+}
+
+.kino-select-item:hover,
+.kino-select-item.is-selected {
+  color: var(--foreground);
+  background: rgba(212, 165, 116, 0.14);
+}
+
+.kino-dropdown {
+  position: relative;
+}
+
+.kino-dropdown-content {
+  position: absolute;
+  top: calc(100% + 10px);
+  min-width: 220px;
+  border: 1px solid rgba(245, 244, 241, 0.14);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(16, 19, 28, 0.98), rgba(10, 12, 18, 0.95));
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  z-index: 10030;
+  backdrop-filter: blur(12px);
+}
+
+.kino-dropdown-content.align-right {
+  right: 0;
+}
+
+.kino-dropdown-content.align-left {
+  left: 0;
+}

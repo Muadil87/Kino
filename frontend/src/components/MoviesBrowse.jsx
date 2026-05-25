@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import MovieCard from './MovieCard'
 import SkeletonCard from './SkeletonCard'
-import { discoverMovies, getGenres } from '../services/tmdb'
+import { discoverMovies, getGenres, getNowPlayingMovies, getPopularMovies, getTrendingMovies, getUpcomingMovies } from '../services/tmdb'
 import CinematicSection from './CinematicSection'
+import { tmdbImage } from '../utils/image'
+import { Button } from './ui/button'
+import { Select } from './ui/select'
 import './MoviesBrowse.css'
 
 const SORT_OPTIONS = [
@@ -10,6 +13,25 @@ const SORT_OPTIONS = [
   { value: 'vote_average.desc', label: 'Highest Rated' },
   { value: 'release_date.desc', label: 'Newest Releases' },
   { value: 'title.asc', label: 'Title A-Z' },
+]
+
+const ERA_OPTIONS = [
+  { value: '', label: 'All Eras' },
+  { value: '1990s', label: '1990s' },
+  { value: '2000s', label: '2000s' },
+  { value: '2010s', label: '2010s' },
+  { value: '2020s', label: '2020s' },
+  { value: 'classic', label: 'Classic Cinema (before 1980)' },
+  { value: 'modern_classics', label: 'Modern Classics' },
+  { value: 'new_releases', label: 'New Releases' },
+]
+
+const CATALOG_OPTIONS = [
+  { value: 'all', label: 'All Movies' },
+  { value: 'trending', label: 'Trending' },
+  { value: 'popular', label: 'Popular' },
+  { value: 'now_playing', label: 'Now Playing' },
+  { value: 'upcoming', label: 'Upcoming' },
 ]
 
 export default function MoviesBrowse() {
@@ -20,10 +42,11 @@ export default function MoviesBrowse() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [filters, setFilters] = useState({
+    category: 'all',
     query: '',
     sortBy: 'popularity.desc',
     genre: '',
-    year: '',
+    releaseEra: '',
     minRating: '',
   })
 
@@ -44,16 +67,47 @@ export default function MoviesBrowse() {
       setLoading(true)
       setError('')
       try {
-        const data = await discoverMovies({
-          page,
-          sortBy: filters.sortBy,
-          withGenres: filters.genre || undefined,
-          year: filters.year || undefined,
-          voteAverageGte: filters.minRating || undefined,
-          query: filters.query || undefined,
-        })
-        setItems(data?.results || [])
-        setTotalPages(Math.min(data?.total_pages || 1, 500))
+        const hasAdvancedFilters = Boolean(filters.query || filters.genre || filters.releaseEra || filters.minRating)
+        const useDiscover = filters.category === 'all' || hasAdvancedFilters
+        const eraRanges = {
+          '1990s': { from: '1990-01-01', to: '1999-12-31' },
+          '2000s': { from: '2000-01-01', to: '2009-12-31' },
+          '2010s': { from: '2010-01-01', to: '2019-12-31' },
+          '2020s': { from: '2020-01-01', to: '2029-12-31' },
+          classic: { from: undefined, to: '1979-12-31' },
+          modern_classics: { from: '1980-01-01', to: '2014-12-31' },
+          new_releases: { from: '2023-01-01', to: undefined },
+        }
+        const selectedEra = eraRanges[filters.releaseEra] || {}
+
+        if (useDiscover) {
+          const data = await discoverMovies({
+            page,
+            sortBy: filters.sortBy,
+            withGenres: filters.genre || undefined,
+            releaseDateGte: selectedEra.from,
+            releaseDateLte: selectedEra.to,
+            voteAverageGte: filters.minRating || undefined,
+            query: filters.query || undefined,
+          })
+          setItems(data?.results || [])
+          setTotalPages(Math.min(data?.total_pages || 1, 500))
+        } else {
+          let data = { results: [], total_pages: 1 }
+          if (filters.category === 'trending') {
+            const results = await getTrendingMovies()
+            data = { results, total_pages: 1 }
+          } else if (filters.category === 'popular') {
+            data = await getPopularMovies(page)
+          } else if (filters.category === 'now_playing') {
+            data = await getNowPlayingMovies(page)
+          } else if (filters.category === 'upcoming') {
+            data = await getUpcomingMovies(page)
+          }
+
+          setItems(data?.results || [])
+          setTotalPages(Math.min(data?.total_pages || 1, 500))
+        }
       } catch {
         setItems([])
         setTotalPages(1)
@@ -83,6 +137,30 @@ export default function MoviesBrowse() {
         title="Browse Movies"
         subtitle="Discover the full TMDB catalog with focused filters and clean cinematic browsing."
       >
+        <div className="browse-hero-strip kino-panel">
+          <img
+            src={tmdbImage('/hZkgoQYus5vegHoetLkCJzb17zJ.jpg', 'w1280')}
+            alt="Movies catalog backdrop"
+            className="browse-hero-image"
+            loading="lazy"
+            onError={(e) => { e.target.style.display = 'none' }}
+          />
+          <div className="browse-hero-overlay" />
+        </div>
+
+        <div className="browse-category-tabs">
+          {CATALOG_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              className={`browse-pill ${filters.category === option.value ? 'active' : ''}`}
+              onClick={() => updateFilter('category', option.value)}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
         <div className="browse-filters kino-panel">
           <input
             type="search"
@@ -91,29 +169,49 @@ export default function MoviesBrowse() {
             value={filters.query}
             onChange={(e) => updateFilter('query', e.target.value)}
           />
-          <select className="browse-select" value={filters.sortBy} onChange={(e) => updateFilter('sortBy', e.target.value)}>
-            {SORT_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
-          <select className="browse-select" value={filters.genre} onChange={(e) => updateFilter('genre', e.target.value)}>
-            <option value="">All Genres</option>
-            {genres.map((g) => <option key={g.id} value={g.id}>{g.name}</option>)}
-          </select>
-          <input
-            type="number"
-            className="browse-input browse-input-small"
-            placeholder="Year"
-            min="1900"
-            max="2099"
-            value={filters.year}
-            onChange={(e) => updateFilter('year', e.target.value)}
+          <Select
+            value={filters.sortBy}
+            onValueChange={(val) => updateFilter('sortBy', val)}
+            options={SORT_OPTIONS}
           />
-          <select className="browse-select" value={filters.minRating} onChange={(e) => updateFilter('minRating', e.target.value)}>
-            <option value="">Any Rating</option>
-            <option value="5">5+</option>
-            <option value="6">6+</option>
-            <option value="7">7+</option>
-            <option value="8">8+</option>
-          </select>
+          <Select
+            value={filters.genre}
+            onValueChange={(val) => updateFilter('genre', val)}
+            options={[{ value: '', label: 'All Genres' }, ...genres.map((g) => ({ value: String(g.id), label: g.name }))]}
+          />
+          <Select
+            value={filters.releaseEra}
+            onValueChange={(val) => updateFilter('releaseEra', val)}
+            options={ERA_OPTIONS}
+          />
+          <Select
+            value={filters.minRating}
+            onValueChange={(val) => updateFilter('minRating', val)}
+            options={[
+              { value: '', label: 'Any Rating' },
+              { value: '5', label: '5+' },
+              { value: '6', label: '6+' },
+              { value: '7', label: '7+' },
+              { value: '8', label: '8+' },
+            ]}
+          />
+          <Button
+            variant="cinematic"
+            className="browse-reset-btn"
+            onClick={() => {
+              setPage(1)
+              setFilters({
+                category: filters.category,
+                query: '',
+                sortBy: 'popularity.desc',
+                genre: '',
+                releaseEra: '',
+                minRating: '',
+              })
+            }}
+          >
+            Reset
+          </Button>
         </div>
       </CinematicSection>
 
