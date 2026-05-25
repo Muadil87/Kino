@@ -1,110 +1,129 @@
-import React, { useMemo, useState } from 'react';
-import MovieCard from './MovieCard';
-import SkeletonCard from './SkeletonCard';
-import './Dashboard.css';
+import { useEffect, useMemo, useState } from 'react'
+import { communityApi, profileApi, recommendationApi } from '../services/api'
+import MovieCard from './MovieCard'
+import SkeletonCard from './SkeletonCard'
+import BadgeChip from './BadgeChip'
+import CinematicSection from './CinematicSection'
+import StatBlock from './StatBlock'
+import ActivityLens from './ActivityLens'
+import './Dashboard.css'
+import './Social.css'
 
-const MOODS = [
-  { name: 'Noir Tension', genres: [53, 80, 9648] },
-  { name: 'Quiet Character Study', genres: [18] },
-  { name: 'Adrenaline Rush', genres: [28, 12] },
-  { name: 'Warm Nostalgia', genres: [10751, 16, 35] },
-  { name: 'Mind-Bending', genres: [878, 14, 9648] },
-]
+const badgeLabel = (code) => {
+  const map = {
+    first_watch: 'First Watch',
+    cinephile_10: 'Cinephile 10',
+    first_review: 'First Review',
+    streak_7: '7-Day Streak',
+  }
+  return map[code] || String(code || '').replaceAll('_', ' ')
+}
 
-const Dashboard = ({ movies }) => {
-  const [activeMood, setActiveMood] = useState(MOODS[0].name)
+export default function Dashboard({ movies, history }) {
+  const [profileProgress, setProfileProgress] = useState(null)
+  const [communities, setCommunities] = useState({ joined: [], discover: [] })
+  const [recommendations, setRecommendations] = useState([])
 
-  const moodMovies = useMemo(() => {
-    const mood = MOODS.find((m) => m.name === activeMood) || MOODS[0]
-    const filtered = (movies || []).filter((movie) =>
-      (movie.genre_ids || []).some((id) => mood.genres.includes(id)),
-    )
-    return filtered.length > 0 ? filtered : movies
-  }, [activeMood, movies])
+  useEffect(() => {
+    let ignore = false
+    ;(async () => {
+      try {
+        const [progress, myCommunities, inbox] = await Promise.all([
+          profileApi.meProgress(),
+          communityApi.list(),
+          recommendationApi.inbox(),
+        ])
+        if (ignore) return
+        setProfileProgress(progress || null)
+        setCommunities(myCommunities || { joined: [], discover: [] })
+        setRecommendations((inbox.items || []).slice(0, 4))
+      } catch (error) {
+        if (!ignore) console.error('Failed loading home ecosystem data:', error)
+      }
+    })()
+    return () => { ignore = true }
+  }, [])
+
+  const topDiscovery = useMemo(() => (movies || []).slice(0, 12), [movies])
+  const recentHistory = useMemo(() => (history || []).slice(0, 8), [history])
 
   if (!movies || movies.length === 0) {
     return (
       <div className="dashboard-container">
-        <section className="trending-section">
-          <div className="section-header">
-            <h2 className="section-title">Trending</h2>
-            <div className="skeleton" style={{ width: '300px', height: '1.2em', marginTop: '0.5rem' }}></div>
-          </div>
-          <div className="movie-grid">
-            {[...Array(8)].map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
-        </section>
+        <CinematicSection overline="KINO Home" title="Loading Your Cinema Pulse">
+          <div className="movie-grid">{[...Array(8)].map((_, i) => <SkeletonCard key={i} />)}</div>
+        </CinematicSection>
       </div>
-    );
+    )
   }
 
   return (
     <div className="dashboard-container">
-      <section className="trending-section">
-        <div className="section-header">
-          <div>
-            <p className="kino-overline">Mood Discovery</p>
-            <h2 className="section-title">Pick a Tonight Mood</h2>
-          </div>
-          <p className="section-subtitle">Jump into curated tones and discover films that match your headspace.</p>
+      <CinematicSection
+        overline="KINO Home"
+        title="Your Cinema Pulse"
+        subtitle="A live snapshot of your identity, your circles, and what to watch next."
+      >
+        <div className="social-hero-strip">
+          <StatBlock label="Level" value={profileProgress?.level ?? 1} />
+          <StatBlock label="XP" value={profileProgress?.xp_total ?? 0} />
+          <StatBlock label="Streak" value={`${profileProgress?.current_streak_days ?? 0} days`} />
         </div>
-        <div className="mood-row">
-          {MOODS.map((mood) => (
-            <button
-              key={mood.name}
-              className={`mood-pill ${activeMood === mood.name ? 'active' : ''}`}
-              type="button"
-              onClick={() => setActiveMood(mood.name)}
-            >
-              {mood.name}
-            </button>
+        <div className="badges-row">
+          {(profileProgress?.badges || []).slice(0, 5).map((badge) => (
+            <BadgeChip key={badge.id || badge.badge_code} label={badgeLabel(badge.badge_code)} />
           ))}
         </div>
-      </section>
+      </CinematicSection>
 
-      {/* Trending Section */}
-      <section className="trending-section">
-        <div className="section-header">
-          <h2 className="section-title">Trending</h2>
-          <p className="section-subtitle">
-            {activeMood} picks from what is trending right now.
-          </p>
+      <CinematicSection
+        overline="Social Momentum"
+        title="From Your Friends"
+        subtitle="Recent logs and reactions from people you trust."
+      >
+        <ActivityLens mode="unified" defaultScope="friends" pageSize={6} />
+      </CinematicSection>
+
+      <CinematicSection
+        overline="Club Momentum"
+        title="From Your Communities"
+        subtitle="Shared progress and club activity from your movie circles."
+      >
+        <div className="social-hero-strip">
+          <StatBlock label="Joined Clubs" value={communities.joined?.length || 0} />
+          <StatBlock label="Discover Clubs" value={communities.discover?.length || 0} />
+          <StatBlock label="Recent Club Events" value="Live" />
         </div>
+        <ActivityLens mode="unified" defaultScope="community" pageSize={6} />
+      </CinematicSection>
+
+      <CinematicSection
+        overline="Discovery"
+        title="Trending For Tonight"
+        subtitle="Fresh picks to keep your cinematic journey moving."
+      >
         <div className="movie-grid">
-          {moodMovies.slice(0, 12).map(movie => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
+          {topDiscovery.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
         </div>
-      </section>
+      </CinematicSection>
 
-      {/* Staff Picks Section */}
-      <section className="staff-picks-section">
-        <div className="section-header">
-          <h2 className="section-title">Staff Picks</h2>
-          <p className="section-subtitle">Curated selection of must-watch films handpicked for you.</p>
-        </div>
-        <div className="picks-grid">
-           {moodMovies.slice(2, 5).map((movie) => (
-             <MovieCard key={movie.id} movie={movie} />
-           ))}
-        </div>
-      </section>
-
-      <section className="staff-picks-section">
-        <div className="section-header">
-          <h2 className="section-title">Editorial Spotlight</h2>
-          <p className="section-subtitle">A rotating column of visually iconic and critically loved films.</p>
-        </div>
+      <CinematicSection
+        overline="Personal Library"
+        title="Continue Your Journey"
+        subtitle="Your recent watch history and social recommendations."
+      >
         <div className="movie-grid">
-          {moodMovies.slice(6, 12).map(movie => (
-            <MovieCard key={movie.id} movie={movie} />
+          {recentHistory.map((movie) => <MovieCard key={movie.id} movie={movie} />)}
+        </div>
+        <div className="post-list home-recommendations">
+          {recommendations.map((r) => (
+            <article className="kino-panel post-card" key={r.id}>
+              <p className="post-author">{r.from_user?.name || 'Member'} · recommended</p>
+              <p className="social-feature-text">{r.movie?.title || 'Movie recommendation'}</p>
+            </article>
           ))}
         </div>
-      </section>
+      </CinematicSection>
     </div>
   )
-};
-
-export default Dashboard;
+}

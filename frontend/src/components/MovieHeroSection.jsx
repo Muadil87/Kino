@@ -1,4 +1,5 @@
 import React from 'react'
+import Icon from './ui/Icon'
 
 export function MovieHeroSection({ 
   movie, 
@@ -73,9 +74,7 @@ export function MovieHeroSection({
           <div className="detail-meta-badges">
             <div className="meta-badge badge-year">{year}</div>
             <div className="meta-badge badge-rating">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{marginRight: '4px'}}>
-                <polygon points="12 2 15.09 10.26 23.77 11.27 17.88 17.14 19.54 25.98 12 21.77 4.46 25.98 6.12 17.14 0.23 11.27 8.91 10.26"></polygon>
-              </svg>
+              <Icon name="star" size={16} tone="gold" />
               {rating}
             </div>
             <div className="meta-badge badge-runtime">{runtime}</div>
@@ -95,22 +94,21 @@ export function MovieHeroSection({
           <div className="detail-actions">
             {onToggleWatchlist && (
               <button 
-                className={`action-btn btn-primary ${isWatch ? 'active' : ''}`}
+                className={`detail-action-btn detail-btn-primary ${isWatch ? 'active' : ''}`}
                 onClick={() => onToggleWatchlist(movie)}
               >
-                {isWatch ? 'In Watchlist' : '+ Add to Watchlist'}
+                <Icon name="watchlist" size={16} tone={isWatch ? 'gold' : 'normal'} />
+                {isWatch ? 'In Watchlist' : 'Add to Watchlist'}
               </button>
             )}
             
             {onToggleFavorite && (
               <button 
-                className={`btn-icon ${isFav ? 'active' : ''}`}
+                className={`detail-btn-icon ${isFav ? 'active' : ''}`}
                 onClick={() => onToggleFavorite(movie)}
                 title={isFav ? "Remove from Favorites" : "Add to Favorites"}
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill={isFav ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
+                <Icon name="favorites" size={24} tone={isFav ? 'gold' : 'normal'} />
               </button>
             )}
           </div>

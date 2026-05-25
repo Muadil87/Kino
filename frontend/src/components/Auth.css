@@ -29,8 +29,8 @@
   position: relative;
   z-index: 2;
   width: min(430px, 100%);
-  background: var(--surface);
-  border: 1px solid var(--border-color);
+  background: linear-gradient(132deg, rgba(23, 23, 32, 0.96), rgba(15, 15, 20, 0.96));
+  border: 1px solid var(--kino-line);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   padding: var(--space-10) var(--space-8);
@@ -39,6 +39,9 @@
 .auth-title {
   margin: 0;
   font-size: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 .auth-subtitle {
@@ -47,11 +50,21 @@
   font-size: 0.92rem;
 }
 
+.auth-label {
+  display: block;
+  margin-top: var(--space-4);
+  font-family: var(--font-label);
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--kino-text-muted);
+}
+
 .auth-input {
   width: 100%;
-  margin-top: var(--space-4);
+  margin-top: var(--space-2);
   background: var(--background-secondary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--kino-line);
   border-radius: var(--radius-sm);
   padding: 0.86rem 0.9rem;
   color: var(--foreground);
@@ -103,6 +116,18 @@
   text-align: center;
   font-size: 0.9rem;
   color: var(--text-muted);
+}
+
+.auth-link-btn {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.45rem 0.7rem;
+}
+
+.auth-link-btn:hover {
+  border-color: var(--kino-line);
+  color: var(--foreground);
 }
 
 .auth-link span {

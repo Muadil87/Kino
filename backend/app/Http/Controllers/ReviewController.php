@@ -4,10 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use App\Models\Review;
+use App\Services\CinemaIdentityService;
 use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    public function __construct(private readonly CinemaIdentityService $identity)
+    {
+    }
+
     public function index(int $tmdbId)
     {
         $movie = Movie::where('tmdb_id', $tmdbId)->first();
@@ -50,6 +55,23 @@ class ReviewController extends Controller
             'content' => $fields['content'],
             'rating' => $fields['rating'],
         ]);
+
+        $this->identity->recordActivity(
+            $request->user(),
+            'review_created',
+            'friends',
+            $movie->id,
+            null,
+            ['review_id' => $review->id, 'rating' => $review->rating]
+        );
+        $this->identity->awardXp(
+            $request->user(),
+            'review_created',
+            "review_created:user:{$request->user()->id}:review:{$review->id}",
+            'review',
+            $review->id
+        );
+        $this->identity->syncBadges($request->user());
 
         return response()->json([
             'message' => 'Review created',

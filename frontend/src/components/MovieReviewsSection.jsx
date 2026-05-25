@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Icon from './ui/Icon'
 import './MovieReviewsSection.css'
 
 export function MovieReviewsSection({ reviews, isLoading }) {
@@ -8,28 +9,25 @@ export function MovieReviewsSection({ reviews, isLoading }) {
   if (!reviews || reviews.length === 0) return null
 
   const toggleExpand = (id) => {
-    setExpandedMap(prev => ({
+    setExpandedMap((prev) => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }))
   }
 
-  // Take top 4 reviews for a balanced grid
   const displayReviews = reviews.slice(0, 4)
 
   return (
     <div className="reviews-section">
       <h2 className="section-title">Critique</h2>
-      
+
       {displayReviews.length > 0 ? (
         <div className="reviews-grid">
-          {displayReviews.map(review => {
+          {displayReviews.map((review) => {
             const isExpanded = expandedMap[review.id]
             const content = review.content
             const shouldTruncate = content.length > 300
-            const displayContent = !isExpanded && shouldTruncate 
-              ? content.slice(0, 300) + '...' 
-              : content
+            const displayContent = !isExpanded && shouldTruncate ? `${content.slice(0, 300)}...` : content
 
             return (
               <div key={review.id} className="review-card">
@@ -39,18 +37,15 @@ export function MovieReviewsSection({ reviews, isLoading }) {
                   </div>
                   {review.author_details?.rating && (
                     <div className="review-rating">
-                      ★ {review.author_details.rating}/10
+                      <Icon name="star" size={16} tone="gold" /> {review.author_details.rating}/10
                     </div>
                   )}
                 </div>
-                
+
                 <div className="review-content">
                   <p>{displayContent}</p>
                   {shouldTruncate && (
-                    <button 
-                      className="review-expand-btn" 
-                      onClick={() => toggleExpand(review.id)}
-                    >
+                    <button className="review-expand-btn" onClick={() => toggleExpand(review.id)}>
                       {isExpanded ? 'Collapse' : 'Read Full Review'}
                     </button>
                   )}

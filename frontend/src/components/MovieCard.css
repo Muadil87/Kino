@@ -116,6 +116,12 @@
   background: rgba(255, 255, 255, 0.01);
 }
 
+.rating-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.22rem;
+}
+
 .movie-meta-chip.subtle {
   border-color: rgba(212, 165, 116, 0.36);
   color: var(--kino-gold);

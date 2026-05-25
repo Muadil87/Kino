@@ -63,6 +63,33 @@ const normalizeHistoryMovie = (movie) => ({
   dateWatched: movie.pivot?.watched_on || null,
 })
 
+const normalizePaginated = (payload, fallbackPerPage = 20) => {
+  if (Array.isArray(payload)) {
+    return {
+      items: payload,
+      meta: { currentPage: 1, lastPage: 1, perPage: payload.length || fallbackPerPage, total: payload.length || 0 },
+    }
+  }
+
+  if (Array.isArray(payload?.data) && typeof payload?.current_page === 'number') {
+    return {
+      items: payload.data,
+      meta: {
+        currentPage: payload.current_page,
+        lastPage: payload.last_page || 1,
+        perPage: payload.per_page || fallbackPerPage,
+        total: payload.total || payload.data.length || 0,
+      },
+    }
+  }
+
+  const list = Array.isArray(payload?.data) ? payload.data : []
+  return {
+    items: list,
+    meta: { currentPage: 1, lastPage: 1, perPage: list.length || fallbackPerPage, total: list.length || 0 },
+  }
+}
+
 export const authApi = {
   async register(payload) {
     const response = await client.post('/register', payload)
@@ -165,5 +192,147 @@ export const historyApi = {
   },
   async remove(tmdbId) {
     await client.delete(`/history/${tmdbId}`)
+  },
+}
+
+export const friendApi = {
+  async list() {
+    const response = await client.get('/friends')
+    return response.data.data || []
+  },
+  async requests({ page = 1, perPage = 20 } = {}) {
+    const response = await client.get('/friends/requests', { params: { page, per_page: perPage } })
+    return normalizePaginated(response.data, perPage)
+  },
+  async send(payload) {
+    const response = await client.post('/friends/requests', payload)
+    return response.data.data
+  },
+  async accept(id) {
+    await client.post(`/friends/requests/${id}/accept`)
+  },
+  async decline(id) {
+    await client.post(`/friends/requests/${id}/decline`)
+  },
+  async block(id) {
+    await client.post(`/friends/${id}/block`)
+  },
+  async remove(id) {
+    await client.delete(`/friends/${id}`)
+  },
+}
+
+export const communityApi = {
+  async list() {
+    const response = await client.get('/communities')
+    return response.data.data || { joined: [], discover: [] }
+  },
+  async create(payload) {
+    const response = await client.post('/communities', payload)
+    return response.data.data
+  },
+  async get(slug) {
+    const response = await client.get(`/communities/${slug}`)
+    return response.data.data
+  },
+  async join(slug) {
+    await client.post(`/communities/${slug}/join`)
+  },
+  async leave(slug) {
+    await client.post(`/communities/${slug}/leave`)
+  },
+  async members(slug, { page = 1, perPage = 24 } = {}) {
+    const response = await client.get(`/communities/${slug}/members`, { params: { page, per_page: perPage } })
+    return normalizePaginated(response.data, perPage)
+  },
+  async posts(slug, { page = 1, perPage = 20 } = {}) {
+    const response = await client.get(`/communities/${slug}/posts`, { params: { page, per_page: perPage } })
+    return normalizePaginated(response.data, perPage)
+  },
+  async createPost(slug, payload) {
+    const response = await client.post(`/communities/${slug}/posts`, payload)
+    return response.data.data
+  },
+  async comment(slug, postId, payload) {
+    const response = await client.post(`/communities/${slug}/posts/${postId}/comments`, payload)
+    return response.data.data
+  },
+  async challenges(slug, { page = 1, perPage = 20 } = {}) {
+    const response = await client.get(`/communities/${slug}/challenges`, { params: { page, per_page: perPage } })
+    return normalizePaginated(response.data, perPage)
+  },
+  async createChallenge(slug, payload) {
+    const response = await client.post(`/communities/${slug}/challenges`, payload)
+    return response.data.data
+  },
+  async leaderboard(slug, { page = 1, perPage = 12 } = {}) {
+    const response = await client.get(`/communities/${slug}/leaderboard`, { params: { page, per_page: perPage } })
+    return normalizePaginated(response.data, perPage)
+  },
+  async stats(slug) {
+    const response = await client.get(`/communities/${slug}/stats`)
+    return response.data.data || {}
+  },
+}
+
+export const activityApi = {
+  async feed({ page = 1, perPage = 30 } = {}) {
+    const response = await client.get('/activity/feed', { params: { page, per_page: perPage } })
+    return normalizePaginated(response.data, perPage)
+  },
+  async unified({ scope = 'home', page = 1, perPage = 30 } = {}) {
+    const response = await client.get('/activity/feed', { params: { scope, page, per_page: perPage } })
+    return normalizePaginated(response.data, perPage)
+  },
+  async community(slug, { page = 1, perPage = 30 } = {}) {
+    const response = await client.get(`/communities/${slug}/activity`, { params: { page, per_page: perPage } })
+    return normalizePaginated(response.data, perPage)
+  },
+}
+
+export const profileApi = {
+  async meProgress() {
+    const response = await client.get('/me/profile-progress')
+    return response.data.data
+  },
+  async show(userId) {
+    const response = await client.get(`/profiles/${userId}`)
+    return response.data.data
+  },
+}
+
+export const recommendationApi = {
+  async send(payload) {
+    const response = await client.post('/recommendations', payload)
+    return response.data.data
+  },
+  async inbox() {
+    const response = await client.get('/recommendations/inbox')
+    return normalizePaginated(response.data, 30)
+  },
+  async update(id, payload) {
+    const response = await client.patch(`/recommendations/${id}`, payload)
+    return response.data.data
+  },
+}
+
+export const telegramApi = {
+  async startLink() {
+    const response = await client.post('/settings/telegram/link/start')
+    return response.data.data
+  },
+  async confirmLink(token) {
+    const response = await client.post('/settings/telegram/link/confirm', { token })
+    return response.data.data
+  },
+  async unlink() {
+    await client.delete('/settings/telegram/link')
+  },
+  async linkCommunityGroup(slug, code) {
+    const response = await client.post(`/communities/${slug}/telegram/link`, { code })
+    return response.data.data
+  },
+  async unlinkCommunityGroup(slug) {
+    await client.delete(`/communities/${slug}/telegram/link`)
   },
 }

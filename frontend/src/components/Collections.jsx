@@ -2,6 +2,8 @@
 import { Link } from 'react-router-dom';
 import { getGenres, getMoviesByGenre, searchMovies } from '../services/tmdb';
 import { tmdbImage } from '../utils/image';
+import Icon from './ui/Icon';
+import CinematicSection from './CinematicSection';
 import './Collections.css';
 
 const Collections = ({ isLoggedIn }) => {
@@ -151,79 +153,76 @@ const Collections = ({ isLoggedIn }) => {
 
   return (
     <div className="collections-page">
-      <div className="collections-header">
-        <div className="header-content section-header">
-          <div>
-            <p className="kino-overline">Curated Catalog</p>
-            <h1 className="section-title">Collections</h1>
-          </div>
-          <p className="section-subtitle">Explore cinema by genre and mood.</p>
-          {isLoggedIn && (
-            <button 
-              className="btn-create" 
-              onClick={() => setShowModal(true)}
-            >
-              Create Collection
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="collections-grid">
-        {/* User Collections - Only visible if logged in */}
-        {isLoggedIn && userCollections.map((collection) => (
-          <Link 
-            key={collection.id} 
-            to={`/collections/${collection.id}/${encodeURIComponent(collection.name)}`}
-            className="collection-card user-collection"
+      <CinematicSection
+        overline="Curated Catalog"
+        title="Collections"
+        subtitle="Explore cinema by genre and mood."
+        action={isLoggedIn ? (
+          <button
+            className="btn-create"
+            onClick={() => setShowModal(true)}
           >
-            {collection.movies && collection.movies.length > 0 && collection.movies[0].poster_path ? (
-               <img 
-                 src={tmdbImage(collection.movies[0].poster_path, "w500")}
-                 alt={collection.name} 
-                 className="card-bg" 
-               />
-            ) : (
-              <div className="card-bg-placeholder" style={{ background: 'linear-gradient(135deg, #1e2029 0%, #17181d 100%)' }}>
-                 <div className="collection-placeholder-icon" aria-hidden="true">Collection</div>
-              </div>
-            )}
-            
-            <div className="card-overlay">
-              <h3>{collection.name}</h3>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                {collection.movies ? collection.movies.length : 0} items · {collection.privacy}
-              </p>
-            </div>
-          </Link>
-        ))}
-
-        {loading ? (
-          [...Array(8)].map((_, i) => (
-            <div key={i} className="collection-card" style={{ border: 'none' }}>
-              <div className="skeleton" style={{ width: '100%', height: '100%', borderRadius: '12px' }}></div>
-            </div>
-          ))
-        ) : (
-          genres.map((genre) => (
+            <Icon name="add" size={16} tone="normal" />
+            Create Collection
+          </button>
+        ) : null}
+      >
+        <div className="collections-grid">
+          {/* User Collections - Only visible if logged in */}
+          {isLoggedIn && userCollections.map((collection) => (
             <Link 
-              key={genre.id} 
-              to={`/collections/${genre.id}/${encodeURIComponent(genre.name)}`}
-              className="collection-card"
+              key={collection.id} 
+              to={`/collections/${collection.id}/${encodeURIComponent(collection.name)}`}
+              className="collection-card user-collection"
             >
-              {genre.image ? (
-                <img src={genre.image} alt={genre.name} className="card-bg" />
+              {collection.movies && collection.movies.length > 0 && collection.movies[0].poster_path ? (
+                 <img 
+                   src={tmdbImage(collection.movies[0].poster_path, "w500")}
+                   alt={collection.name} 
+                   className="card-bg" 
+                 />
               ) : (
-                <div className="card-bg-placeholder"></div>
+                <div className="card-bg-placeholder" style={{ background: 'linear-gradient(135deg, #1e2029 0%, #17181d 100%)' }}>
+                   <div className="collection-placeholder-icon" aria-hidden="true">Collection</div>
+                </div>
               )}
               
               <div className="card-overlay">
-                <h3>{genre.name}</h3>
+                <h3>{collection.name}</h3>
+                <p className="collection-meta">
+                  {collection.movies ? collection.movies.length : 0} items · {collection.privacy}
+                </p>
               </div>
             </Link>
-          ))
-        )}
-      </div>
+          ))}
+
+          {loading ? (
+            [...Array(8)].map((_, i) => (
+              <div key={i} className="collection-card" style={{ border: 'none' }}>
+                <div className="skeleton" style={{ width: '100%', height: '100%', borderRadius: '12px' }}></div>
+              </div>
+            ))
+          ) : (
+            genres.map((genre) => (
+              <Link 
+                key={genre.id} 
+                to={`/collections/${genre.id}/${encodeURIComponent(genre.name)}`}
+              className="collection-card"
+              >
+                {genre.image ? (
+                  <img src={genre.image} alt={genre.name} className="card-bg" />
+                ) : (
+                  <div className="card-bg-placeholder"></div>
+                )}
+                
+                <div className="card-overlay">
+                  <h3>{genre.name}</h3>
+                </div>
+              </Link>
+            ))
+          )}
+        </div>
+      </CinematicSection>
 
       {/* Create Collection Modal */}
       {showModal && (
@@ -275,9 +274,9 @@ const Collections = ({ isLoggedIn }) => {
                         value={privacy} 
                         onChange={(e) => setPrivacy(e.target.value)}
                       >
-                        <option value="public">Anyone â€” Public list</option>
+                        <option value="public">Anyone - Public list</option>
                         <option value="friends">Friends only</option>
-                        <option value="private">Just me â€” Private</option>
+                        <option value="private">Just me - Private</option>
                       </select>
                     </div>
                   </div>
@@ -307,7 +306,7 @@ const Collections = ({ isLoggedIn }) => {
                 <label>Add Movies</label>
                 <div className="add-film-input-wrapper">
                   <div className="add-film-input">
-                    <span className="search-icon" aria-hidden="true">Search</span>
+                    <span className="search-icon" aria-hidden="true"><Icon name="search" size={16} tone="muted" /></span>
                     <input 
                       type="text" 
                       placeholder="Search for a movie..." 
@@ -334,7 +333,7 @@ const Collections = ({ isLoggedIn }) => {
                             <span className="result-title">{movie.title}</span>
                             <span className="result-year">{movie.release_date ? movie.release_date.split('-')[0] : ''}</span>
                           </div>
-                          <span className="plus-icon" aria-hidden="true">Add</span>
+                          <span className="plus-icon" aria-hidden="true"><Icon name="add" size={16} tone="gold" /></span>
                         </div>
                       ))}
                     </div>
@@ -352,7 +351,7 @@ const Collections = ({ isLoggedIn }) => {
                           className="remove-movie-btn"
                           onClick={() => removeMovieFromCollection(movie.id)}
                         >
-                          Ã—
+                          x
                         </button>
                       </div>
                     ))}

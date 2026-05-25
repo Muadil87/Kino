@@ -32,6 +32,43 @@ export const getPopularMovies = async () => {
     return response.data.results;
 };
 
+export const discoverMovies = async ({
+    page = 1,
+    sortBy = 'popularity.desc',
+    withGenres,
+    year,
+    voteAverageGte,
+    query,
+} = {}) => {
+    ensureApiKey();
+
+    if (query && query.trim()) {
+        const response = await tmdbClient.get('/search/movie', {
+            params: {
+                query: query.trim(),
+                page,
+                include_adult: false,
+                ...(year ? { primary_release_year: year } : {}),
+            },
+        });
+        return response.data;
+    }
+
+    const response = await tmdbClient.get('/discover/movie', {
+        params: {
+            page,
+            sort_by: sortBy,
+            include_adult: false,
+            include_video: false,
+            ...(withGenres ? { with_genres: withGenres } : {}),
+            ...(year ? { primary_release_year: year } : {}),
+            ...(voteAverageGte ? { 'vote_average.gte': voteAverageGte } : {}),
+        },
+    });
+
+    return response.data;
+};
+
 export const searchMovies = async (query) => {
     ensureApiKey();
     const response = await tmdbClient.get('/search/movie', {

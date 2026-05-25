@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getMoviesByGenre } from '../services/tmdb';
 import MovieCard from './MovieCard';
 import SkeletonCard from './SkeletonCard';
+import CinematicSection from './CinematicSection';
 import './Collections.css';
 
 const CollectionDetail = ({ isLoggedIn }) => {
@@ -83,22 +84,26 @@ const CollectionDetail = ({ isLoggedIn }) => {
 
   return (
     <div className="collection-detail-page">
-      {/* Hero Header */}
-      <div 
-        className="collection-hero" 
-        style={{ 
+      <div
+        className="collection-hero"
+        style={{
           backgroundImage: backdrop ? `url(${backdrop})` : 'none',
           backgroundColor: backdrop ? 'transparent' : 'var(--background-secondary)'
         }}
       >
         <div className="collection-hero-content">
+          <p className="kino-overline">Collection</p>
           <h1 className="genre-title">{decodeURIComponent(name)}</h1>
           <p className="genre-subtitle">{description}</p>
         </div>
       </div>
 
-      {/* Movie Grid */}
-      <div className="section" style={{ padding: '0 5%' }}>
+      <div className="collection-detail-body">
+        <CinematicSection
+          overline="Curated List"
+          title="Collection Movies"
+          subtitle="A focused list from this collection with cinematic continuity."
+        >
         <div className="movie-grid">
           {movies.map(movie => (
             <MovieCard key={movie.id} movie={movie} />
@@ -110,6 +115,7 @@ const CollectionDetail = ({ isLoggedIn }) => {
             <p>This collection is empty. Go back and add some movies!</p>
           </div>
         )}
+        </CinematicSection>
       </div>
     </div>
   );

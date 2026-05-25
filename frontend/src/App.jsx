@@ -6,15 +6,19 @@ import Navbar from './components/Navbar'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
-import WatchlistPage from './pages/WatchlistPage'
 import CollectionsPage from './pages/CollectionsPage'
 import CollectionDetailPage from './pages/CollectionDetailPage'
 import MovieDetailPage from './pages/MovieDetailPage'
 import SearchResultsPage from './pages/SearchResultsPage'
-import FavoritesPage from './pages/FavoritesPage'
 import ProfilePage from './pages/ProfilePage'
 import SettingsPage from './pages/SettingsPage'
 import DashboardPage from './pages/DashboardPage'
+import MoviesPage from './pages/MoviesPage'
+import CommunitiesPage from './pages/CommunitiesPage'
+import CommunityDetailPage from './pages/CommunityDetailPage'
+import FriendsPage from './pages/FriendsPage'
+import ActivityFeedPage from './pages/ActivityFeedPage'
+import MyCinemaPage from './pages/MyCinemaPage'
 import './App.css'
 import './components/SharedStyles.css'
 
@@ -38,6 +42,7 @@ function App() {
 
   const navigate = useNavigate()
   const location = useLocation()
+  const cinemaTab = new URLSearchParams(location.search).get('tab') || 'watchlist'
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -253,31 +258,58 @@ function App() {
 
           <Route path="/dashboard" element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <DashboardPage movies={movies} />
+              <DashboardPage movies={movies} history={history} />
             </ProtectedRoute>
           } />
 
+          <Route path="/movies" element={<MoviesPage />} />
+
           <Route path="/collections" element={<CollectionsPage isLoggedIn={isLoggedIn} />} />
+          <Route path="/communities" element={
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <CommunitiesPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/communities/:slug" element={
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <CommunityDetailPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/friends" element={
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <FriendsPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/activity" element={
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <ActivityFeedPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/settings/telegram" element={
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <Navigate to="/communities" replace />
+            </ProtectedRoute>
+          } />
 
           <Route path="/collections/:id/:name" element={<CollectionDetailPage isLoggedIn={isLoggedIn} />} />
 
-          <Route path="/watchlist" element={
+          <Route path="/my-cinema" element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <WatchlistPage
+              <MyCinemaPage
+                key={cinemaTab}
                 watchlist={watchlist}
+                favorites={favorites}
                 history={history}
                 onRemoveFromWatchlist={(movie) => toggleWatchlist(movie)}
+                onRemoveFromFavorites={(movie) => toggleFavorite(movie)}
                 onRemoveFromHistory={(movie) => removeFromHistory(movie)}
                 onMoveToHistory={(movie) => moveToHistory(movie)}
+                initialTab={cinemaTab}
               />
             </ProtectedRoute>
           } />
-
-          <Route path="/favorites" element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <FavoritesPage movies={favorites} />
-            </ProtectedRoute>
-          } />
+          <Route path="/watchlist" element={<Navigate to="/my-cinema?tab=watchlist" replace />} />
+          <Route path="/favorites" element={<Navigate to="/my-cinema?tab=favorites" replace />} />
 
           <Route path="/profile" element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>

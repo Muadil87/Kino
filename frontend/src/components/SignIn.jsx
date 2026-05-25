@@ -3,6 +3,7 @@ import { authApi } from '../services/api'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { Input } from './ui/input'
+import Icon from './ui/Icon'
 import './Auth.css'
 
 export default function SignIn({ onNavigateToSignUp, onLogin }) {
@@ -37,10 +38,11 @@ export default function SignIn({ onNavigateToSignUp, onLogin }) {
         onError={(e) => { e.target.style.display = 'none' }}
       />
       <Card className="auth-card">
-        <h2 className="auth-title">Welcome Back</h2>
+        <h2 className="auth-title"><Icon name="cinema" size={20} tone="gold" />Welcome Back</h2>
         <p className="auth-subtitle">Sign in to continue curating your cinema.</p>
         {error && <div className="auth-error" role="alert">{error}</div>}
         <form onSubmit={handleSubmit}>
+          <label className="auth-label" htmlFor="email">Email</label>
           <Input
             variant="unstyled"
             type="email"
@@ -51,6 +53,7 @@ export default function SignIn({ onNavigateToSignUp, onLogin }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
+          <label className="auth-label" htmlFor="password">Password</label>
           <Input
             variant="unstyled"
             type="password"
@@ -65,9 +68,9 @@ export default function SignIn({ onNavigateToSignUp, onLogin }) {
             {loading ? 'Signing In...' : 'Sign In'}
           </Button>
         </form>
-        <div className="auth-link" onClick={onNavigateToSignUp} style={{ cursor: 'pointer' }}>
+        <button type="button" className="auth-link auth-link-btn" onClick={onNavigateToSignUp}>
           New to KINO? <span>Join the Club</span>
-        </div>
+        </button>
       </Card>
     </div>
   )

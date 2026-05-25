@@ -4,17 +4,19 @@ import { searchMovies } from '../services/tmdb'
 import { tmdbImage } from '../utils/image'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
+import Icon from './ui/Icon'
 import './Navbar.css'
 import './NavbarSearch.css'
 
-export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount = 0, favoritesCount = 0 }) {
+export default function Navbar({ isLoggedIn, onLogout }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [showDropdown, setShowDropdown] = useState(false)
-  const [showUserDropdown, setShowUserDropdown] = useState(false)
+  
+  const [showQuickMenu, setShowQuickMenu] = useState(false)
   const searchRef = useRef(null)
-  const userMenuRef = useRef(null)
+  const quickMenuRef = useRef(null)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -27,8 +29,8 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowDropdown(false)
       }
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-        setShowUserDropdown(false)
+      if (quickMenuRef.current && !quickMenuRef.current.contains(event.target)) {
+        setShowQuickMenu(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -72,6 +74,11 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
     setMobileMenuOpen(false)
   }
 
+  const closeAllMenus = () => {
+    setShowQuickMenu(false)
+    setMobileMenuOpen(false)
+  }
+
   return (
     <nav className={`navbar ${isTransparentPage ? 'transparent' : ''}`}>
       <div className="navbar-container">
@@ -82,19 +89,24 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
 
         <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
           <Link to={isLoggedIn ? "/dashboard" : "/#trending"} className="nav-link">
-            Trending
+            Home
           </Link>
-          <Link to="/collections" className="nav-link">
-            Collections
+          <Link to="/movies" className="nav-link">
+            Movies
           </Link>
           {isLoggedIn && (
-            <Link to="/watchlist" className="nav-link">
-              My Watchlist
+            <Link to="/activity" className="nav-link">
+              Activity
             </Link>
           )}
           {isLoggedIn && (
-            <Link to="/favorites" className="nav-link">
-              Favorites
+            <Link to="/communities" className="nav-link">
+              Communities
+            </Link>
+          )}
+          {isLoggedIn && (
+            <Link to="/profile" className="nav-link">
+              Profile
             </Link>
           )}
         </div>
@@ -103,6 +115,7 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
           {!isTransparentPage && (
             <div className="search-container" ref={searchRef}>
               <form className="search-form" onSubmit={handleSearchSubmit}>
+                <span className="navbar-search-icon"><Icon name="search" size={16} tone="muted" /></span>
                 <Input
                   variant="unstyled"
                   type="search"
@@ -157,53 +170,8 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
                 aria-label="Settings"
                 title="Settings"
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="3"></circle>
-                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                </svg>
+                <Icon name="settings" size={24} tone="muted" />
               </Button>
-
-              <div className="user-menu-container" ref={userMenuRef}>
-                <Button
-                  variant="unstyled"
-                  size="none"
-                  className="user-btn" 
-                  onClick={() => setShowUserDropdown(!showUserDropdown)}
-                  aria-label="User Profile"
-                  title={username || "User"}
-                >
-                  <div className="user-avatar-small">
-                    {username ? username.charAt(0).toUpperCase() : 'U'}
-                  </div>
-                </Button>
-                
-                {showUserDropdown && (
-                  <div className="user-dropdown">
-                    <div className="user-dropdown-header">
-                      <span className="user-dropdown-greeting">Signed in as</span>
-                      <span className="user-dropdown-name">{username || 'User'}</span>
-                    </div>
-                    
-                    <div className="user-dropdown-divider"></div>
-                    
-                    <Button variant="unstyled" size="none" className="user-dropdown-item" onClick={() => { navigate('/profile'); setShowUserDropdown(false); }}>
-                      Profile
-                    </Button>
-                    <Button variant="unstyled" size="none" className="user-dropdown-item" onClick={() => { navigate('/watchlist'); setShowUserDropdown(false); }}>
-                      Watchlist <span className="badge-count">{watchlistCount}</span>
-                    </Button>
-                    <Button variant="unstyled" size="none" className="user-dropdown-item" onClick={() => { navigate('/favorites'); setShowUserDropdown(false); }}>
-                      Favorites <span className="badge-count">{favoritesCount}</span>
-                    </Button>
-                    
-                    <div className="user-dropdown-divider"></div>
-                    
-                    <Button variant="unstyled" size="none" className="user-dropdown-item logout-item" onClick={() => { if(onLogout) onLogout(); setShowUserDropdown(false); }}>
-                      Log Out
-                    </Button>
-                  </div>
-                )}
-              </div>
             </>
           ) : (
             <>
@@ -220,18 +188,42 @@ export default function Navbar({ isLoggedIn, username, onLogout, watchlistCount 
             </>
           )}
 
-          <Button
-            variant="unstyled"
-            size="none"
-            className="menu-btn"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-          </Button>
+          <div className="quick-menu-wrap" ref={quickMenuRef}>
+            <Button
+              variant="unstyled"
+              size="none"
+              className="menu-btn"
+              onClick={() => {
+                if (window.innerWidth <= 768) {
+                  setMobileMenuOpen((v) => !v)
+                  setShowQuickMenu(false)
+                } else {
+                  setShowQuickMenu((v) => !v)
+                }
+              }}
+              aria-label="Open quick menu"
+            >
+              <Icon name="menu" size={24} tone="muted" />
+            </Button>
+            {showQuickMenu && (
+              <div className="quick-menu-dropdown">
+                <Link to={isLoggedIn ? '/dashboard' : '/'} className="quick-menu-item" onClick={closeAllMenus}><Icon name="trending" size={16} />Trending</Link>
+                <Link to="/movies" className="quick-menu-item" onClick={closeAllMenus}><Icon name="browse" size={16} />Browse</Link>
+                {isLoggedIn && <Link to="/my-cinema" className="quick-menu-item" onClick={closeAllMenus}><Icon name="watchlist" size={16} />My Cinema</Link>}
+                <Link to="/collections" className="quick-menu-item" onClick={closeAllMenus}><Icon name="collections" size={16} />Collections</Link>
+                {isLoggedIn && <Link to="/profile" className="quick-menu-item" onClick={closeAllMenus}><Icon name="user" size={16} />Profile</Link>}
+                {isLoggedIn && <Link to="/settings" className="quick-menu-item" onClick={closeAllMenus}><Icon name="settings" size={16} />Settings</Link>}
+                {isLoggedIn && <Link to="/friends" className="quick-menu-item" onClick={closeAllMenus}><Icon name="user" size={16} />Friends</Link>}
+                {isLoggedIn && <Link to="/activity" className="quick-menu-item" onClick={closeAllMenus}><Icon name="sparkles" size={16} />Activity</Link>}
+                {isLoggedIn && (
+                  <Button variant="unstyled" size="none" className="quick-menu-item quick-menu-logout" onClick={() => { closeAllMenus(); if (onLogout) onLogout(); }}>
+                    <Icon name="logout" size={16} />
+                    Log Out
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </nav>

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -71,5 +73,45 @@ class User extends Authenticatable
         return $this->belongsToMany(Movie::class, 'histories', 'user_id', 'movie_id')
             ->withPivot('watched_on')
             ->withTimestamps();
+    }
+
+    public function sentFriendRequests(): HasMany
+    {
+        return $this->hasMany(Friendship::class, 'requester_id');
+    }
+
+    public function receivedFriendRequests(): HasMany
+    {
+        return $this->hasMany(Friendship::class, 'addressee_id');
+    }
+
+    public function ownedCommunities(): HasMany
+    {
+        return $this->hasMany(Community::class, 'owner_id');
+    }
+
+    public function communityMemberships(): HasMany
+    {
+        return $this->hasMany(CommunityMember::class, 'user_id');
+    }
+
+    public function telegramLink(): HasOne
+    {
+        return $this->hasOne(UserTelegramLink::class, 'user_id');
+    }
+
+    public function activityEvents(): HasMany
+    {
+        return $this->hasMany(ActivityEvent::class, 'actor_user_id');
+    }
+
+    public function profile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class, 'user_id');
+    }
+
+    public function badges(): HasMany
+    {
+        return $this->hasMany(UserBadge::class, 'user_id');
     }
 }

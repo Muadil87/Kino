@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { Input } from './ui/input'
+import Icon from './ui/Icon'
 import './Settings.css'
 
 const Settings = ({ username, setUsername }) => {
@@ -36,10 +37,19 @@ const Settings = ({ username, setUsername }) => {
   return (
     <div className="settings-page">
       <div className="settings-container">
-        <Card className="settings-card">
-          <h1 className="settings-title">Account Settings</h1>
+        <div className="section-header settings-header">
+          <div>
+            <p className="kino-overline">Preferences</p>
+            <h1 className="section-title">Account Settings</h1>
+          </div>
+          <p className="section-subtitle">Update your account details with a clean and secure workflow.</p>
+        </div>
 
+        <Card className="settings-card kino-panel">
           <form className="settings-form" onSubmit={handleSave}>
+            <div className="settings-mini-title">
+              <p className="post-author">Identity</p>
+            </div>
             <div className="form-group">
               <label htmlFor="username">Username</label>
               <Input
@@ -53,37 +63,46 @@ const Settings = ({ username, setUsername }) => {
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="password">New Password (Optional)</label>
-              <Input
-                variant="unstyled"
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="form-input"
-                placeholder="********"
-              />
+            <div className="form-grid">
+              <div className="form-group">
+                <label htmlFor="password">New Password (Optional)</label>
+                <Input
+                  variant="unstyled"
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="form-input"
+                  placeholder="********"
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <Input
+                  variant="unstyled"
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="form-input"
+                  placeholder="********"
+                />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <Input
-                variant="unstyled"
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="form-input"
-                placeholder="********"
-              />
+            <div className="settings-mini-title">
+              <p className="post-author">Security</p>
             </div>
 
             {error && <div className="error-message">{error}</div>}
             {message && <div className="success-message">{message}</div>}
 
             <div className="form-actions">
-              <Button variant="unstyled" size="none" type="submit" className="btn-primary save-btn">Save Changes</Button>
+              <Button variant="unstyled" size="none" type="submit" className="btn-primary save-btn">
+                <Icon name="settings" size={16} tone="normal" />
+                Save Changes
+              </Button>
             </div>
           </form>
         </Card>

@@ -4,6 +4,7 @@ import { authApi } from '../services/api'
 import { Button } from './ui/button'
 import { Card } from './ui/card'
 import { Input } from './ui/input'
+import Icon from './ui/Icon'
 import './Auth.css'
 
 const SignUp = ({ onNavigateToSignIn, onSignUp }) => {
@@ -66,14 +67,16 @@ const SignUp = ({ onNavigateToSignIn, onSignUp }) => {
         onError={(e) => { e.target.style.display = 'none' }}
       />
       <Card className="auth-card">
-        <h2 className="auth-title">Create Account</h2>
+        <h2 className="auth-title"><Icon name="cinema" size={20} tone="gold" />Create Account</h2>
         <p className="auth-subtitle">Join the club. Build your collection.</p>
         {error && <div className="auth-error" role="alert">{error}</div>}
 
         <form onSubmit={handleSignUp}>
+          <label className="auth-label" htmlFor="signup-username">Username</label>
           <Input
             variant="unstyled"
             type="text"
+            id="signup-username"
             name="username"
             value={formData.username}
             onChange={handleChange}
@@ -82,9 +85,11 @@ const SignUp = ({ onNavigateToSignIn, onSignUp }) => {
             required
           />
 
+          <label className="auth-label" htmlFor="signup-email">Email</label>
           <Input
             variant="unstyled"
             type="email"
+            id="signup-email"
             name="email"
             value={formData.email}
             onChange={handleChange}
@@ -93,9 +98,11 @@ const SignUp = ({ onNavigateToSignIn, onSignUp }) => {
             required
           />
 
+          <label className="auth-label" htmlFor="signup-password">Password</label>
           <Input
             variant="unstyled"
             type="password"
+            id="signup-password"
             name="password"
             value={formData.password}
             onChange={handleChange}
@@ -104,9 +111,11 @@ const SignUp = ({ onNavigateToSignIn, onSignUp }) => {
             required
           />
 
+          <label className="auth-label" htmlFor="signup-password-confirm">Confirm Password</label>
           <Input
             variant="unstyled"
             type="password"
+            id="signup-password-confirm"
             name="password_confirmation"
             value={formData.password_confirmation}
             onChange={handleChange}
@@ -120,9 +129,9 @@ const SignUp = ({ onNavigateToSignIn, onSignUp }) => {
           </Button>
         </form>
 
-        <div className="auth-link" onClick={onNavigateToSignIn} style={{ cursor: 'pointer' }}>
+        <button type="button" className="auth-link auth-link-btn" onClick={onNavigateToSignIn}>
           Already have an account? <span>Sign In</span>
-        </div>
+        </button>
       </Card>
     </div>
   )

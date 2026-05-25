@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { tmdbImage } from '../utils/image'
 import { Button } from './ui/button'
+import Icon from './ui/Icon'
 import './MovieCard.css'
 
 export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
@@ -54,10 +55,7 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
                   }}
                   title="Mark as Watched"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                  </svg>
+                  <Icon name="watched" size={20} tone="gold" />
                 </Button>
               )}
               {onRemove && (
@@ -72,10 +70,7 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
                   }}
                   title="Remove from List"
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
+                  <Icon name="remove" size={20} tone="muted" />
                 </Button>
               )}
             </div>
@@ -87,7 +82,12 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
             <h3 className="movie-title">{movie.title}</h3>
             <div className="movie-meta-row">
               {year && <span className="movie-meta-chip">{year}</span>}
-              {rating && <span className="movie-meta-chip">? {rating}</span>}
+              {rating && (
+                <span className="movie-meta-chip rating-chip">
+                  <Icon name="star" size={16} tone="gold" />
+                  {rating}
+                </span>
+              )}
               {movie.dateWatched && <span className="movie-meta-chip subtle">Watched</span>}
             </div>
           </div>

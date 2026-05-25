@@ -43,6 +43,9 @@
   padding: 0.5rem 0;
   position: relative;
   transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
 }
 
 .tab-btn:hover {
@@ -79,6 +82,12 @@
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: clamp(0.85rem, 1.5vw, 1.2rem);
   width: 100%;
+}
+
+.overline-icon {
+  display: inline-flex;
+  margin-right: 0.35rem;
+  transform: translateY(2px);
 }
 
 /* Empty State - Using SharedStyles.css */

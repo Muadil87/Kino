@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import MovieCard from './MovieCard';
 import { getSimilarMovies } from '../services/tmdb';
+import Icon from './ui/Icon';
 import './Watchlist.css';
 
 const Watchlist = ({ watchlist, history, onRemoveFromWatchlist, onRemoveFromHistory, onMoveToHistory }) => {
@@ -69,12 +70,14 @@ const Watchlist = ({ watchlist, history, onRemoveFromWatchlist, onRemoveFromHist
             className={`tab-btn ${activeTab === 'watchlist' ? 'active' : ''}`} 
             onClick={() => setActiveTab('watchlist')}
           >
+            <Icon name="watchlist" size={16} />
             Watchlist <span className="count">({(watchlist || []).length})</span>
           </button>
           <button 
             className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`} 
             onClick={() => setActiveTab('history')}
           >
+            <Icon name="history" size={16} />
             History <span className="count">({(history || []).length})</span>
           </button>
         </div>
@@ -116,7 +119,7 @@ const Watchlist = ({ watchlist, history, onRemoveFromWatchlist, onRemoveFromHist
         <div className="watchlist-content recommendations-section">
           <div className="section-header">
             <div>
-              <p className="kino-overline">Personalized</p>
+              <p className="kino-overline"><span className="overline-icon"><Icon name="ai" size={16} tone="gold" /></span>Personalized</p>
               <h2 className="section-title">Recommended for You</h2>
             </div>
             <p className="section-subtitle">Suggestions based on your latest watchlist additions.</p>
