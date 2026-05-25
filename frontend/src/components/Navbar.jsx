@@ -20,7 +20,9 @@ export default function Navbar({ isLoggedIn, onLogout }) {
   const location = useLocation()
 
   // Check if we are on a page that requires a transparent navbar
+  const isHomePage = location.pathname === '/'
   const isTransparentPage = ['/', '/login', '/signup', '/signin'].includes(location.pathname)
+  const showNavbarSearch = isHomePage || !isTransparentPage
 
   // Click outside to close dropdowns
   useEffect(() => {
@@ -71,7 +73,7 @@ export default function Navbar({ isLoggedIn, onLogout }) {
   }
 
   return (
-    <nav className={`navbar ${isTransparentPage ? 'transparent' : ''}`}>
+    <nav className={`navbar ${isTransparentPage ? 'transparent' : ''} ${isHomePage ? 'home-navbar' : ''}`}>
       <div className="navbar-container">
         
         <Link to="/" className="navbar-logo" style={{ textDecoration: 'none' }}>
@@ -79,26 +81,26 @@ export default function Navbar({ isLoggedIn, onLogout }) {
         </Link>
 
         <div className={`navbar-links ${mobileMenuOpen ? 'active' : ''}`}>
-          <Link to="/" className="nav-link">
+          <Link to="/" className={`nav-link ${isHomePage ? 'active' : ''}`}>
             Home
           </Link>
-          <Link to="/movies" className="nav-link">
+          <Link to="/movies" className={`nav-link ${location.pathname === '/movies' ? 'active' : ''}`}>
             Movies
           </Link>
-          {isLoggedIn && (
-            <Link to="/activity" className="nav-link">
+          {(isLoggedIn || isHomePage) && (
+            <Link to={isLoggedIn ? '/activity' : '/login'} className={`nav-link ${location.pathname === '/activity' ? 'active' : ''}`}>
               Activity
             </Link>
           )}
-          {isLoggedIn && (
-            <Link to="/profile" className="nav-link">
+          {(isLoggedIn || isHomePage) && (
+            <Link to={isLoggedIn ? '/profile' : '/signup'} className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}>
               Profile
             </Link>
           )}
         </div>
 
         <div className="navbar-actions">
-          {!isTransparentPage && (
+          {showNavbarSearch && (
             <div className="search-container" ref={searchRef}>
               <form className="search-form" onSubmit={handleSearchSubmit}>
                 <span className="navbar-search-icon"><Icon name="search" size={16} tone="muted" /></span>
@@ -106,7 +108,7 @@ export default function Navbar({ isLoggedIn, onLogout }) {
                   variant="unstyled"
                   type="search"
                   className="search-input"
-                  placeholder="Search movies..."
+                  placeholder={isHomePage ? 'Search movies, actors, directors...' : 'Search movies...'}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onFocus={() => {

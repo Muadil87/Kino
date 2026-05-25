@@ -121,14 +121,20 @@
   gap: 7px;
 }
 
-.profile-stats {
+.profile-stats-bar {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: 0;
+  padding: 8px;
 }
 
-.stat-item {
-  padding: 14px;
+.stat-pair {
+  padding: 14px 16px;
+  border-right: 1px solid var(--kino-line);
+}
+
+.stat-pair:last-child {
+  border-right: none;
 }
 
 .stat-icon {
@@ -136,39 +142,41 @@
 }
 
 .stat-num {
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   font-family: var(--font-label);
-  font-size: clamp(1.7rem, 2.5vw, 2.3rem);
+  font-size: clamp(1.5rem, 2vw, 2rem);
   line-height: 1;
 }
 
 .stat-title {
   margin: 6px 0 0;
-  font-size: 1.08rem;
+  font-size: 0.95rem;
 }
 
-.stat-sub {
-  margin: 3px 0 0;
-  color: var(--kino-text-muted);
-  font-size: 0.9rem;
+.profile-workspace {
+  padding: 20px;
 }
 
-.profile-grid {
+.profile-workspace-grid {
   display: grid;
-  grid-template-columns: 1fr 1.12fr;
-  gap: 14px;
+  grid-template-columns: 0.95fr 1.05fr;
+  gap: 22px;
 }
 
-.about-card,
-.settings-card {
-  padding: 16px;
+.about-column {
+  padding-right: 16px;
+  border-right: 1px solid var(--kino-line);
 }
 
-.about-card h2,
-.settings-card h2,
+.settings-column {
+  padding-left: 6px;
+}
+
+.about-column h2,
+.settings-column h2,
 .library-card h2 {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: 1.42rem;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -188,7 +196,7 @@
 
 .about-section h3 {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: 1.05rem;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -232,7 +240,7 @@
 
 .favorite-title {
   margin: 0;
-  font-size: 1.35rem;
+  font-size: 1.05rem;
   line-height: 1.2;
 }
 
@@ -248,7 +256,7 @@
   fill: currentColor;
 }
 
-.settings-card .muted {
+.settings-column .muted {
   margin-top: 8px;
   color: var(--kino-text-muted);
 }
@@ -491,12 +499,23 @@
 }
 
 @media (max-width: 980px) {
-  .profile-stats {
+  .profile-stats-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .profile-grid {
+  .profile-workspace-grid {
     grid-template-columns: 1fr;
+  }
+
+  .about-column {
+    border-right: none;
+    border-bottom: 1px solid var(--kino-line);
+    padding-right: 0;
+    padding-bottom: 18px;
+  }
+
+  .settings-column {
+    padding-left: 0;
   }
 
   .profile-movie-strip {

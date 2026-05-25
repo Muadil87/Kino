@@ -19,6 +19,17 @@
   background: rgba(11, 11, 15, 0.55);
 }
 
+.navbar.home-navbar {
+  top: 18px;
+  left: 44px;
+  right: 44px;
+  height: 54px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
 .navbar-container {
   width: min(1600px, 100%);
   padding: 0 var(--space-6);
@@ -40,6 +51,12 @@
   text-transform: uppercase;
 }
 
+.home-navbar .logo-text {
+  font-size: 1.85rem;
+  letter-spacing: 0.16em;
+  color: #f5f2eb;
+}
+
 .logo-text::after {
   content: "";
   display: inline-block;
@@ -57,6 +74,10 @@
   gap: var(--space-6);
 }
 
+.home-navbar .navbar-links {
+  gap: clamp(1.8rem, 3.1vw, 3.4rem);
+}
+
 .nav-link {
   font-size: 0.74rem;
   text-transform: uppercase;
@@ -65,6 +86,24 @@
   position: relative;
   padding: 0.3rem 0.15rem;
   font-family: var(--font-label);
+}
+
+.home-navbar .nav-link {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: rgba(245, 242, 235, 0.86);
+}
+
+.home-navbar .nav-link.active {
+  color: #ffffff;
+}
+
+.home-navbar .nav-link::after {
+  bottom: -9px;
+  height: 2px;
 }
 
 .nav-link:hover {
@@ -121,6 +160,15 @@
   transition: width var(--dur-base) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
 }
 
+.home-navbar .search-input {
+  width: min(360px, 26vw);
+  height: 48px;
+  border-color: rgba(245, 242, 235, 0.16);
+  background: rgba(9, 12, 16, 0.58);
+  font-size: 0.9rem;
+  backdrop-filter: blur(14px);
+}
+
 .navbar-search-icon {
   position: absolute;
   left: 0.82rem;
@@ -133,6 +181,10 @@
 .search-input:focus {
   width: 300px;
   border-color: var(--accent-primary);
+}
+
+.home-navbar .search-input:focus {
+  width: min(390px, 29vw);
 }
 
 .search-input::placeholder {
@@ -148,6 +200,18 @@
   letter-spacing: 0.12em;
   font-weight: 700;
   font-family: var(--font-label);
+}
+
+.home-navbar .sign-in-btn {
+  color: rgba(245, 242, 235, 0.82);
+}
+
+.home-navbar .sign-up-btn {
+  padding: 0.72rem 1rem;
+  background: rgba(212, 165, 116, 0.12);
+  color: #f3b547;
+  border: 1px solid rgba(243, 181, 71, 0.3);
+  box-shadow: none;
 }
 
 .sign-in-btn {
@@ -297,6 +361,19 @@
 }
 
 @media (max-width: 768px) {
+  .navbar.home-navbar {
+    left: 14px;
+    right: 14px;
+    height: 64px;
+    background: rgba(7, 10, 14, 0.82);
+    border-color: rgba(245, 242, 235, 0.08);
+    backdrop-filter: blur(12px);
+  }
+
+  .home-navbar .logo-text {
+    font-size: 1.4rem;
+  }
+
   .navbar-links {
     position: absolute;
     top: 72px;
