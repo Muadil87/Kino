@@ -2,11 +2,18 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   AtSign,
+  Bookmark,
+  CalendarDays,
+  Camera,
   ChevronRight,
   Clapperboard,
+  Clock3,
+  Heart,
   Lock,
   Mail,
+  PenLine,
   Settings,
+  Shield,
   Star,
   Tag,
   User,
@@ -44,6 +51,59 @@ const normalizeGenres = (value) => {
       .filter(Boolean)
   }
   return []
+}
+
+const formatRelativeDate = (value) => {
+  if (!value) return 'Just now'
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return 'Recently'
+
+  const diffMs = Date.now() - date.getTime()
+  const minute = 60 * 1000
+  const hour = 60 * minute
+  const day = 24 * hour
+
+  if (diffMs < hour) return `${Math.max(1, Math.floor(diffMs / minute))}m ago`
+  if (diffMs < day) return `${Math.floor(diffMs / hour)}h ago`
+  return `${Math.floor(diffMs / day)}d ago`
+}
+
+const recentActivityLine = (event) => {
+  const movieTitle = event?.movie?.title || 'a movie'
+
+  switch (event?.event_type) {
+    case 'review_created':
+      return `Reviewed ${movieTitle}`
+    case 'watchlist_added':
+      return `Added ${movieTitle} to watchlist`
+    case 'favorite_added':
+      return `Favorited ${movieTitle}`
+    case 'movie_watched':
+      return `Watched ${movieTitle}`
+    case 'movie_rated':
+      return `Rated ${movieTitle} ${event?.metadata?.rating ? `(${event.metadata.rating}/5)` : ''}`.trim()
+    case 'movie_recommended':
+      return `Recommended ${movieTitle}`
+    default:
+      return String(event?.event_type || 'Updated profile').replaceAll('_', ' ')
+  }
+}
+
+const activityIcon = (eventType) => {
+  switch (eventType) {
+    case 'review_created':
+      return <PenLine size={15} />
+    case 'watchlist_added':
+      return <Bookmark size={15} />
+    case 'favorite_added':
+      return <Star size={15} />
+    case 'movie_watched':
+      return <Clapperboard size={15} />
+    case 'movie_recommended':
+      return <Tag size={15} />
+    default:
+      return <Clock3 size={15} />
+  }
 }
 
 function RatingStars({ count = 4 }) {
@@ -184,6 +244,10 @@ export default function Profile({ profileData, loading, error, onRefresh }) {
 
   const activeItems = library[activeTab] || []
   const libraryPreview = (activeItems || []).slice(0, 5)
+  const topMovies = profileData?.identity?.top_movies || []
+  const recentActivity = profileData?.identity?.recent_activity || []
+  const profileCompletion = profileData?.identity?.profile_completion || { percent: 0, completed_items: 0, total_items: 0 }
+  const ratingAverage = Number.isFinite(stats.rating_average) ? stats.rating_average : 0
 
   const clearStatus = () => {
     setSaveError('')
@@ -438,13 +502,14 @@ export default function Profile({ profileData, loading, error, onRefresh }) {
             </button>
             <button type="button" className="hero-avatar-wrap" onClick={() => avatarInputRef.current?.click()} title="Change profile picture">
               {avatarSrc ? <img src={avatarSrc} alt={user.name || 'avatar'} className="hero-avatar" onError={() => setAvatarLoadFailed(true)} /> : <span className="hero-avatar-initials">{initials(user.name)}</span>}
+              <span className="hero-avatar-edit"><Camera size={15} /></span>
             </button>
             <div className="hero-main">
               <h1>{user.name || 'User'}</h1>
               <p className="hero-username">@{(user.name || 'user').replace(/\s+/g, '').toLowerCase()}</p>
-              <p className="hero-email">{user.email || ''}</p>
+              <p className="hero-email hero-meta-line"><Mail size={16} /> {user.email || ''}</p>
               <p className="hero-bio">{form.bio || 'Film lover. Story seeker. Always watching.'}</p>
-              <p className="hero-joined">Joined {formatMonthYear(user.created_at)}</p>
+              <p className="hero-joined hero-meta-line"><CalendarDays size={16} /> Joined {formatMonthYear(user.created_at)}</p>
             </div>
           </Card>
 
@@ -469,23 +534,83 @@ export default function Profile({ profileData, loading, error, onRefresh }) {
             <div className="stat-pair"><Mail size={18} className="stat-icon" /><p className="stat-num">{stats.reviews_count ?? 0}</p><p className="stat-title">Reviews</p></div>
           </section>
 
-          <section className="profile-workspace kino-panel">
-            <div className="profile-workspace-grid">
-              <section className="about-column">
-                <h2><User size={20} /> About</h2>
-                <p className="about-copy">{form.bio || 'I love movies that make me feel something. Always looking for great storytelling.'}</p>
+          <section className="profile-identity-grid">
+            <Card className="kino-panel profile-identity-card">
+              <div className="profile-identity-head">
+                <h2><Clapperboard size={18} /> Top 4 Movies</h2>
+                <Link to="/my-cinema?tab=watched" className="library-view-all">Open Watched</Link>
+              </div>
+              {topMovies.length > 0 ? (
+                <>
+                  <div className="profile-top-movies-grid">
+                    {topMovies.map((movie) => (
+                      <Link key={`top-${movie.id}`} to={`/movies/${movie.id}`} className="profile-top-movie">
+                        <div className="poster-wrap">
+                          <img src={tmdbImage(movie.poster_path, 'w342')} alt={movie.title} />
+                        </div>
+                        <p className="movie-name">{movie.title}</p>
+                        <p className="movie-year">{movie.release_date ? movie.release_date.slice(0, 4) : 'N/A'}</p>
+                      </Link>
+                    ))}
+                  </div>
+                  <Link to="/my-cinema?tab=watched" className="profile-wide-link">
+                    View all top movies <ChevronRight size={16} />
+                  </Link>
+                </>
+              ) : (
+                <div className="empty-box">No watched movies yet.</div>
+              )}
+            </Card>
 
-                <div className="about-section">
-                  <h3><Tag size={18} /> Favorite Genres</h3>
-                  <div className="chips-row">
-                    {(form.favorite_genres || []).length > 0
-                      ? form.favorite_genres.map((g) => <span key={g} className="chip">{g}</span>)
-                      : <span className="muted">No genres selected yet.</span>}
+            <Card className="kino-panel profile-identity-card">
+              <h2><Star size={18} /> Identity Metrics</h2>
+              <div className="profile-metric-grid">
+                <div className="profile-metric">
+                  <span className="profile-metric-icon"><Star size={16} /></span>
+                  <p className="profile-metric-label">Rating Average</p>
+                  <p className="profile-metric-value">{ratingAverage.toFixed(1)}<small> / 5</small></p>
+                </div>
+                <div className="profile-metric">
+                  <span className="profile-metric-icon"><Clapperboard size={16} /></span>
+                  <p className="profile-metric-label">Total Watched</p>
+                  <p className="profile-metric-value">{stats.watched_count ?? 0}</p>
+                </div>
+                <div className="profile-metric">
+                  <span className="profile-metric-icon"><PenLine size={16} /></span>
+                  <p className="profile-metric-label">Total Reviews</p>
+                  <p className="profile-metric-value">{stats.reviews_count ?? 0}</p>
+                </div>
+                <div className="profile-metric">
+                  <span className="profile-metric-icon"><Bookmark size={16} /></span>
+                  <p className="profile-metric-label">Watchlist Count</p>
+                  <p className="profile-metric-value">{stats.watchlist_count ?? 0}</p>
+                </div>
+              </div>
+
+              <div className="about-section">
+                <h3><Tag size={17} /> Favorite Genres</h3>
+                <div className="chips-row">
+                  {(form.favorite_genres || []).length > 0
+                    ? form.favorite_genres.map((g) => <span key={`identity-${g}`} className="chip">{g}</span>)
+                    : <span className="muted">No genres selected yet.</span>}
+                </div>
+              </div>
+
+              <div className="identity-bottom-grid">
+                <div className="identity-mini-panel">
+                  <h3><Clapperboard size={17} /> Favorite Director</h3>
+                  <div className="favorite-line director-line">
+                    {form.favorite_director_image_path ? (
+                      <img className="director-avatar" src={tmdbImage(form.favorite_director_image_path, 'w185')} alt={form.favorite_director} />
+                    ) : (
+                      <span className="director-avatar director-avatar-fallback">{initials(form.favorite_director || 'D')}</span>
+                    )}
+                    <p className="favorite-title">{form.favorite_director || 'Not set'}</p>
                   </div>
                 </div>
 
-                <div className="about-section">
-                  <h3><Star size={18} /> Favorite Movie</h3>
+                <div className="identity-mini-panel">
+                  <h3><Star size={17} /> Favorite Movie</h3>
                   <div className="favorite-line">
                     {form.favorite_movie_poster_path && (
                       <img src={tmdbImage(form.favorite_movie_poster_path, 'w185')} alt={form.favorite_movie} />
@@ -497,54 +622,87 @@ export default function Profile({ profileData, loading, error, onRefresh }) {
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <div className="about-section">
-                  <h3><Clapperboard size={18} /> Favorite Director</h3>
-                  <div className="favorite-line director-line">
-                    {form.favorite_director_image_path && (
-                      <img className="director-avatar" src={tmdbImage(form.favorite_director_image_path, 'w185')} alt={form.favorite_director} />
-                    )}
-                    <p className="favorite-title">{form.favorite_director || 'Not set'}</p>
+              <div className="about-section">
+                <h3><User size={17} /> Profile Completion</h3>
+                <div className="profile-completion-row">
+                  <p className="profile-completion-label">
+                    {profileCompletion.percent ?? 0}% complete ({profileCompletion.completed_items ?? 0}/{profileCompletion.total_items ?? 0})
+                  </p>
+                  <div className="profile-completion-track">
+                    <span style={{ width: `${profileCompletion.percent ?? 0}%` }} />
                   </div>
                 </div>
-              </section>
+              </div>
+            </Card>
+          </section>
 
-              <section className="settings-column">
-                <h2><Settings size={20} /> Account Settings</h2>
-                <p className="muted">Manage your account information</p>
-                {saveMessage && <p className="ok">{saveMessage}</p>}
-                {saveError && <p className="err">{saveError}</p>}
-
-                <div className="settings-rows">
-                  <div className="settings-row-block">
-                    <SettingsRow icon={<User size={18} />} title="Change Bio" subtitle="Update your short profile intro" onClick={() => setActiveEditor(activeEditor === 'bio' ? null : 'bio')} />
-                    {renderEditor('bio')}
-                  </div>
-                  <div className="settings-row-block">
-                    <SettingsRow icon={<AtSign size={18} />} title="Change Username" subtitle={form.name || '@username'} onClick={() => setActiveEditor(activeEditor === 'name' ? null : 'name')} />
-                    {renderEditor('name')}
-                  </div>
-                  <div className="settings-row-block">
-                    <SettingsRow icon={<Mail size={18} />} title="Change Email" subtitle={form.email || 'user@email.com'} onClick={() => setActiveEditor(activeEditor === 'email' ? null : 'email')} />
-                    {renderEditor('email')}
-                  </div>
-                  <div className="settings-row-block">
-                    <SettingsRow icon={<Tag size={18} />} title="Update Favorites" subtitle="Genres, movie, and director" onClick={() => setActiveEditor(activeEditor === 'taste' ? null : 'taste')} />
-                    {renderEditor('taste')}
-                  </div>
-                  <div className="settings-row-block">
-                    <SettingsRow icon={<Lock size={18} />} title="Change Password" subtitle="Update your password" onClick={() => setActiveEditor(activeEditor === 'password' ? null : 'password')} />
-                    {renderEditor('password')}
-                  </div>
-                </div>
-              </section>
+          <Card className="kino-panel profile-identity-card">
+            <div className="profile-identity-head">
+              <h2><Clock3 size={18} /> Recent Activity</h2>
             </div>
+            {recentActivity.length > 0 ? (
+              <>
+                <div className="profile-recent-list">
+                  {recentActivity.map((event) => (
+                    <article key={`recent-${event.id}`} className="profile-recent-item">
+                      <div className="profile-recent-left">
+                        <span className="profile-recent-icon">{activityIcon(event.event_type)}</span>
+                        <p className="profile-recent-text">{recentActivityLine(event)}</p>
+                      </div>
+                      <p className="profile-recent-time">{formatRelativeDate(event.created_at)}</p>
+                    </article>
+                  ))}
+                </div>
+                <Link to="/activity" className="profile-wide-link">
+                  View all activity <ChevronRight size={16} />
+                </Link>
+              </>
+            ) : (
+              <div className="empty-box">No recent activity yet.</div>
+            )}
+          </Card>
+
+          <section className="profile-workspace kino-panel">
+            <section className="settings-column settings-column-full">
+              <h2><Settings size={20} /> Account Settings</h2>
+              <p className="muted">Manage your account information</p>
+              {saveMessage && <p className="ok">{saveMessage}</p>}
+              {saveError && <p className="err">{saveError}</p>}
+
+              <div className="settings-rows">
+                <div className="settings-row-block">
+                  <SettingsRow icon={<User size={18} />} title="Edit Bio" subtitle="Update your bio and personal information" onClick={() => setActiveEditor(activeEditor === 'bio' ? null : 'bio')} />
+                  {renderEditor('bio')}
+                </div>
+                <div className="settings-row-block">
+                  <SettingsRow icon={<Heart size={18} />} title="Favorites" subtitle="Manage your favorite genres, movie and director" onClick={() => setActiveEditor(activeEditor === 'taste' ? null : 'taste')} />
+                  {renderEditor('taste')}
+                </div>
+                <div className="settings-row-block">
+                  <SettingsRow icon={<AtSign size={18} />} title="Username" subtitle="Change your public username" onClick={() => setActiveEditor(activeEditor === 'name' ? null : 'name')} />
+                  {renderEditor('name')}
+                </div>
+                <div className="settings-row-block">
+                  <SettingsRow icon={<Lock size={18} />} title="Password" subtitle="Change your account password" onClick={() => setActiveEditor(activeEditor === 'password' ? null : 'password')} />
+                  {renderEditor('password')}
+                </div>
+                <div className="settings-row-block">
+                  <SettingsRow icon={<Mail size={18} />} title="Email" subtitle="Update your email address" onClick={() => setActiveEditor(activeEditor === 'email' ? null : 'email')} />
+                  {renderEditor('email')}
+                </div>
+                <div className="settings-row-block">
+                  <SettingsRow icon={<Shield size={18} />} title="Privacy & Security" subtitle="Manage your privacy settings" onClick={() => setActiveEditor(null)} />
+                </div>
+              </div>
+            </section>
           </section>
 
           <Card className="kino-panel library-card">
             <div className="library-head">
               <h2><Clapperboard size={18} /> My Library</h2>
-              <Link to={`/my-cinema?tab=${activeTab}`} className="library-view-all">View All</Link>
+              <Link to={`/my-cinema?tab=${activeTab}`} className="library-view-all">View full library</Link>
             </div>
 
             <div className="library-tabs">

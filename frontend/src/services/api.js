@@ -155,6 +155,17 @@ export const reviewApi = {
   },
 }
 
+export const movieRatingApi = {
+  async get(tmdbId) {
+    const response = await client.get(`/movies/${tmdbId}/rating`)
+    return response.data.data || { rating: null }
+  },
+  async set(tmdbId, payload) {
+    const response = await client.put(`/movies/${tmdbId}/rating`, payload)
+    return response.data.data || { rating: null }
+  },
+}
+
 export const favoritesApi = {
   async list() {
     const response = await client.get('/favorites')

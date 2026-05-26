@@ -8,6 +8,7 @@ use App\Http\Controllers\CommunityPostController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\MovieRatingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\ReviewController;
@@ -47,6 +48,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/history/{tmdbId}', [HistoryController::class, 'destroy']);
 
     Route::post('/movies/{tmdbId}/reviews', [ReviewController::class, 'store']);
+    Route::get('/movies/{tmdbId}/rating', [MovieRatingController::class, 'show']);
+    Route::put('/movies/{tmdbId}/rating', [MovieRatingController::class, 'upsert']);
     Route::delete('/reviews/{reviewId}', [ReviewController::class, 'destroy']);
 });
 

@@ -19,7 +19,9 @@ export default function Navbar({ isLoggedIn, onLogout }) {
   const navigate = useNavigate()
   const location = useLocation()
 
-  // Check if we are on a page that requires a transparent navbar
+  const primaryNavbarPaths = ['/', '/dashboard', '/movies', '/activity', '/my-cinema', '/profile']
+  const isMovieDetailPage = location.pathname.startsWith('/movies/')
+  const isHomeNavbarPage = primaryNavbarPaths.includes(location.pathname) || isMovieDetailPage
   const isHomePage = location.pathname === '/'
   const isPublicLanding = isHomePage && !isLoggedIn
   const isTransparentPage = ['/', '/login', '/register'].includes(location.pathname)
@@ -74,7 +76,7 @@ export default function Navbar({ isLoggedIn, onLogout }) {
   }
 
   return (
-    <nav className={`navbar ${isTransparentPage ? 'transparent' : ''} ${isHomePage ? 'home-navbar' : ''} ${isPublicLanding ? 'landing-navbar' : ''}`}>
+    <nav className={`navbar ${isTransparentPage ? 'transparent' : ''} ${isHomeNavbarPage ? 'home-navbar' : ''} ${isPublicLanding ? 'landing-navbar' : ''}`}>
       <div className="navbar-container">
         
         <Link to="/" className="navbar-logo" style={{ textDecoration: 'none' }}>

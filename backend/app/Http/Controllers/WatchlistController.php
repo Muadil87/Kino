@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
+use App\Services\CinemaIdentityService;
 use Illuminate\Http\Request;
 
 class WatchlistController extends Controller
 {
+    public function __construct(private readonly CinemaIdentityService $identity)
+    {
+    }
+
     public function index(Request $request)
     {
         $movies = $request->user()
@@ -37,7 +42,19 @@ class WatchlistController extends Controller
             ]
         );
 
+        $alreadyInWatchlist = $request->user()->watchlist()->where('movies.id', $movie->id)->exists();
         $request->user()->watchlist()->syncWithoutDetaching([$movie->id]);
+
+        if (!$alreadyInWatchlist) {
+            $this->identity->recordActivity(
+                $request->user(),
+                'watchlist_added',
+                'friends',
+                $movie->id,
+                null,
+                ['tmdb_id' => $movie->tmdb_id]
+            );
+        }
 
         return response()->json([
             'message' => 'Movie added to watchlist',

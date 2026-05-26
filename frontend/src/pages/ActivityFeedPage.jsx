@@ -1,13 +1,24 @@
 import { useEffect, useState } from 'react'
-import { activityApi } from '../services/api'
+import { Link } from 'react-router-dom'
+import { activityApi, recommendationApi } from '../services/api'
 import ActivityLens from '../components/ActivityLens'
 import '../components/Social.css'
 
 export default function ActivityFeedPage() {
   const [countMeta, setCountMeta] = useState({ total: 0 })
+  const [newRecommendations, setNewRecommendations] = useState([])
+
   useEffect(() => {
-    activityApi.unified({ scope: 'friends', page: 1, perPage: 1 }).then((res) => {
-      setCountMeta(res.meta || { total: 0 })
+    Promise.all([
+      activityApi.unified({ scope: 'friends', page: 1, perPage: 1 }),
+      recommendationApi.inbox(),
+    ]).then(([activityRes, inboxRes]) => {
+      setCountMeta(activityRes.meta || { total: 0 })
+      const incoming = (inboxRes.items || []).filter((item) => item.status === 'sent')
+      setNewRecommendations(incoming.slice(0, 2))
+    }).catch(() => {
+      setCountMeta({ total: 0 })
+      setNewRecommendations([])
     })
   }, [])
 
@@ -24,6 +35,20 @@ export default function ActivityFeedPage() {
       <div className="social-toolbar">
         <p className="social-count">{countMeta.total} events</p>
       </div>
+
+      {newRecommendations.length > 0 && (
+        <div className="kino-panel social-surface-card activity-recommendation-alert">
+          <p className="post-author">Inbox</p>
+          <p className="social-feature-text">New recommendation for you</p>
+          {newRecommendations.map((item) => (
+            <p key={item.id} className="social-muted">
+              {item.from_user?.name || 'Member'} recommended {item.movie?.title || 'a movie'}
+            </p>
+          ))}
+          <Link className="btn-ghost" to="/my-cinema?tab=recommendations">Open Recommendations</Link>
+        </div>
+      )}
+
       <ActivityLens pageSize={12} defaultScope="friends" />
     </section>
   )

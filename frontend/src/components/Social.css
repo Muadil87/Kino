@@ -274,6 +274,14 @@
   margin: 0;
 }
 
+.activity-recommendation-alert {
+  margin-bottom: 0.9rem;
+}
+
+.activity-recommendation-alert .btn-ghost {
+  margin-top: 0.45rem;
+}
+
 @media (max-width: 900px) {
   .social-two-col {
     grid-template-columns: 1fr;

@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getMovieDetails, getMovieCredits, getMovieVideos, getSimilarMovies, getMovieReviews, getMovieProviders } from '../services/tmdb'
+import { movieRatingApi } from '../services/api'
 import './MovieDetail.css'
 import { ErrorBoundary } from './ErrorBoundary'
 import { MovieHeroSection } from './MovieHeroSection'
@@ -9,7 +10,7 @@ import { SimilarMoviesSection } from './SimilarMoviesSection'
 import { MovieTrailerSection } from './MovieTrailerSection'
 import { MovieReviewsSection } from './MovieReviewsSection'
 
-function MovieDetailContent({ movies, onToggleFavorite, onToggleWatchlist, isFavorite, isInWatchlist }) {
+function MovieDetailContent({ movies, onToggleFavorite, onToggleWatchlist, isFavorite, isInWatchlist, isLoggedIn }) {
   const { id } = useParams()
   const movieId = Number(id)
   const navigate = useNavigate()
@@ -25,6 +26,7 @@ function MovieDetailContent({ movies, onToggleFavorite, onToggleWatchlist, isFav
   const [reviews, setReviews] = useState([])
   const [providers, setProviders] = useState(null)
   const [isLoadingAncillary, setIsLoadingAncillary] = useState(false)
+  const [userRating, setUserRating] = useState(0)
 
   // Initial load / Sync with ID
   useEffect(() => {
@@ -55,6 +57,27 @@ function MovieDetailContent({ movies, onToggleFavorite, onToggleWatchlist, isFav
     }
     load()
   }, [movieId, movies])
+
+  useEffect(() => {
+    let ignore = false
+
+    const loadRating = async () => {
+      if (!isLoggedIn) {
+        setUserRating(0)
+        return
+      }
+
+      try {
+        const data = await movieRatingApi.get(movieId)
+        if (!ignore) setUserRating(Number(data?.rating || 0))
+      } catch {
+        if (!ignore) setUserRating(0)
+      }
+    }
+
+    loadRating()
+    return () => { ignore = true }
+  }, [movieId, isLoggedIn])
 
   // Ancillary Data
   useEffect(() => {
@@ -109,6 +132,27 @@ function MovieDetailContent({ movies, onToggleFavorite, onToggleWatchlist, isFav
       window.scrollTo(0, 0)
   }
 
+  const handleRateMovie = async (ratingValue) => {
+    if (!isLoggedIn) {
+      navigate('/login')
+      return
+    }
+
+    if (!mainMovie) return
+
+    try {
+      const result = await movieRatingApi.set(movieId, {
+        rating: ratingValue,
+        title: mainMovie.title || 'Untitled',
+        poster_path: mainMovie.poster_path || null,
+        release_date: mainMovie.release_date || null,
+      })
+      setUserRating(Number(result?.rating || ratingValue))
+    } catch (error) {
+      console.error('Failed to save movie rating:', error)
+    }
+  }
+
   return (
     <div className="detail-page">
       <MovieHeroSection 
@@ -121,6 +165,9 @@ function MovieDetailContent({ movies, onToggleFavorite, onToggleWatchlist, isFav
         onToggleWatchlist={onToggleWatchlist}
         isFavorite={isFavorite}
         isInWatchlist={isInWatchlist}
+        userRating={userRating}
+        onRateMovie={handleRateMovie}
+        isLoggedIn={isLoggedIn}
       />
       
       <MovieCastSection cast={castData?.cast} isLoading={isLoadingAncillary} />

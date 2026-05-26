@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Movie;
+use App\Services\CinemaIdentityService;
 use Illuminate\Http\Request;
 
 class FavoriteController extends Controller
 {
+    public function __construct(private readonly CinemaIdentityService $identity)
+    {
+    }
+
     public function index(Request $request)
     {
         $movies = $request->user()
@@ -35,7 +40,19 @@ class FavoriteController extends Controller
             ]
         );
 
+        $alreadyFavorite = $request->user()->favorites()->where('movies.id', $movie->id)->exists();
         $request->user()->favorites()->syncWithoutDetaching([$movie->id]);
+
+        if (!$alreadyFavorite) {
+            $this->identity->recordActivity(
+                $request->user(),
+                'favorite_added',
+                'friends',
+                $movie->id,
+                null,
+                ['tmdb_id' => $movie->tmdb_id]
+            );
+        }
 
         return response()->json([
             'message' => 'Movie added to favorites',

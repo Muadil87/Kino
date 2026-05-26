@@ -1,11 +1,12 @@
-import { activityHeadline } from '../utils/activity'
+import { activityDetail, activityHeadline } from '../utils/activity'
 
 export default function ActivityCard({ event }) {
+  const detail = activityDetail(event)
+
   return (
     <article className="kino-panel post-card">
-      <p className="post-author">{activityHeadline(event)}</p>
-      {event?.movie?.title && <p className="social-feature-text">{event.movie.title}</p>}
-      {event?.community?.name && <p className="social-muted">Community: {event.community.name}</p>}
+      <p className="social-feature-text">{activityHeadline(event)}</p>
+      {detail && <p className="social-muted">{detail}</p>}
     </article>
   )
 }

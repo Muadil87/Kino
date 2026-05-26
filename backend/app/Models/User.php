@@ -114,4 +114,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(UserBadge::class, 'user_id');
     }
+
+    public function movieRatings(): HasMany
+    {
+        return $this->hasMany(UserMovieRating::class, 'user_id');
+    }
+
+    public function ratedMovies()
+    {
+        return $this->belongsToMany(Movie::class, 'user_movie_ratings', 'user_id', 'movie_id')
+            ->withPivot('rating')
+            ->withTimestamps();
+    }
 }

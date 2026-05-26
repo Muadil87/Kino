@@ -10,7 +10,10 @@ export function MovieHeroSection({
   onToggleFavorite, 
   onToggleWatchlist, 
   isFavorite, 
-  isInWatchlist 
+  isInWatchlist,
+  userRating,
+  onRateMovie,
+  isLoggedIn,
 }) {
   if (error) return <div className="error-message">Error: {error}</div>
   if (isLoading && !movie) return <div className="loading-screen">Loading movie details...</div>
@@ -112,6 +115,26 @@ export function MovieHeroSection({
               </button>
             )}
           </div>
+
+          {isLoggedIn && (
+            <div className="detail-user-rating">
+              <span className="rating-label">Your Rating</span>
+              <div className="rating-stars-row">
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    className={`detail-rating-star ${Number(userRating || 0) >= value ? 'active' : ''}`}
+                    onClick={() => onRateMovie?.(value)}
+                    aria-label={`Rate ${value} stars`}
+                    title={`Rate ${value} stars`}
+                  >
+                    <Icon name="star" size={18} tone={Number(userRating || 0) >= value ? 'gold' : 'muted'} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {providers && providers.length > 0 && (
             <div className="detail-providers">

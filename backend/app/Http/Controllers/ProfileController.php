@@ -201,6 +201,73 @@ class ProfileController extends Controller
                 ];
             });
 
+        $ratedMovies = $user->movieRatings()
+            ->with('movie:id,tmdb_id,title,poster_path,release_date')
+            ->orderByDesc('rating')
+            ->latest('updated_at')
+            ->get()
+            ->map(fn ($item) => [
+                'id' => $item->movie?->id,
+                'tmdb_id' => $item->movie?->tmdb_id,
+                'title' => $item->movie?->title,
+                'poster_path' => $item->movie?->poster_path,
+                'release_date' => $item->movie?->release_date,
+                'rating' => $item->rating,
+            ])
+            ->filter(fn ($movie) => !empty($movie['id']))
+            ->values();
+
+        $topMoviesSource = $watched->count() > 0
+            ? $watched->values()
+            : $ratedMovies;
+
+        $topMovies = $topMoviesSource
+            ->take(4)
+            ->map(fn ($movie) => [
+                'id' => $movie['id'],
+                'tmdb_id' => $movie['tmdb_id'],
+                'title' => $movie['title'],
+                'poster_path' => $movie['poster_path'],
+                'release_date' => $movie['release_date'],
+                'rating' => $movie['rating'] ?? null,
+            ])
+            ->values();
+
+        $recentActivity = ActivityEvent::where('actor_user_id', $user->id)
+            ->with(['movie:id,tmdb_id,title,poster_path', 'community:id,name,slug'])
+            ->latest()
+            ->limit(8)
+            ->get()
+            ->map(fn ($event) => [
+                'id' => $event->id,
+                'event_type' => $event->event_type,
+                'movie' => $event->movie,
+                'community' => $event->community,
+                'metadata' => $event->metadata ?? [],
+                'created_at' => $event->created_at,
+            ]);
+
+        $completionChecks = [
+            'bio' => filled($profile->bio),
+            'avatar' => filled($profile->avatar_url),
+            'cover' => filled($profile->cover_url),
+            'favorite_genres' => !empty($profile->favorite_genres ?? []),
+            'favorite_movie' => filled($profile->favorite_movie),
+            'favorite_director' => filled($profile->favorite_director),
+            'watched' => $watched->count() > 0,
+            'reviewed' => $reviews->count() > 0,
+        ];
+
+        $completionCompleted = collect($completionChecks)->filter()->count();
+        $completionTotal = count($completionChecks);
+        $completionPercent = $completionTotal > 0
+            ? (int) round(($completionCompleted / $completionTotal) * 100)
+            : 0;
+
+        $personalRatingAverage = round((float) $ratedMovies->avg('rating'), 1);
+        $reviewRatingAverage = round((float) $reviews->avg('rating'), 1);
+        $ratingAverage = $ratedMovies->count() > 0 ? $personalRatingAverage : $reviewRatingAverage;
+
         return [
             'user' => [
                 'id' => $user->id,
@@ -224,12 +291,24 @@ class ProfileController extends Controller
                 'watchlist_count' => $watchlist->count(),
                 'favorites_count' => $favorites->count(),
                 'reviews_count' => $reviews->count(),
+                'rating_average' => $ratingAverage,
             ],
             'library' => [
                 'watched' => $watched->values(),
                 'watchlist' => $watchlist->values(),
                 'favorites' => $favorites->values(),
                 'reviews' => $reviews->values(),
+                'rated' => $ratedMovies->values(),
+            ],
+            'identity' => [
+                'top_movies' => $topMovies,
+                'recent_activity' => $recentActivity,
+                'profile_completion' => [
+                    'percent' => $completionPercent,
+                    'completed_items' => $completionCompleted,
+                    'total_items' => $completionTotal,
+                    'checklist' => $completionChecks,
+                ],
             ],
         ];
     }

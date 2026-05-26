@@ -28,4 +28,16 @@ class Movie extends Model
     {
         return $this->belongsToMany(User::class, 'watchlists');
     }
+
+    public function userRatings()
+    {
+        return $this->hasMany(UserMovieRating::class);
+    }
+
+    public function ratedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'user_movie_ratings', 'movie_id', 'user_id')
+            ->withPivot('rating')
+            ->withTimestamps();
+    }
 }
