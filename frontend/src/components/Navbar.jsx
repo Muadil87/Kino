@@ -22,7 +22,7 @@ export default function Navbar({ isLoggedIn, onLogout }) {
   // Check if we are on a page that requires a transparent navbar
   const isHomePage = location.pathname === '/'
   const isPublicLanding = isHomePage && !isLoggedIn
-  const isTransparentPage = ['/', '/login', '/signup', '/signin'].includes(location.pathname)
+  const isTransparentPage = ['/', '/login', '/register'].includes(location.pathname)
   const showNavbarSearch = isHomePage || !isTransparentPage
 
   // Click outside to close dropdowns
@@ -95,6 +95,11 @@ export default function Navbar({ isLoggedIn, onLogout }) {
               </Link>
             )}
             {isLoggedIn && (
+              <Link to="/my-cinema" className={`nav-link ${location.pathname === '/my-cinema' ? 'active' : ''}`}>
+                My Cinema
+              </Link>
+            )}
+            {isLoggedIn && (
               <Link to="/profile" className={`nav-link ${location.pathname === '/profile' ? 'active' : ''}`}>
                 Profile
               </Link>
@@ -126,7 +131,7 @@ export default function Navbar({ isLoggedIn, onLogout }) {
                     searchResults.map(movie => (
                       <Link 
                         key={movie.id} 
-                        to={`/movie/${movie.id}`} 
+                        to={`/movies/${movie.id}`} 
                         className="search-result-item"
                         onClick={handleResultClick}
                       >
@@ -169,7 +174,7 @@ export default function Navbar({ isLoggedIn, onLogout }) {
               <Button variant="unstyled" size="none" className="sign-in-btn" onClick={() => navigate('/login')}>
                 Sign In
               </Button>
-              <Button variant="unstyled" size="none" className="sign-up-btn" onClick={() => navigate('/signup')}>
+              <Button variant="unstyled" size="none" className="sign-up-btn" onClick={() => navigate('/register')}>
                 Create Account
               </Button>
             </>

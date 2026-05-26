@@ -105,7 +105,7 @@ function MovieDetailContent({ movies, onToggleFavorite, onToggleWatchlist, isFav
   }, [providers])
 
   const handleMovieSelect = (selectedId) => {
-      navigate(`/movie/${selectedId}`)
+      navigate(`/movies/${selectedId}`)
       window.scrollTo(0, 0)
   }
 

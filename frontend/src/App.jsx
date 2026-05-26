@@ -207,17 +207,17 @@ function App() {
             element={
               isLoggedIn
                 ? <DashboardPage movies={movies} history={history} />
-                : <LandingPage movies={movies} onGetStarted={() => navigate('/signup')} />
+                : <LandingPage movies={movies} onGetStarted={() => navigate('/register')} />
             }
           />
 
           <Route path="/login" element={
             <PublicOnlyRoute isLoggedIn={isLoggedIn}>
-              <LoginPage onNavigateToSignUp={() => navigate('/signup')} onLogin={handleLogin} />
+              <LoginPage onNavigateToSignUp={() => navigate('/register')} onLogin={handleLogin} />
             </PublicOnlyRoute>
           } />
 
-          <Route path="/signup" element={
+          <Route path="/register" element={
             <PublicOnlyRoute isLoggedIn={isLoggedIn}>
               <SignupPage onNavigateToSignIn={() => navigate('/login')} onSignUp={handleLogin} />
             </PublicOnlyRoute>
@@ -236,23 +236,11 @@ function App() {
               <ActivityFeedPage />
             </ProtectedRoute>
           } />
-          <Route path="/settings/telegram" element={
-            <ProtectedRoute isLoggedIn={isLoggedIn}>
-              <Navigate to="/activity" replace />
-            </ProtectedRoute>
-          } />
           <Route path="/my-cinema" element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>
               <MyCinemaPage />
             </ProtectedRoute>
           } />
-          <Route path="/watchlist" element={<Navigate to="/profile" replace />} />
-          <Route path="/favorites" element={<Navigate to="/profile" replace />} />
-          <Route path="/collections" element={<Navigate to="/movies" replace />} />
-          <Route path="/collections/:id/:name" element={<Navigate to="/movies" replace />} />
-          <Route path="/communities" element={<Navigate to="/activity" replace />} />
-          <Route path="/communities/:slug" element={<Navigate to="/activity" replace />} />
-          <Route path="/friends" element={<Navigate to="/activity" replace />} />
 
           <Route path="/profile" element={
             <ProtectedRoute isLoggedIn={isLoggedIn}>
@@ -266,11 +254,9 @@ function App() {
             </ProtectedRoute>
           } />
 
-          <Route path="/settings" element={<Navigate to="/profile" replace />} />
-
           <Route path="/search" element={<SearchResultsPage />} />
 
-          <Route path="/movie/:id" element={
+          <Route path="/movies/:id" element={
             <MovieDetailPage
               movies={movies}
               isFavorite={isFav}
@@ -284,7 +270,7 @@ function App() {
         </Routes>
       </div>
 
-      {!['/', '/login', '/signup'].includes(location.pathname.replace(/\/$/, '') || '/') && (
+      {!['/', '/login', '/register'].includes(location.pathname.replace(/\/$/, '') || '/') && (
         <footer className="footer">
           <div className="footer-container">
             <div className="footer-bottom">

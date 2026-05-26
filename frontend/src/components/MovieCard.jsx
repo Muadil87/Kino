@@ -15,7 +15,7 @@ export default function MovieCard({ movie, onRemove, onMarkWatched, onClick }) {
 
   return (
     <Link
-      to={`/movie/${movie.id}`}
+      to={`/movies/${movie.id}`}
       className="movie-card-link"
       onClick={(e) => {
         if (onClick) {

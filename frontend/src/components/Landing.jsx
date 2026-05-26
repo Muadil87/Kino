@@ -28,7 +28,7 @@ function RailMovieCard({ movie }) {
   const rating = typeof movie.vote_average === 'number' ? Math.min(movie.vote_average / 2 + 0.7, 4.9).toFixed(1) : '4.7'
 
   return (
-    <Link to={`/movie/${movie.id}`} className="landing-rail-card">
+    <Link to={`/movies/${movie.id}`} className="landing-rail-card">
       <img src={tmdbImage(imagePath, 'w780')} alt={movie.title} loading="lazy" />
       <span className="rail-rating"><Star size={13} fill="currentColor" /> {rating}</span>
       <span className="rail-save"><Bookmark size={18} /></span>

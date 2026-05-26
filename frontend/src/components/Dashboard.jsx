@@ -91,7 +91,7 @@ export default function Dashboard({ movies, history }) {
   const trending = useMemo(() => source.slice(0, 6).map((movie) => normalizeMovie(movie, movie)), [source])
   const following = useMemo(() => source.slice(2, 6).map((movie) => normalizeMovie(movie, movie)), [source])
   const popular = useMemo(() => source.slice(0, 6).map((movie) => normalizeMovie(movie, movie)), [source])
-  const openMovie = (id) => navigate(`/movie/${id}`)
+  const openMovie = (id) => navigate(`/movies/${id}`)
 
   if (!source || source.length === 0) {
     return (

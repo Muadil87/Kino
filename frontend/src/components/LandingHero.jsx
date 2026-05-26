@@ -122,7 +122,7 @@ export default function LandingHero({ onGetStarted, onExplore }) {
           {visiblePosters.map((poster) => (
             <Link
               key={`${poster.className}-${poster.id}`}
-              to={`/movie/${poster.id}`}
+              to={`/movies/${poster.id}`}
               className={`hero-poster-card ${poster.className}`}
               aria-label={`Open ${poster.title}`}
             >

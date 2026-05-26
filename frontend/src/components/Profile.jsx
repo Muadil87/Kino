@@ -558,7 +558,7 @@ export default function Profile({ profileData, loading, error, onRefresh }) {
             {activeTab !== 'reviews' && libraryPreview.length > 0 && (
               <div className="profile-movie-strip">
                 {libraryPreview.map((movie) => (
-                  <Link to={`/movie/${movie.id}`} className="profile-movie-card" key={`${activeTab}-${movie.id}`}>
+                  <Link to={`/movies/${movie.id}`} className="profile-movie-card" key={`${activeTab}-${movie.id}`}>
                     <div className="poster-wrap">
                       <img src={tmdbImage(movie.poster_path, 'w342')} alt={movie.title} />
                     </div>

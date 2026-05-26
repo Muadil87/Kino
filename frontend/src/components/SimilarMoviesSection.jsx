@@ -12,7 +12,7 @@ export function SimilarMoviesSection({ movies, onMovieSelect }) {
     if (onMovieSelect) {
       onMovieSelect(movie.id)
     } else {
-      navigate(`/movie/${movie.id}`)
+      navigate(`/movies/${movie.id}`)
       window.scrollTo(0, 0)
     }
   }
