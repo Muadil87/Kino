@@ -101,18 +101,31 @@ export default function MyCinemaPage() {
   }
 
   return (
-    <div className="profile-page">
+    <div className="profile-page-cinematic my-cinema-page">
       <Card className="kino-panel library-card my-cinema-card">
-        <div className="library-head">
-          <h2>My Cinema</h2>
-          <div className="library-tabs">
+        <header className="my-cinema-header">
+          <div className="my-cinema-title-group">
+            <p className="my-cinema-kicker">Personal Library</p>
+            <h1 className="my-cinema-title">My Cinema</h1>
+            <p className="my-cinema-subtitle">
+              Track your watchlist, favorites, reviews, and recommendations in one cinematic workspace.
+            </p>
+          </div>
+
+          <div className="library-tabs my-cinema-tabs" role="tablist" aria-label="My Cinema sections">
             {TABS.map((t) => (
-              <button key={t} type="button" className={t === tab ? 'active' : ''} onClick={() => setTab(t)}>
+              <button
+                key={t}
+                type="button"
+                className={t === tab ? 'active' : ''}
+                onClick={() => setTab(t)}
+                aria-pressed={t === tab}
+              >
                 {TAB_LABEL[t]}
               </button>
             ))}
           </div>
-        </div>
+        </header>
 
         {loading && <div className="empty-box">Loading your cinema...</div>}
         {error && !loading && <div className="empty-box">{error}</div>}

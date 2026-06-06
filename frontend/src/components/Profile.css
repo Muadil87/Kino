@@ -690,61 +690,160 @@
 }
 
 .my-cinema-card {
-  padding: 16px;
+  padding: 22px;
+}
+
+.my-cinema-page {
+  padding-top: 108px;
+}
+
+.my-cinema-header {
+  display: grid;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid color-mix(in srgb, var(--kino-gold), transparent 84%);
+}
+
+.my-cinema-title-group {
+  display: grid;
+  gap: 8px;
+  max-width: 72ch;
+}
+
+.my-cinema-kicker {
+  margin: 0;
+  color: var(--kino-gold);
+  font-family: var(--font-label);
+  font-size: 0.76rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.my-cinema-title {
+  margin: 0;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 0.96;
+}
+
+.my-cinema-subtitle {
+  margin: 0;
+  color: var(--kino-text-muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.my-cinema-tabs {
+  margin-top: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.my-cinema-tabs button {
+  cursor: pointer;
+  border: 1px solid color-mix(in srgb, var(--kino-gold), transparent 76%);
+  border-radius: 999px;
+  padding: 0.72rem 1rem;
+  transition: border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.my-cinema-tabs button:hover {
+  color: #fff5dd;
+  border-color: color-mix(in srgb, var(--kino-gold), transparent 38%);
+  background: rgba(243, 188, 86, 0.08);
+}
+
+.my-cinema-tabs .active {
+  color: #14110b;
+  border-bottom: 1px solid transparent;
+  border-color: rgba(243, 188, 86, 0.65);
+  background: linear-gradient(135deg, rgba(243, 188, 86, 0.96), rgba(210, 149, 51, 0.92));
 }
 
 .my-cinema-overview {
-  margin-top: 14px;
+  margin-top: 20px;
   display: grid;
-  gap: 14px;
+  gap: 18px;
 }
 
 .my-cinema-stats {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .my-cinema-stat {
-  border: 1px solid color-mix(in srgb, var(--kino-gold), transparent 82%);
-  border-radius: 8px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid color-mix(in srgb, var(--kino-gold), transparent 80%);
+  border-radius: 14px;
+  padding: 16px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+    rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .my-cinema-stat-value {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: 2rem;
   line-height: 1;
   font-family: var(--font-label);
 }
 
 .my-cinema-stat-label {
-  margin: 8px 0 0;
+  margin: 10px 0 0;
   color: var(--kino-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.86rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .my-cinema-overview-grid {
   display: grid;
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .my-cinema-overview-panel {
   border: 1px solid color-mix(in srgb, var(--kino-gold), transparent 82%);
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 16px;
+  padding: 16px;
+  min-height: 240px;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.my-cinema-overview-panel:last-child {
+  min-height: auto;
 }
 
 .my-cinema-overview-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .my-cinema-overview-head h3 {
   margin: 0;
+  font-size: 1.18rem;
+}
+
+.my-cinema-overview-head .btn-ghost {
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--kino-gold), transparent 74%);
+}
+
+.my-cinema-overview-panel .profile-movie-grid {
+  grid-template-columns: repeat(auto-fit, minmax(148px, 188px));
+  justify-content: start;
+}
+
+.my-cinema-overview-panel .empty-box {
+  margin-top: 0;
 }
 
 .my-cinema-recommendations .community-actions {
@@ -770,6 +869,14 @@
 
   .profile-movie-strip {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .my-cinema-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .my-cinema-overview-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -813,6 +920,38 @@
   }
 
   .my-cinema-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .my-cinema-page {
+    width: calc(100% - 18px);
+    padding-top: 92px;
+  }
+
+  .my-cinema-card {
+    padding: 16px;
+  }
+
+  .my-cinema-title {
+    font-size: 2.15rem;
+  }
+
+  .my-cinema-tabs {
+    gap: 8px;
+  }
+
+  .my-cinema-tabs button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .my-cinema-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .my-cinema-overview-panel .profile-movie-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
