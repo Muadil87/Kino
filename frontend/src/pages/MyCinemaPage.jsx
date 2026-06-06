@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import MovieCard from '../components/MovieCard'
 import { Card } from '../components/ui/card'
+import Icon from '../components/ui/Icon'
 import { profileApi, recommendationApi } from '../services/api'
 import '../components/Profile.css'
 
@@ -23,6 +24,14 @@ const STAT_LABEL = {
   watched: 'Watched',
   reviews: 'Reviews',
   recommendations: 'Recommendations',
+}
+
+const STAT_ICON = {
+  watchlist: 'watchlist',
+  favorites: 'favorites',
+  watched: 'eye',
+  reviews: 'star',
+  recommendations: 'collections',
 }
 
 export default function MyCinemaPage() {
@@ -82,10 +91,11 @@ export default function MyCinemaPage() {
   }), [library, recommendations])
 
   const overviewCards = useMemo(() => ([
-    { key: 'watchlist', items: library.watchlist.slice(0, 4) },
-    { key: 'favorites', items: library.favorites.slice(0, 4) },
-    { key: 'watched', items: library.watched.slice(0, 4) },
+    { key: 'watchlist', title: 'Continue Watching', actionLabel: 'Open', items: library.watchlist.slice(0, 2) },
+    { key: 'favorites', title: 'Favorites', actionLabel: 'View all', items: library.favorites.slice(0, 2) },
   ]), [library])
+
+  const activeTitle = TAB_LABEL[tab]
 
   const updateRecommendation = async (id, status) => {
     setUpdatingRecommendationId(id)
@@ -102,8 +112,8 @@ export default function MyCinemaPage() {
 
   return (
     <div className="profile-page-cinematic my-cinema-page">
-      <Card className="kino-panel library-card my-cinema-card">
-        <header className="my-cinema-header">
+      <section className="my-cinema-hero">
+        <div className="my-cinema-hero-copy">
           <div className="my-cinema-title-group">
             <p className="my-cinema-kicker">Personal Library</p>
             <h1 className="my-cinema-title">My Cinema</h1>
@@ -125,88 +135,198 @@ export default function MyCinemaPage() {
               </button>
             ))}
           </div>
-        </header>
+        </div>
 
-        {loading && <div className="empty-box">Loading your cinema...</div>}
-        {error && !loading && <div className="empty-box">{error}</div>}
+        <div className="my-cinema-hero-visual" aria-hidden="true">
+          <div className="my-cinema-hero-glow my-cinema-hero-glow-left" />
+          <div className="my-cinema-hero-glow my-cinema-hero-glow-right" />
+          <div className="my-cinema-light-beam my-cinema-light-beam-primary" />
+          <div className="my-cinema-light-beam my-cinema-light-beam-secondary" />
+          <div className="my-cinema-light-orb" />
+          <div className="my-cinema-projector">
+            <span className="my-cinema-projector-top" />
+            <span className="my-cinema-projector-reel my-cinema-projector-reel-large" />
+            <span className="my-cinema-projector-reel my-cinema-projector-reel-small" />
+            <span className="my-cinema-projector-lens" />
+            <span className="my-cinema-projector-body" />
+            <span className="my-cinema-projector-stand" />
+            <span className="my-cinema-projector-base" />
+          </div>
+        </div>
+      </section>
 
-        {!loading && !error && tab === 'overview' && (
-          <div className="my-cinema-overview">
-            <section className="my-cinema-stats">
-              {Object.entries(stats).map(([key, value]) => (
-                <article key={key} className="my-cinema-stat">
-                  <p className="my-cinema-stat-value">{value}</p>
-                  <p className="my-cinema-stat-label">{STAT_LABEL[key]}</p>
-                </article>
-              ))}
-            </section>
+      <Card className="kino-panel my-cinema-stats-shell">
+        <section className="my-cinema-stats">
+          {Object.entries(stats).map(([key, value]) => (
+            <article key={key} className="my-cinema-stat">
+              <span className="my-cinema-stat-icon">
+                <Icon name={STAT_ICON[key]} size={24} tone="gold" />
+              </span>
+              <div className="my-cinema-stat-copy">
+                <p className="my-cinema-stat-value">{value}</p>
+                <p className="my-cinema-stat-label">{STAT_LABEL[key]}</p>
+              </div>
+            </article>
+          ))}
+        </section>
+      </Card>
 
-            <section className="my-cinema-overview-grid">
-              {overviewCards.map(({ key, items }) => (
-                <article key={key} className="my-cinema-overview-panel">
-                  <div className="my-cinema-overview-head">
-                    <h3>{STAT_LABEL[key]}</h3>
-                    <button type="button" className="btn-ghost" onClick={() => setTab(key)}>Open</button>
-                  </div>
-                  {items.length > 0 ? (
-                    <div className="movie-grid profile-movie-grid">
-                      {items.map((movie) => <MovieCard key={`overview-${key}-${movie.id}`} movie={movie} />)}
-                    </div>
-                  ) : (
-                    <div className="empty-box">No items yet.</div>
-                  )}
-                </article>
-              ))}
+      {loading && <Card className="kino-panel my-cinema-card"><div className="empty-box">Loading your cinema...</div></Card>}
+      {error && !loading && <Card className="kino-panel my-cinema-card"><div className="empty-box">{error}</div></Card>}
 
-              <article className="my-cinema-overview-panel">
-                <div className="my-cinema-overview-head">
-                  <h3>Recent Reviews</h3>
-                  <button type="button" className="btn-ghost" onClick={() => setTab('reviews')}>Open</button>
+      {!loading && !error && tab === 'overview' && (
+        <section className="my-cinema-showcase-grid">
+          {overviewCards.map(({ key, title, actionLabel, items }) => (
+            <Card key={key} className="kino-panel my-cinema-feature-card">
+              <div className="my-cinema-feature-head">
+                <h2>{title}</h2>
+                <button type="button" className="my-cinema-inline-link" onClick={() => setTab(key)}>
+                  {actionLabel}
+                </button>
+              </div>
+              {items.length > 0 ? (
+                <div className="movie-grid profile-movie-grid my-cinema-feature-grid">
+                  {items.map((movie) => <MovieCard key={`overview-${key}-${movie.id}`} movie={movie} />)}
                 </div>
-                {library.reviews.length > 0 ? (
-                  <div className="reviews-list">
-                    {library.reviews.slice(0, 3).map((review) => (
-                      <article key={`overview-review-${review.id}`} className="review-item">
-                        <h3>{review.movie?.title || 'Unknown movie'}</h3>
-                        <p className="muted">Rating: {review.rating}/5</p>
-                        <p>{review.content}</p>
-                      </article>
-                    ))}
+              ) : (
+                <div className="my-cinema-empty-state">
+                  <span className="my-cinema-empty-icon"><Icon name={STAT_ICON[key]} size={28} tone="gold" /></span>
+                  <div>
+                    <h3>No {STAT_LABEL[key].toLowerCase()} yet.</h3>
+                    <p>Start curating this shelf to build out your cinema.</p>
                   </div>
-                ) : (
-                  <div className="empty-box">No reviews yet.</div>
-                )}
-              </article>
-            </section>
-          </div>
-        )}
+                </div>
+              )}
+            </Card>
+          ))}
 
-        {!loading && !error && ['watchlist', 'favorites', 'watched'].includes(tab) && active.length > 0 && (
-          <div className="movie-grid profile-movie-grid">
-            {active.map((movie) => <MovieCard key={`${tab}-${movie.id}`} movie={movie} />)}
-          </div>
-        )}
+          <Card className="kino-panel my-cinema-feature-card">
+            <div className="my-cinema-feature-head">
+              <h2>Watched</h2>
+              <button type="button" className="my-cinema-inline-link" onClick={() => setTab('watched')}>
+                Open
+              </button>
+            </div>
+            {library.watched.length > 0 ? (
+              <div className="movie-grid profile-movie-grid my-cinema-feature-grid">
+                {library.watched.slice(0, 2).map((movie) => <MovieCard key={`overview-watched-${movie.id}`} movie={movie} />)}
+              </div>
+            ) : (
+              <div className="my-cinema-empty-state my-cinema-empty-state-wide">
+                <span className="my-cinema-empty-icon"><Icon name="cinema" size={28} tone="gold" /></span>
+                <div>
+                  <h3>You haven&apos;t watched any movies yet.</h3>
+                  <p>Start watching and track your journey.</p>
+                </div>
+                <Link to="/movies" className="my-cinema-empty-action">
+                  Explore Movies
+                </Link>
+              </div>
+            )}
+          </Card>
 
-        {!loading && !error && tab === 'reviews' && active.length > 0 && (
-          <div className="reviews-list">
-            {active.map((review) => (
-              <article key={review.id} className="review-item">
-                <h3>{review.movie?.title || 'Unknown movie'}</h3>
-                <p className="muted">Rating: {review.rating}/5</p>
-                <p>{review.content}</p>
-              </article>
-            ))}
-          </div>
-        )}
+          <Card className="kino-panel my-cinema-feature-card">
+            <div className="my-cinema-feature-head">
+              <h2>Recent Reviews</h2>
+              <button type="button" className="my-cinema-inline-link" onClick={() => setTab('reviews')}>
+                Open
+              </button>
+            </div>
+            {library.reviews.length > 0 ? (
+              <div className="reviews-list my-cinema-review-list">
+                {library.reviews.slice(0, 2).map((review) => (
+                  <article key={`overview-review-${review.id}`} className="review-item my-cinema-review-card">
+                    <h3>{review.movie?.title || 'Unknown movie'}</h3>
+                    <p className="muted">Rating: {review.rating}/5</p>
+                    <p>{review.content}</p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <div className="my-cinema-empty-state my-cinema-empty-state-wide">
+                <span className="my-cinema-empty-icon"><Icon name="collections" size={28} tone="gold" /></span>
+                <div>
+                  <h3>No reviews yet.</h3>
+                  <p>Share your thoughts on movies you&apos;ve watched.</p>
+                </div>
+                <Link to="/movies" className="my-cinema-empty-action">
+                  Write a Review
+                </Link>
+              </div>
+            )}
+          </Card>
+        </section>
+      )}
 
-        {!loading && !error && tab === 'recommendations' && (
+      {!loading && !error && ['watchlist', 'favorites', 'watched'].includes(tab) && (
+        <Card className="kino-panel my-cinema-card">
+          <div className="my-cinema-feature-head my-cinema-feature-head-standalone">
+            <h2>{activeTitle}</h2>
+            <span className="my-cinema-section-meta">{active.length} titles</span>
+          </div>
+          {active.length > 0 ? (
+            <div className="movie-grid profile-movie-grid my-cinema-library-grid">
+              {active.map((movie) => <MovieCard key={`${tab}-${movie.id}`} movie={movie} />)}
+            </div>
+          ) : (
+            <div className="my-cinema-empty-state my-cinema-empty-state-wide">
+              <span className="my-cinema-empty-icon"><Icon name={STAT_ICON[tab]} size={28} tone="gold" /></span>
+              <div>
+                <h3>No items in this section yet.</h3>
+                <p>Explore more films and start building this collection.</p>
+              </div>
+              <Link to="/movies" className="my-cinema-empty-action">
+                Explore Movies
+              </Link>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {!loading && !error && tab === 'reviews' && (
+        <Card className="kino-panel my-cinema-card">
+          <div className="my-cinema-feature-head my-cinema-feature-head-standalone">
+            <h2>Reviews</h2>
+            <span className="my-cinema-section-meta">{active.length} entries</span>
+          </div>
+          {active.length > 0 ? (
+            <div className="reviews-list my-cinema-review-list">
+              {active.map((review) => (
+                <article key={review.id} className="review-item my-cinema-review-card">
+                  <h3>{review.movie?.title || 'Unknown movie'}</h3>
+                  <p className="muted">Rating: {review.rating}/5</p>
+                  <p>{review.content}</p>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="my-cinema-empty-state my-cinema-empty-state-wide">
+              <span className="my-cinema-empty-icon"><Icon name="collections" size={28} tone="gold" /></span>
+              <div>
+                <h3>No reviews yet.</h3>
+                <p>Watch something memorable, then come back and review it.</p>
+              </div>
+              <Link to="/movies" className="my-cinema-empty-action">
+                Browse Movies
+              </Link>
+            </div>
+          )}
+        </Card>
+      )}
+
+      {!loading && !error && tab === 'recommendations' && (
+        <Card className="kino-panel my-cinema-card">
+          <div className="my-cinema-feature-head my-cinema-feature-head-standalone">
+            <h2>Recommendations</h2>
+            <span className="my-cinema-section-meta">{recommendations.length} items</span>
+          </div>
           <div className="my-cinema-recommendations">
             {recommendationError && <p className="err">{recommendationError}</p>}
 
             {recommendations.length > 0 ? (
-              <div className="reviews-list">
+              <div className="reviews-list my-cinema-review-list">
                 {recommendations.map((item) => (
-                  <article key={item.id} className="review-item">
+                  <article key={item.id} className="review-item my-cinema-review-card">
                     <h3>{item.movie?.title || 'Movie recommendation'}</h3>
                     <p className="muted">From: {item.from_user?.name || 'Member'}</p>
                     <p className="muted">Status: {item.status || 'pending'}</p>
@@ -241,15 +361,20 @@ export default function MyCinemaPage() {
                 ))}
               </div>
             ) : (
-              <div className="empty-box">No recommendations yet.</div>
+              <div className="my-cinema-empty-state my-cinema-empty-state-wide">
+                <span className="my-cinema-empty-icon"><Icon name="collections" size={28} tone="gold" /></span>
+                <div>
+                  <h3>No recommendations yet.</h3>
+                  <p>Recommendations from your network will appear here.</p>
+                </div>
+                <Link to="/activity" className="my-cinema-empty-action">
+                  Open Activity
+                </Link>
+              </div>
             )}
           </div>
-        )}
-
-        {!loading && !error && ['watchlist', 'favorites', 'watched', 'reviews'].includes(tab) && active.length === 0 && (
-          <div className="empty-box">No items in this section yet.</div>
-        )}
-      </Card>
+        </Card>
+      )}
     </div>
   )
 }
