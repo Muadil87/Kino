@@ -2,6 +2,7 @@ import axios from 'axios'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'
 const TOKEN_KEY = 'kino_token'
+const USER_KEY = 'kino_user'
 let unauthorizedHandler = null
 
 const client = axios.create({
@@ -29,6 +30,36 @@ const tokenStorage = {
   },
 }
 
+const userStorage = {
+  get() {
+    const raw = sessionStorage.getItem(USER_KEY) || localStorage.getItem(USER_KEY)
+
+    if (!raw) {
+      return null
+    }
+
+    try {
+      return JSON.parse(raw)
+    } catch {
+      this.clear()
+      return null
+    }
+  },
+  set(user, persistent = true) {
+    const serialized = JSON.stringify(user)
+    sessionStorage.setItem(USER_KEY, serialized)
+    if (persistent) {
+      localStorage.setItem(USER_KEY, serialized)
+    } else {
+      localStorage.removeItem(USER_KEY)
+    }
+  },
+  clear() {
+    sessionStorage.removeItem(USER_KEY)
+    localStorage.removeItem(USER_KEY)
+  },
+}
+
 client.interceptors.request.use((config) => {
   const token = tokenStorage.get()
   if (token) {
@@ -42,6 +73,7 @@ client.interceptors.response.use(
   (error) => {
     if (error?.response?.status === 401) {
       tokenStorage.clear()
+      userStorage.clear()
       if (typeof unauthorizedHandler === 'function') {
         unauthorizedHandler()
       }
@@ -107,14 +139,25 @@ export const authApi = {
     const response = await client.post('/logout')
     return response.data
   },
+  saveSession(user, token, persistent = true) {
+    tokenStorage.set(token, persistent)
+    userStorage.set(user, persistent)
+  },
   saveToken(token, persistent = true) {
     tokenStorage.set(token, persistent)
   },
+  saveUser(user, persistent = true) {
+    userStorage.set(user, persistent)
+  },
   clearToken() {
     tokenStorage.clear()
+    userStorage.clear()
   },
   getToken() {
     return tokenStorage.get()
+  },
+  getUser() {
+    return userStorage.get()
   },
   onUnauthorized(handler) {
     unauthorizedHandler = handler

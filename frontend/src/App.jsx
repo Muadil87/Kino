@@ -25,14 +25,17 @@ function PublicOnlyRoute({ isLoggedIn, children }) {
 }
 
 function App() {
+  const initialToken = authApi.getToken()
+  const initialUser = authApi.getUser()
+
   const [movies, setMovies] = useState([])
   const [favorites, setFavorites] = useState([])
   const [watchlist, setWatchlist] = useState([])
   const [history, setHistory] = useState([])
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [username, setUsername] = useState('Movie Buff')
-  const [email, setEmail] = useState('')
-  const [authBootstrapped, setAuthBootstrapped] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(Boolean(initialToken && initialUser))
+  const [username, setUsername] = useState(initialUser?.name || 'Movie Buff')
+  const [email, setEmail] = useState(initialUser?.email || '')
+  const [authBootstrapped, setAuthBootstrapped] = useState(!initialToken || Boolean(initialUser))
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -64,9 +67,25 @@ function App() {
   useEffect(() => {
     const bootstrapAuth = async () => {
       const token = authApi.getToken()
+      const storedUser = authApi.getUser()
+
       if (!token) {
+        authApi.clearToken()
         setAuthBootstrapped(true)
         return
+      }
+
+      if (storedUser) {
+        setIsLoggedIn(true)
+        setUsername(storedUser.name || 'Movie Buff')
+        setEmail(storedUser.email || '')
+        setAuthBootstrapped(true)
+
+        loadUserLists().catch(() => {
+          setWatchlist([])
+          setFavorites([])
+          setHistory([])
+        })
       }
 
       try {
@@ -74,6 +93,7 @@ function App() {
         setIsLoggedIn(true)
         setUsername(user.name || 'Movie Buff')
         setEmail(user.email || '')
+        authApi.saveUser(user, Boolean(localStorage.getItem('kino_token')))
         await loadUserLists()
       } catch {
         authApi.clearToken()
@@ -81,6 +101,8 @@ function App() {
         setWatchlist([])
         setFavorites([])
         setHistory([])
+        setUsername('Movie Buff')
+        setEmail('')
       } finally {
         setAuthBootstrapped(true)
       }

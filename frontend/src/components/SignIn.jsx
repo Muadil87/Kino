@@ -20,7 +20,7 @@ export default function SignIn({ onNavigateToSignUp, onLogin }) {
 
     try {
       const data = await authApi.login({ email, password })
-      authApi.saveToken(data.token)
+      authApi.saveSession(data.user, data.token)
       onLogin(data.user)
     } catch (err) {
       setError(err.response?.data?.message || 'Sign in failed')

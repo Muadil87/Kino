@@ -41,7 +41,7 @@ const SignUp = ({ onNavigateToSignIn, onSignUp }) => {
         password_confirmation: formData.password_confirmation
       })
 
-      authApi.saveToken(data.token)
+      authApi.saveSession(data.user, data.token)
 
       if (onSignUp) {
         onSignUp(data.user)
