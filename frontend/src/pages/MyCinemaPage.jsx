@@ -46,13 +46,23 @@ export default function MyCinemaPage() {
       setError('')
       setRecommendationError('')
       try {
-        const [profileData, inboxData] = await Promise.all([
+        const [profileResult, inboxResult] = await Promise.allSettled([
           profileApi.me(),
           recommendationApi.inbox(),
         ])
 
-        setLibrary(profileData.library || EMPTY_LIBRARY)
-        setRecommendations(inboxData.items || [])
+        if (profileResult.status !== 'fulfilled') {
+          throw new Error('profile-load-failed')
+        }
+
+        setLibrary(profileResult.value.library || EMPTY_LIBRARY)
+
+        if (inboxResult.status === 'fulfilled') {
+          setRecommendations(inboxResult.value.items || [])
+        } else {
+          setRecommendations([])
+          setRecommendationError('Recommendations are unavailable right now.')
+        }
       } catch {
         setError('Failed to load your cinema data.')
       } finally {

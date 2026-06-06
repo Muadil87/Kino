@@ -23,7 +23,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Protected Routes (Only logged-in users with a valid Token can access)
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('jwt.auth')->group(function () {
     
     // Get the currently logged in user info
     Route::get('/user', function (Request $request) {
@@ -57,7 +57,7 @@ Route::get('/movies/{tmdbId}/reviews', [ReviewController::class, 'index']);
 Route::get('/profiles/{user}', [ProfileController::class, 'show']);
 Route::post('/telegram/webhook', TelegramWebhookController::class);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('jwt.auth')->group(function () {
     Route::get('/friends', [FriendController::class, 'index']);
     Route::get('/friends/requests', [FriendController::class, 'requests']);
     Route::post('/friends/requests', [FriendController::class, 'store']);

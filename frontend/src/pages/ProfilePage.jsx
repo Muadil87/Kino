@@ -13,9 +13,8 @@ export default function ProfilePage() {
     try {
       const data = await profileApi.me()
       setProfileData(data)
-    } catch (err) {
-      const message = err?.response?.data?.message || 'Failed to load your profile.'
-      setError(message)
+    } catch {
+      setError('Failed to load your profile.')
     } finally {
       setLoading(false)
     }

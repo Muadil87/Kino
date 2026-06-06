@@ -12,6 +12,7 @@ use App\Models\UserBadge;
 use App\Models\UserProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class ProfileController extends Controller
 {
@@ -201,21 +202,25 @@ class ProfileController extends Controller
                 ];
             });
 
-        $ratedMovies = $user->movieRatings()
-            ->with('movie:id,tmdb_id,title,poster_path,release_date')
-            ->orderByDesc('rating')
-            ->latest('updated_at')
-            ->get()
-            ->map(fn ($item) => [
-                'id' => $item->movie?->id,
-                'tmdb_id' => $item->movie?->tmdb_id,
-                'title' => $item->movie?->title,
-                'poster_path' => $item->movie?->poster_path,
-                'release_date' => $item->movie?->release_date,
-                'rating' => $item->rating,
-            ])
-            ->filter(fn ($movie) => !empty($movie['id']))
-            ->values();
+        $ratedMovies = collect();
+
+        if (Schema::hasTable('user_movie_ratings')) {
+            $ratedMovies = $user->movieRatings()
+                ->with('movie:id,tmdb_id,title,poster_path,release_date')
+                ->orderByDesc('rating')
+                ->latest('updated_at')
+                ->get()
+                ->map(fn ($item) => [
+                    'id' => $item->movie?->id,
+                    'tmdb_id' => $item->movie?->tmdb_id,
+                    'title' => $item->movie?->title,
+                    'poster_path' => $item->movie?->poster_path,
+                    'release_date' => $item->movie?->release_date,
+                    'rating' => $item->rating,
+                ])
+                ->filter(fn ($movie) => !empty($movie['id']))
+                ->values();
+        }
 
         $topMoviesSource = $watched->count() > 0
             ? $watched->values()

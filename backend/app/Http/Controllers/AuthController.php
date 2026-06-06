@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\JwtService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
+    public function __construct(private readonly JwtService $jwt)
+    {
+    }
+
     // 1. REGISTER (Sign Up)
     public function register(Request $request)
     {
@@ -26,13 +30,15 @@ class AuthController extends Controller
             'password' => Hash::make($fields['password']), // Always hash passwords!
         ]);
 
-        // C. Create a token (The "ID Card" for the user)
-        $token = $user->createToken('kino_token')->plainTextToken;
+        // C. Issue a signed JWT for the new session
+        $token = $this->jwt->issueToken($user);
 
         // D. Send response back to React
         return response()->json([
             'user' => $user,
             'token' => $token,
+            'token_type' => 'Bearer',
+            'expires_in' => $this->jwt->ttlInSeconds(),
             'message' => 'User registered successfully!'
         ], 201);
     }
@@ -56,13 +62,15 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // C. Generate Token
-        $token = $user->createToken('kino_token')->plainTextToken;
+        // C. Generate a signed JWT
+        $token = $this->jwt->issueToken($user);
 
         // D. Return response
         return response()->json([
             'user' => $user,
             'token' => $token,
+            'token_type' => 'Bearer',
+            'expires_in' => $this->jwt->ttlInSeconds(),
             'message' => 'Logged in successfully!'
         ], 200);
     }
@@ -70,8 +78,8 @@ class AuthController extends Controller
     // 3. LOGOUT
     public function logout(Request $request)
     {
-        // Delete the token (Revoke the ID Card)
-        $request->user()->currentAccessToken()->delete();
+        // Invalidate all currently-issued JWTs for this user.
+        $request->user()->increment('token_version');
 
         return response()->json([
             'message' => 'Logged out successfully'
